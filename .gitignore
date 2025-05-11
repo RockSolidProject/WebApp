@@ -1,0 +1,19 @@
+# Node modules
+node_modules/
+
+/.idea/
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# Build outputs
+dist/
+build/
+.vite/
+
+# System files
+.DS_Store
+
