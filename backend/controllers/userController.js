@@ -1,5 +1,4 @@
 var UserModel = require('../models/userModel.js');
-
 /**
  * userController.js
  *
@@ -50,25 +49,25 @@ module.exports = {
     /**
      * userController.create()
      */
-    create: function (req, res) {
+    create: async function (req, res) {
         var user = new UserModel({
 			username : req.body.username,
 			email : req.body.email,
 			password : req.body.password,
 			avatar : req.body.avatar,
-			createdAt : req.body.createdAt
+			createdAt : new Date()
         });
 
-        user.save(function (err, user) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when creating user',
-                    error: err
-                });
-            }
-
-            return res.status(201).json(user);
-        });
+        try {
+            const savedUser = await user.save()
+            return res.status(201).json(savedUser)
+        }
+        catch(err){
+            return res.status(500).json({
+                message: 'Error when creating user',
+                error: err
+            })
+        }
     },
 
     /**
