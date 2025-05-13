@@ -45,16 +45,11 @@ module.exports = {
      * climbingAreaController.create()
      */
     create: async function (req, res) {
-        if (!req.body.name || !req.body.latitude || !req.body.longitude) {
-            return res.status(400).json({ message: "Name, latitude, and longitude are required." });
-        }
-
         var climbingArea = new ClimbingareaModel({
 			name : req.body.name,
 			latitude : req.body.latitude,
 			longitude : req.body.longitude,
             postedBy : req.session.userId,
-            dateTime : new Date()
         });
         try {
             const savedClimbingArea = await climbingArea.save();

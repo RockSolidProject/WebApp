@@ -9,7 +9,10 @@ var climbingAreaSchema = new Schema({
 	 	type: Schema.Types.ObjectId,
 	 	ref: 'user'
 	},
-    'dataTime' : Date
+    'dateTime' : {
+        type: Date,
+        default: Date.now
+    }
 });
 
-module.exports = mongoose.model('climbingArea', climbingAreaSchema);
+module.exports = mongoose.model('ClimbingArea', climbingAreaSchema);
