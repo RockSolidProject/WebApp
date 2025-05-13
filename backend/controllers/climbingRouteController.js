@@ -12,7 +12,10 @@ module.exports = {
      */
     list: async function (req, res) {
         try {
-            const climbingRoutes = await ClimbingrouteModel.find();
+            const climbingRoutes = await ClimbingrouteModel
+                .find()
+                .populate("postedBy")
+                .populate("climbingArea")
             return res.json(climbingRoutes);
         } catch (err) {
             return res.status(500).json({
@@ -29,7 +32,10 @@ module.exports = {
         var id = req.params.id;
 
         try {
-            const climbingRoute = await ClimbingrouteModel.findById(id)
+            const climbingRoute = await ClimbingrouteModel
+                .findById(id)
+                .populate("postedBy")
+                .populate("climbingArea")
             if (!climbingRoute) {
                 return res.status(404).json({
                     message: 'No such climbing route.'

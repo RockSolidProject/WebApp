@@ -7,7 +7,9 @@ module.exports = {
      */
     list: async function (req, res) {
         try {
-            const climbingAreas = await ClimbingareaModel.find();
+            const climbingAreas = await ClimbingareaModel
+                .find()
+                .populate("postedBy")
             return res.json(climbingAreas)
         }
         catch (err) {
@@ -25,7 +27,9 @@ module.exports = {
         var id = req.params.id;
 
         try {
-            const climbingArea = await ClimbingareaModel.findById(id);
+            const climbingArea = await ClimbingareaModel
+                .findById(id)
+                .populate("postedBy")
             if (!climbingArea) {
                 return res.status(404).json({
                     message: 'No such climbingArea'

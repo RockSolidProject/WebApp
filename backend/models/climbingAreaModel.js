@@ -25,4 +25,4 @@ var climbingAreaSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('ClimbingArea', climbingAreaSchema);
+module.exports = mongoose.model('climbingArea', climbingAreaSchema);

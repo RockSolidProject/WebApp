@@ -34,4 +34,4 @@ var climbingRouteSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('ClimbingRoute', climbingRouteSchema);
+module.exports = mongoose.model('climbingRoute', climbingRouteSchema);
