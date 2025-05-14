@@ -1,6 +1,7 @@
 var RouteWishListModel = require('../models/routeWishListModel.js')
 var RouteClimbedModel = require('../models/routeClimbedModel.js')
 var RouteCommentModel = require('../models/routeCommentModel.js')
+var RouteRateModel = require('../models/routeRateModel.js')
 
 /**
  * routeConnectionController.js
@@ -59,6 +60,23 @@ module.exports = {
         catch (err) {
             return res.status(500).json({
                 message: "Error getting routes comments.",
+                error: err
+            })
+        }
+    },
+
+    getRoutesRatings: async function(req, res) {
+        const routeId = req.params.routeId
+        try {
+            const ratings = await RouteRateModel
+                .find({climbingRoute: routeId})
+                .populate("postedBy")
+                .populate("climbingRoute")
+            return res.json(ratings)
+        }
+        catch (err) {
+            return res.status(500).json({
+                message: "Error getting routes ratings.",
                 error: err
             })
         }
@@ -140,6 +158,36 @@ module.exports = {
         catch (err) {
             return res.status(500).json({
                 message: "Adding comment failed",
+                error: err
+            })
+        }
+    },
+
+    rateRoute: async function(req, res) {
+        const routeId = req.params.routeId
+        //TODO get user ID 
+        const userId = "000000000000000000000000"
+
+        //TODO check if rating a number between 1 and 5
+
+        try {
+            const current = await RouteRateModel.findOne({postedBy: userId, climbingRoute: routeId})
+            if (current) {
+                current.rating = req.body.rating
+                await current.save()
+                return res.status(200).json(current)
+            }
+            const routeRate = new RouteRateModel({
+                climbingRoute: routeId,
+                postedBy: userId,
+                rating: req.body.rating
+            })
+            await routeRate.save()
+            return res.status(201).json(routeRating)
+        }
+        catch (err) {
+            return res.status(500).json({
+                message: "Rating route failed.",
                 error: err
             })
         }
