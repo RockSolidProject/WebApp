@@ -1,5 +1,6 @@
 var RouteWishListModel = require('../models/routeWishListModel.js')
 var RouteClimbedModel = require('../models/routeClimbedModel.js')
+var RouteCommentModel = require('../models/routeCommentModel.js')
 
 /**
  * routeConnectionController.js
@@ -40,6 +41,24 @@ module.exports = {
         catch (err) {
             return res.status(500).json({
                 message: "Failed to get users climbed routes.",
+                error: err
+            })
+        }
+    },
+
+    getRoutesComments: async function(req, res) {
+        const routeId = req.params.routeId
+
+        try {
+            const comments = await RouteCommentModel
+                .find({climbingRoute: routeId})
+                .populate("postedBy")
+                .populate("climbingRoute")
+            return res.json(comments)
+        }
+        catch (err) {
+            return res.status(500).json({
+                message: "Error getting routes comments.",
                 error: err
             })
         }
@@ -97,6 +116,30 @@ module.exports = {
         catch (err) {
             return res.status(500).json({
                 message: "Failed to mark routes as climbed.",
+                error: err
+            })
+        }
+    },
+
+    commentRoute: async function(req, res) {
+        const routeId = req.params.routeId
+        //TODO get user ID 
+        const userId = "000000000000000000000000"
+
+        try {
+            const comment = new RouteCommentModel({
+                climbingRoute: routeId,
+                postedBy: userId,
+                content: req.body.content,
+                image: req.body.image
+            })
+
+            const addedComment = await comment.save()
+            return res.status(201).json(addedComment)
+        }
+        catch (err) {
+            return res.status(500).json({
+                message: "Adding comment failed",
                 error: err
             })
         }

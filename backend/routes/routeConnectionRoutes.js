@@ -13,6 +13,11 @@ router.get('/wishlist', routeConnectionController.getUsersWishlist)
 router.get('/climbed', routeConnectionController.getUsersClimbedRoutes)
 
 /*
+ * GET
+ */
+router.get('/comment/:routeId', routeConnectionController.getRoutesComments)
+
+/*
  * POST
  */
 router.post('/wishlist/:routeId', routeConnectionController.toggleWishList)
@@ -21,5 +26,10 @@ router.post('/wishlist/:routeId', routeConnectionController.toggleWishList)
  * POST
  */
 router.post('/climbed/:routeId', routeConnectionController.markClimbed)
+
+/*
+ * POST
+ */
+router.post('/comment/:routeId', routeConnectionController.commentRoute)
 
 module.exports = router;
