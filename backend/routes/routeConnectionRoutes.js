@@ -8,9 +8,18 @@ var routeConnectionController = require('../controllers/routeConnectionControlle
 router.get('/wishlist', routeConnectionController.getUsersWishlist)
 
 /*
+ * GET
+ */
+router.get('/climbed', routeConnectionController.getUsersClimbedRoutes)
+
+/*
  * POST
  */
 router.post('/wishlist/:routeId', routeConnectionController.toggleWishList)
 
+/*
+ * POST
+ */
+router.post('/climbed/:routeId', routeConnectionController.markClimbed)
 
 module.exports = router;
