@@ -53,7 +53,7 @@ module.exports = {
 			name : req.body.name,
 			latitude : req.body.latitude,
 			longitude : req.body.longitude,
-            postedBy : "000000000000000000000000",
+            postedBy : req.user.id
         });
         try {
             const savedClimbingArea = await climbingArea.save();

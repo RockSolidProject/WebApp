@@ -11,8 +11,7 @@ var RouteRateModel = require('../models/routeRateModel.js')
 
 module.exports = {
     getUsersWishlist: async function (req, res) {
-        //TODO get user ID 
-        const userId = "000000000000000000000000"
+        const userId = req.user.id
 
         try {
             const wishlist = await RouteWishListModel
@@ -30,8 +29,7 @@ module.exports = {
     },
 
     getUsersClimbedRoutes: async function(req, res) {
-        //TODO get user ID 
-        const userId = "000000000000000000000000"
+        const userId = req.user.id
         try {
             const climbedRoutes = await RouteClimbedModel
                 .find({postedBy: userId})
@@ -84,8 +82,7 @@ module.exports = {
 
     toggleWishList: async function (req, res) {
         const routeId = req.params.routeId
-        //TODO get user ID 
-        const userId = "000000000000000000000000"
+        const userId = req.user.id
         try {
             const current = await RouteWishListModel.findOne({postedBy: userId, climbingRoute: routeId})
             if (current) {
@@ -110,10 +107,7 @@ module.exports = {
 
     markClimbed: async function(req, res) {
         const routeId = req.params.routeId
-        //TODO get user ID 
-        const userId = "000000000000000000000000"
-
-        //TODO ALSO SHCECK VALIDITY OF CLIMBING GRADE STRING
+        const userId = req.user.id
 
         try{            
             const current = await RouteClimbedModel.findOne({postedBy: userId, climbingRoute: routeId})
@@ -141,8 +135,7 @@ module.exports = {
 
     commentRoute: async function(req, res) {
         const routeId = req.params.routeId
-        //TODO get user ID 
-        const userId = "000000000000000000000000"
+        const userId = req.user.id
 
         try {
             const comment = new RouteCommentModel({

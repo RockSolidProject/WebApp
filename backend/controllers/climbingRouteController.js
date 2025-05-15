@@ -59,7 +59,8 @@ module.exports = {
 			name : req.body.name,
 			length : req.body.length,
 			type : req.body.type,
-            climbingArea: req.body.climbingArea
+            climbingArea: req.body.climbingArea,
+            postedBy : req.user.id
         });
 
         try {
