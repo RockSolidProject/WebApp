@@ -158,10 +158,7 @@ module.exports = {
 
     rateRoute: async function(req, res) {
         const routeId = req.params.routeId
-        //TODO get user ID 
-        const userId = "000000000000000000000000"
-
-        //TODO check if rating a number between 1 and 5
+        const userId = req.user.id
 
         try {
             const current = await RouteRateModel.findOne({postedBy: userId, climbingRoute: routeId})
