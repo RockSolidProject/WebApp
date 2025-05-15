@@ -1,6 +1,9 @@
 var UserModel = require('../models/userModel.js');
 const bcrypt = require('bcryptjs');
 const {hash} = require("bcryptjs");
+const jwt = require('jsonwebtoken');
+const JWT_SECRET_KEY = "some_secret_key"
+
 /**
  * userController.js
  *
@@ -18,6 +21,10 @@ module.exports = {
             if (!user) {
                 return res.status(404).json({ message: 'No such user' });
             }
+            if (user._id.toString() !== req.user.id) {
+                return res.status(403).json({message: "Access denied: Wrong user."})
+            }
+
             return res.json(user);
         } catch (err) {
             return res.status(500).json({
@@ -34,6 +41,9 @@ module.exports = {
             const user = await UserModel.findById(id);
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
+            }
+            if (user._id.toString() !== req.user.id) {
+                return res.status(403).json({message: "Access denied: Wrong user."})
             }
             user.avatar = avatar;
             const updatedUser = await user.save();
@@ -75,20 +85,34 @@ module.exports = {
         var password = req.body.password;
         try{
             const user = await UserModel.findOne({username: username});
-            if(user){
-                const hashedPassword = user.password
-                const isMatch = await bcrypt.compare(password, hashedPassword)
-                return isMatch ? res.json(user) : res.status(401).json({
-                    message: 'Invalid username or password'
-                })
-            }
-            else{
+            if(!user){
                 return res.status(401).json({
                     message: 'Invalid username or password'
                 })
             }
+            const isMatch = await bcrypt.compare(password, user.password)
+            if (!isMatch) {
+                return res.status(401).json({
+                message: 'Invalid username or password'
+                })
+            }
+            
+            const jwtToken = jwt.sign({
+                id: user._id,
+                username: username
+            }, JWT_SECRET_KEY, {expiresIn: '1h'})
 
-        }catch(err){
+            const userData = {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                avatar: user.avarar
+            }
+
+            return res.json({token: jwtToken, userData: userData})
+
+        }
+        catch(err){
             return res.status(500).json({
                 message: 'Error when logging in',
                 error: err
@@ -109,6 +133,10 @@ module.exports = {
                     message: 'User not found'
                 });
             } else {
+                if (user._id.toString() !== req.user.id) {
+                    return res.status(403).json({message: "Access denied: Wrong user."})
+                }
+
                 //update user
                 user.username = req.body.username ? req.body.username : user.username;
                 user.email = req.body.email ? req.body.email : user.email;
@@ -137,6 +165,9 @@ module.exports = {
             const user = await UserModel.findByIdAndDelete(id);
             if (!user) {
                 return res.status(404).json({ message: 'No such user' });
+            }
+            if (user._id.toString() !== req.user.id) {
+                return res.status(403).json({message: "Access denied: Wrong user."})
             }
             return res.status(204).json();
         } catch (err) {
