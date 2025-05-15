@@ -21,6 +21,10 @@ module.exports = {
             if (!user) {
                 return res.status(404).json({ message: 'No such user' });
             }
+            if (user._id.toString() !== req.user.id) {
+                return res.status(403).json({message: "Access denied: Wrong user."})
+            }
+
             return res.json(user);
         } catch (err) {
             return res.status(500).json({
@@ -37,6 +41,9 @@ module.exports = {
             const user = await UserModel.findById(id);
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
+            }
+            if (user._id.toString() !== req.user.id) {
+                return res.status(403).json({message: "Access denied: Wrong user."})
             }
             user.avatar = avatar;
             const updatedUser = await user.save();
@@ -126,6 +133,10 @@ module.exports = {
                     message: 'User not found'
                 });
             } else {
+                if (user._id.toString() !== req.user.id) {
+                    return res.status(403).json({message: "Access denied: Wrong user."})
+                }
+
                 //update user
                 user.username = req.body.username ? req.body.username : user.username;
                 user.email = req.body.email ? req.body.email : user.email;
@@ -154,6 +165,9 @@ module.exports = {
             const user = await UserModel.findByIdAndDelete(id);
             if (!user) {
                 return res.status(404).json({ message: 'No such user' });
+            }
+            if (user._id.toString() !== req.user.id) {
+                return res.status(403).json({message: "Access denied: Wrong user."})
             }
             return res.status(204).json();
         } catch (err) {

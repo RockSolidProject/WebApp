@@ -13,7 +13,7 @@ router.get('/test', function(req, res, next) {
 /*
  * GET
  */
-router.get('/:id', userController.show);
+router.get('/:id', auth, userController.show);
 
 /*
  * POST
@@ -24,11 +24,11 @@ router.post('/login', userController.login);
 /*
  * PUT
  */
-router.put('/:id', userController.update);
-router.put('/avatar/:id', userController.setAvatar);
+router.put('/:id', auth, userController.update);
+router.put('/avatar/:id', auth, userController.setAvatar);
 /*
  * DELETE
  */
-router.delete('/:id', userController.remove);
+router.delete('/:id', auth, userController.remove);
 
 module.exports = router;
