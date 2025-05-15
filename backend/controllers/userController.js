@@ -1,6 +1,9 @@
 var UserModel = require('../models/userModel.js');
 const bcrypt = require('bcryptjs');
 const {hash} = require("bcryptjs");
+const jwt = require('jsonwebtoken');
+const JWT_SECRET_KEY = "some_secret_key"
+
 /**
  * userController.js
  *
@@ -75,20 +78,34 @@ module.exports = {
         var password = req.body.password;
         try{
             const user = await UserModel.findOne({username: username});
-            if(user){
-                const hashedPassword = user.password
-                const isMatch = await bcrypt.compare(password, hashedPassword)
-                return isMatch ? res.json(user) : res.status(401).json({
-                    message: 'Invalid username or password'
-                })
-            }
-            else{
+            if(!user){
                 return res.status(401).json({
                     message: 'Invalid username or password'
                 })
             }
+            const isMatch = await bcrypt.compare(password, user.password)
+            if (!isMatch) {
+                return res.status(401).json({
+                message: 'Invalid username or password'
+                })
+            }
+            
+            const jwtToken = jwt.sign({
+                id: user._id,
+                username: username
+            }, JWT_SECRET_KEY, {expiresIn: '1h'})
 
-        }catch(err){
+            const userData = {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                avatar: user.avarar
+            }
+
+            return res.json({token: jwtToken, userData: userData})
+
+        }
+        catch(err){
             return res.status(500).json({
                 message: 'Error when logging in',
                 error: err
