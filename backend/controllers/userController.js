@@ -2,7 +2,7 @@ var UserModel = require('../models/userModel.js');
 const bcrypt = require('bcryptjs');
 const {hash} = require("bcryptjs");
 const jwt = require('jsonwebtoken');
-const JWT_SECRET_KEY = "some_secret_key"
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
 
 /**
  * userController.js
