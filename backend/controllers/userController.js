@@ -1,5 +1,6 @@
 var UserModel = require('../models/userModel.js');
-
+const bcrypt = require('bcryptjs');
+const {hash} = require("bcryptjs");
 /**
  * userController.js
  *
@@ -8,123 +9,141 @@ var UserModel = require('../models/userModel.js');
 module.exports = {
 
     /**
-     * userController.list()
-     */
-    list: function (req, res) {
-        UserModel.find(function (err, users) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting user.',
-                    error: err
-                });
-            }
-
-            return res.json(users);
-        });
-    },
-
-    /**
      * userController.show()
      */
-    show: function (req, res) {
-        var id = req.params.id;
-
-        UserModel.findOne({_id: id}, function (err, user) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting user.',
-                    error: err
-                });
-            }
-
+    show: async function(req, res) {
+        const id = req.params.id;
+        try {
+            const user = await UserModel.findById(id);
             if (!user) {
-                return res.status(404).json({
-                    message: 'No such user'
-                });
+                return res.status(404).json({ message: 'No such user' });
             }
-
             return res.json(user);
-        });
+        } catch (err) {
+            return res.status(500).json({
+                message: 'Error when getting the user.',
+                error: err.message
+            });
+        }
+    },
+
+    setAvatar: async function(req, res) {
+        const id = req.params.id;
+        const avatar = req.body.avatar;
+        try {
+            const user = await UserModel.findById(id);
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            user.avatar = avatar;
+            const updatedUser = await user.save();
+            return res.json(updatedUser);
+        } catch (err) {
+            return res.status(500).json({
+                message: 'Error when updating avatar',
+                error: err.message
+            });
+        }
     },
 
     /**
      * userController.create()
      */
-    create: function (req, res) {
-        var user = new UserModel({
-			username : req.body.username,
-			email : req.body.email,
-			password : req.body.password,
-			avatar : req.body.avatar,
-			createdAt : req.body.createdAt
-        });
+    create: async function (req, res) {
+        try {
+            const hashedPassword = await bcrypt.hash(req.body.password, 10);
+            var user = new UserModel({
+                username : req.body.username,
+                email : req.body.email,
+                password : hashedPassword,
+                avatar : req.body.avatar,
+                createdAt : new Date()
+            });
+            const savedUser = await user.save()
+            return res.status(201).json(savedUser)
+        }
+        catch(err){
+            return res.status(500).json({
+                message: 'Error when creating user',
+                error: err
+            })
+        }
+    },
 
-        user.save(function (err, user) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when creating user',
-                    error: err
-                });
+    login: async function (req, res) {
+        var username = req.body.username;
+        var password = req.body.password;
+        try{
+            const user = await UserModel.findOne({username: username});
+            if(user){
+                const hashedPassword = user.password
+                const isMatch = await bcrypt.compare(password, hashedPassword)
+                return isMatch ? res.json(user) : res.status(401).json({
+                    message: 'Invalid username or password'
+                })
+            }
+            else{
+                return res.status(401).json({
+                    message: 'Invalid username or password'
+                })
             }
 
-            return res.status(201).json(user);
-        });
+        }catch(err){
+            return res.status(500).json({
+                message: 'Error when logging in',
+                error: err
+            })
+        }
+
     },
 
     /**
      * userController.update()
      */
-    update: function (req, res) {
+    update: async function (req, res) {
         var id = req.params.id;
-
-        UserModel.findOne({_id: id}, function (err, user) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting user',
-                    error: err
-                });
-            }
-
+        try {
+            const user = await UserModel.findById(id)
             if (!user) {
                 return res.status(404).json({
-                    message: 'No such user'
+                    message: 'User not found'
                 });
+            } else {
+                //update user
+                user.username = req.body.username ? req.body.username : user.username;
+                user.email = req.body.email ? req.body.email : user.email;
+                user.password = req.body.password ? req.body.password : user.password;
+                user.avatar = req.body.avatar ? req.body.avatar : user.avatar;
+                user.createdAt = req.body.createdAt ? req.body.createdAt : user.createdAt;
+
+                const updateUser = await user.save()
+                return res.json(updateUser)
             }
+        } catch(err){
+            return res.status(500).json({
+                message: 'Error when updating user',
+                error: err
+            })
+        }
 
-            user.username = req.body.username ? req.body.username : user.username;
-			user.email = req.body.email ? req.body.email : user.email;
-			user.password = req.body.password ? req.body.password : user.password;
-			user.avatar = req.body.avatar ? req.body.avatar : user.avatar;
-			user.createdAt = req.body.createdAt ? req.body.createdAt : user.createdAt;
-			
-            user.save(function (err, user) {
-                if (err) {
-                    return res.status(500).json({
-                        message: 'Error when updating user.',
-                        error: err
-                    });
-                }
-
-                return res.json(user);
-            });
-        });
     },
 
     /**
      * userController.remove()
      */
-    remove: function (req, res) {
-        var id = req.params.id;
-
-        UserModel.findByIdAndRemove(id, function (err, user) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when deleting the user.',
-                    error: err
-                });
+    remove: async function(req, res) {
+        const id = req.params.id;
+        try {
+            const user = await UserModel.findByIdAndDelete(id);
+            if (!user) {
+                return res.status(404).json({ message: 'No such user' });
             }
-
             return res.status(204).json();
-        });
-    }
+        } catch (err) {
+            return res.status(500).json({
+                message: 'Error when deleting the user.',
+                error: err
+            });
+        }
+    },
 };
