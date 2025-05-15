@@ -1,10 +1,11 @@
+require('dotenv').config();
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose');
-var mongoDB = "mongodb://127.0.0.1/projekt";
+var mongoDB = process.env.MONGODB_LINK
 
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
