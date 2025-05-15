@@ -5,7 +5,6 @@ var userController = require('../controllers/userController.js');
 /*
  * GET
  */
-router.get('/', userController.list);
 router.get('/test', function(req, res, next) {
     res.json({ message: 'Connection successful!' });
 });
@@ -19,12 +18,13 @@ router.get('/:id', userController.show);
  * POST
  */
 router.post('/', userController.create);
+router.post('/login', userController.login);
 
 /*
  * PUT
  */
 router.put('/:id', userController.update);
-
+router.put('/avatar/:id', userController.setAvatar);
 /*
  * DELETE
  */
