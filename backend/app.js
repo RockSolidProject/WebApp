@@ -1,10 +1,11 @@
+require('dotenv').config();
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose');
-var mongoDB = "mongodb://127.0.0.1/projekt";
+var mongoDB = process.env.MONGODB_LINK
 
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
@@ -34,10 +35,6 @@ app.use(cors({
   }
 }));
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -50,21 +47,6 @@ app.use(express.static(path.join(__dirname, 'public')));
  * Connect-mongo skrbi, da se session hrani v bazi.
  * Posledično ostanemo prijavljeni, tudi ko spremenimo kodo (restartamo strežnik)
  */
-var session = require('express-session');
-var MongoStore = require('connect-mongo');
-app.use(session({
-  secret: 'work hard',
-  resave: true,
-  saveUninitialized: false,
-  store: MongoStore.create({mongoUrl: mongoDB})
-}));
-//Shranimo sejne spremenljivke v locals
-//Tako lahko do njih dostopamo v vseh view-ih (glej layout.hbs)
-app.use(function (req, res, next) {
-  res.locals.session = req.session;
-  next();
-});
-
 
 app.use('/', indexRouter);
 app.use('/users', userRoutes);
