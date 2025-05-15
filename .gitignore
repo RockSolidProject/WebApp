@@ -14,6 +14,7 @@ dist/
 build/
 .vite/
 
+.env
 # System files
 .DS_Store
 

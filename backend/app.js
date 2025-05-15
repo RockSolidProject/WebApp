@@ -4,7 +4,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose');
-var mongoDB = "mongodb://127.0.0.1/projekt";
+require('dotenv').config();
+//var mongoDB = "mongodb://127.0.0.1/projekt"; //local
+var mongoDB = process.env.MONGO_URI; //docker
 
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
@@ -17,7 +19,12 @@ var userRoutes = require('./routes/userRoutes');
 var app = express();
 
 var cors = require('cors');
-var allowedOrigins = ['http://localhost:5173', 'http://localhost:3001'];
+var allowedOrigins = [
+  'https://app.localhost',
+  'https://api.app.localhost',
+  'http://localhost:5173',
+  'http://localhost:3001'
+];
 app.use(cors({
   credentials: true,
   origin: function(origin, callback){

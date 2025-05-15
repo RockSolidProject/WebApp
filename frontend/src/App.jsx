@@ -4,7 +4,7 @@ import Header from './components/Header';
 
 const App = () => {
     useEffect(() => {
-        fetch('http://localhost:3001/users/test')
+        fetch(`${import.meta.env.VITE_API_URL}/users/test`)
             .then((response) => response.json())
             .then((data) => console.log(data))
             .catch((error) => console.error('Error:', error));
