@@ -21,3 +21,4 @@ backend/package-lock.json
 package-lock.json
 frontend/package-lock.json
 .vscode
+/backend/.env

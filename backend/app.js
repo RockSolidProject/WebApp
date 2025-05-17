@@ -17,6 +17,8 @@ var userRoutes = require('./routes/userRoutes');
 var climbingAreaRoutes = require('./routes/climbingAreaRoutes')
 var climbingRouteRoutes = require('./routes/climbingRouteRoutes')
 var routeConnectionRoutes = require('./routes/routeConnectionRoutes')
+var groupRoutes = require('./routes/groupRoutes');
+var eventRoutes = require('./routes/eventRoutes');
 
 var app = express();
 
@@ -53,6 +55,8 @@ app.use('/users', userRoutes);
 app.use('/climbingAreas', climbingAreaRoutes)
 app.use('/climbingRoutes', climbingRouteRoutes)
 app.use('/routeConnections', routeConnectionRoutes)
+app.use('/groups', groupRoutes)
+app.use('/events', eventRoutes)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
