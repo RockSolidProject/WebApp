@@ -18,14 +18,9 @@ router.get('/:id', groupController.show);
  */
 router.post('/', auth, groupController.create);
 
-/*
- * PUT
- */
-router.put('/:id', groupController.update);
 
 /*
  * DELETE
  */
-router.delete('/:id', groupController.remove);
 
 module.exports = router;
