@@ -1,4 +1,5 @@
 var EventModel = require('../models/eventModel.js');
+var GroupModel = require('../models/groupModel.js');
 
 /**
  * eventController.js
@@ -10,7 +11,7 @@ module.exports = {
     /**
      * eventController.list()
      */
-    list: function (req, res) { // TODO
+    list: async function (req, res) { // TODO
         EventModel.find(function (err, events) {
             if (err) {
                 return res.status(500).json({
@@ -50,27 +51,42 @@ module.exports = {
     /**
      * eventController.create()
      */
-    create: function (req, res) { // TODO
-        var event = new EventModel({
-			climbingAreas : req.body.climbingAreas,
-			climbingCenters : req.body.climbingCenters,
-			groups : req.body.groups,
-			name : req.body.name,
-			description : req.body.description,
-			date : req.body.date,
-			photo : req.body.photo
-        });
-
-        event.save(function (err, event) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when creating event',
-                    error: err
-                });
+    create: async function (req, res) { // TODO
+        var groups = req.body.groups;
+        var centers = req.body.climbingCenters;
+        var areas = req.body.climbingAreas
+        if (groups.length === 0 || (centers.length === 0 && areas.length === 0)) {
+            return res.status(400).json({
+                message: 'Event must have at least one group',
+                error: new Error('cannot create an event and center'),
+            })
+        }
+        try {
+            const ownedGroups = await GroupModel.find({owner: req.user.id, _id: {$in: groups}});
+            if (groups.length !== ownedGroups.length) {
+                return res.status(400).json({
+                    message: 'Cannot add a group that doesn\'t belong to you',
+                    error: new Error('Cannot create event')
+                })
             }
+            var event = new EventModel({
+                climbingAreas: areas,
+                climbingCenters: centers,
+                groups: groups,
+                name: req.body.name,
+                description: req.body.description,
+                date: req.body.date,
+                photo: req.body.photo
+            });
+            var savedEvent = event.save()
+            return res.json(savedEvent)
 
-            return res.status(201).json(event);
-        });
+        } catch (err) {
+            return res.status(500).json({
+                message: 'Error when getting event.',
+                error: err
+            })
+        }
     },
 
     /**
@@ -94,13 +110,13 @@ module.exports = {
             }
 
             event.climbingAreas = req.body.climbingAreas ? req.body.climbingAreas : event.climbingAreas;
-			event.climbingCenters = req.body.climbingCenters ? req.body.climbingCenters : event.climbingCenters;
-			event.groups = req.body.groups ? req.body.groups : event.groups;
-			event.name = req.body.name ? req.body.name : event.name;
-			event.description = req.body.description ? req.body.description : event.description;
-			event.date = req.body.date ? req.body.date : event.date;
-			event.photo = req.body.photo ? req.body.photo : event.photo;
-			
+            event.climbingCenters = req.body.climbingCenters ? req.body.climbingCenters : event.climbingCenters;
+            event.groups = req.body.groups ? req.body.groups : event.groups;
+            event.name = req.body.name ? req.body.name : event.name;
+            event.description = req.body.description ? req.body.description : event.description;
+            event.date = req.body.date ? req.body.date : event.date;
+            event.photo = req.body.photo ? req.body.photo : event.photo;
+
             event.save(function (err, event) {
                 if (err) {
                     return res.status(500).json({
