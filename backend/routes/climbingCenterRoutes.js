@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var climbingCenterController = require('../controllers/climbingCenterController.js');
+const climbingAreaController = require("../controllers/climbingCenterController");
+const auth = require("../middleware/auth");
 
 /*
  * GET
@@ -15,16 +17,6 @@ router.get('/:id', climbingCenterController.show);
 /*
  * POST
  */
-router.post('/', climbingCenterController.create);
-
-/*
- * PUT
- */
-router.put('/:id', climbingCenterController.update);
-
-/*
- * DELETE
- */
-router.delete('/:id', climbingCenterController.remove);
+router.post('/', auth, climbingCenterController.create);
 
 module.exports = router;

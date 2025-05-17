@@ -1,30 +1,18 @@
 var express = require('express');
 var router = express.Router();
-var climbingCenterRateController = require('../controllers/climbingCenterRateCommentController.js');
+var climbingCenterRateCommentController = require('../controllers/climbingCenterRateCommentController.js');
+const auth = require("../middleware/auth");
 
 /*
  * GET
  */
-router.get('/', climbingCenterRateController.list);
-
-/*
- * GET
- */
-router.get('/:id', climbingCenterRateController.show);
+router.get('/comment/:centerId', climbingCenterRateCommentController.getClimbingCenterComments);
+router.get('/rating/:centerId', climbingCenterRateCommentController.getClimbingCenterRatings);
 
 /*
  * POST
  */
-router.post('/', climbingCenterRateController.create);
-
-/*
- * PUT
- */
-router.put('/:id', climbingCenterRateController.update);
-
-/*
- * DELETE
- */
-router.delete('/:id', climbingCenterRateController.remove);
+router.post('/comment/:centerId', auth, climbingCenterRateCommentController.commentCenter);
+router.post('/rating/:centerId', auth, climbingCenterRateCommentController.rateCenter);
 
 module.exports = router;

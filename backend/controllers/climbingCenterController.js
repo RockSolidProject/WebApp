@@ -1,131 +1,73 @@
 var ClimbingcenterModel = require('../models/climbingCenterModel.js');
+const climbingCenterModel = require("../models/climbingCenterModel");
 
 module.exports = {
 
     /**
      * climbingCenterController.list()
      */
-    list: function (req, res) {
-        ClimbingcenterModel.find(function (err, climbingCenters) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting climbingCenter.',
-                    error: err
-                });
-            }
-
+    list: async function (req, res) {
+        try {
+            const climbingCenters = await climbingCenterModel
+                .find()
+                .populate("owner");
             return res.json(climbingCenters);
-        });
+        } catch (err) {
+            return res.status(500).json({
+                message: 'Error when getting climbing centers.',
+                error: err.message || err
+            });
+        }
     },
 
     /**
      * climbingCenterController.show()
      */
-    show: function (req, res) {
+    show: async function (req, res) {
         var id = req.params.id;
 
-        ClimbingcenterModel.findOne({_id: id}, function (err, climbingCenter) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting climbingCenter.',
-                    error: err
-                });
-            }
-
+        try {
+            const climbingCenter = await climbingCenterModel
+                .findById(id)
+                .populate("owner")
             if (!climbingCenter) {
                 return res.status(404).json({
                     message: 'No such climbingCenter'
                 });
             }
-
-            return res.json(climbingCenter);
-        });
+            return res.json(climbingCenter)
+        }
+        catch (err) {
+            return res.status(500).json({
+                message: 'Error when getting climbingCenter.',
+                error: err
+            });
+        }
     },
 
     /**
      * climbingCenterController.create()
      */
-    create: function (req, res) {
-        var climbingCenter = new ClimbingcenterModel({
-			name : req.body.name,
-			latitude : req.body.latitude,
-			longitude : req.body.longitude,
-			owner : req.body.owner,
-			hasBoulders : req.body.hasBoulders,
-			hasRoutes : req.body.hasRoutes,
-			hasMoonboard : req.body.hasMoonboard,
-			hasSprayWall : req.body.hasSprayWall
+    create: async function (req, res) {
+        var climbingCenter = new climbingCenterModel({
+            name : req.body.name,
+            latitude : req.body.latitude,
+            longitude : req.body.longitude,
+            owner : req.body.owner,
+            hasBoulders : req.body.hasBoulders,
+            hasRoutes : req.body.hasRoutes,
+            hasMoonboard : req.body.hasMoonboard,
+            hasSprayWall : req.body.hasSprayWall
         });
-
-        climbingCenter.save(function (err, climbingCenter) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when creating climbingCenter',
-                    error: err
-                });
-            }
-
-            return res.status(201).json(climbingCenter);
-        });
-    },
-
-    /**
-     * climbingCenterController.update()
-     */
-    update: function (req, res) {
-        var id = req.params.id;
-
-        ClimbingcenterModel.findOne({_id: id}, function (err, climbingCenter) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting climbingCenter',
-                    error: err
-                });
-            }
-
-            if (!climbingCenter) {
-                return res.status(404).json({
-                    message: 'No such climbingCenter'
-                });
-            }
-
-            climbingCenter.name = req.body.name ? req.body.name : climbingCenter.name;
-			climbingCenter.latitude = req.body.latitude ? req.body.latitude : climbingCenter.latitude;
-			climbingCenter.longitude = req.body.longitude ? req.body.longitude : climbingCenter.longitude;
-			climbingCenter.owner = req.body.owner ? req.body.owner : climbingCenter.owner;
-			climbingCenter.hasBoulders = req.body.hasBoulders ? req.body.hasBoulders : climbingCenter.hasBoulders;
-			climbingCenter.hasRoutes = req.body.hasRoutes ? req.body.hasRoutes : climbingCenter.hasRoutes;
-			climbingCenter.hasMoonboard = req.body.hasMoonboard ? req.body.hasMoonboard : climbingCenter.hasMoonboard;
-			climbingCenter.hasSprayWall = req.body.hasSprayWall ? req.body.hasSprayWall : climbingCenter.hasSprayWall;
-			
-            climbingCenter.save(function (err, climbingCenter) {
-                if (err) {
-                    return res.status(500).json({
-                        message: 'Error when updating climbingCenter.',
-                        error: err
-                    });
-                }
-
-                return res.json(climbingCenter);
+        try {
+            const savedclimbingCenter = await climbingCenter.save();
+            return res.status(201).json(savedclimbingCenter);
+        }
+        catch (err) {
+            return res.status(500).json({
+                message: 'Error when creating climbingCenter',
+                error: err
             });
-        });
-    },
-
-    /**
-     * climbingCenterController.remove()
-     */
-    remove: function (req, res) {
-        var id = req.params.id;
-
-        ClimbingcenterModel.findByIdAndRemove(id, function (err, climbingCenter) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when deleting the climbingCenter.',
-                    error: err
-                });
-            }
-
-            return res.status(204).json();
-        });
+        }
     }
 };
