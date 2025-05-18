@@ -1,4 +1,3 @@
-var ClimbingcenterModel = require('../models/climbingCenterModel.js');
 const climbingCenterModel = require("../models/climbingCenterModel");
 
 module.exports = {
@@ -69,5 +68,85 @@ module.exports = {
                 error: err
             });
         }
-    }
+    },
+
+    listMoonboard: async function (req, res) {
+        try {
+            const climbingCenter = await climbingCenterModel
+                .find({ hasMoonboard: true })
+                .populate("owner")
+            if (!climbingCenter) {
+                return res.status(404).json({
+                    message: 'No such climbingCenter'
+                });
+            }
+            return res.json(climbingCenter)
+        }
+        catch (err) {
+            return res.status(500).json({
+                message: 'Error when getting climbingCenter.',
+                error: err
+            });
+        }
+    },
+
+    listBoulders: async function (req, res) {
+        try {
+            const climbingCenter = await climbingCenterModel
+                .find({ hasBoulders: true })
+                .populate("owner")
+            if (!climbingCenter) {
+                return res.status(404).json({
+                    message: 'No such climbingCenter'
+                });
+            }
+            return res.json(climbingCenter)
+        }
+        catch (err) {
+            return res.status(500).json({
+                message: 'Error when getting climbingCenter.',
+                error: err
+            });
+        }
+    },
+
+    listRoutes: async function (req, res) {
+        try {
+            const climbingCenter = await climbingCenterModel
+                .find({ hasRoutes: true })
+                .populate("owner")
+            if (!climbingCenter) {
+                return res.status(404).json({
+                    message: 'No such climbingCenter'
+                });
+            }
+            return res.json(climbingCenter)
+        }
+        catch (err) {
+            return res.status(500).json({
+                message: 'Error when getting climbingCenter.',
+                error: err
+            });
+        }
+    },
+
+    listSprayWall: async function (req, res) {
+        try {
+            const climbingCenter = await climbingCenterModel
+                .find({hasSprayWall: true})
+                .populate("owner")
+            if (!climbingCenter) {
+                return res.status(404).json({
+                    message: 'No such climbingCenter'
+                });
+            }
+            return res.json(climbingCenter)
+        }
+        catch (err) {
+            return res.status(500).json({
+                message: 'Error when getting climbingCenter.',
+                error: err
+            });
+        }
+    },
 };

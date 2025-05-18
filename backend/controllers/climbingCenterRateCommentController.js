@@ -1,6 +1,6 @@
 var ClimbingCenterRateModel = require('../models/climbingCenterRateModel.js');
 var ClimbingCenterCommentModel = require('../models/climbingCenterCommentModel.js');
-
+var ClimbingCenterModel = require('../models/climbingCenterModel.js');
 module.exports = {
 
     getClimbingCenterComments: async function(req, res) {
@@ -37,6 +37,31 @@ module.exports = {
         }
     },
 
+    getClimbingCenterAverageRating: async function(req, res) {
+        const centerId = req.params.centerId
+        try {
+            const ratings = await ClimbingCenterRateModel
+                .find({climbingCenter: centerId})
+            if (ratings.length === 0) {
+                return res.status(200).json({
+                    message: "No ratings yet.",
+                    averageRating: 0
+                })
+            }
+            const sum = ratings.reduce((acc, rating) => acc + rating.rating, 0)
+            const average = sum / ratings.length
+            return res.status(200).json({
+                averageRating: average
+            })
+        }
+        catch (err) {
+            return res.status(500).json({
+                message: "Error getting center average rating.",
+                error: err
+            })
+        }
+    },
+
 
     commentCenter: async function(req, res) {
         const centerId = req.params.centerId
@@ -62,29 +87,44 @@ module.exports = {
     },
 
     rateCenter: async function(req, res) {
-        const centerId = req.params.centerId
-        const userId = req.user.id
+        const centerId = req.params.centerId;
+        const userId = req.user.id;
+
+        if (req.body.rating < 1 || req.body.rating > 5) {
+            return res.status(400).json({
+                message: "Rating must be between 1 and 5."
+            });
+        }
 
         try {
-            const current = await ClimbingCenterRateModel.findOne({postedBy: userId, climbingCenter: centerId})
+            const current = await ClimbingCenterRateModel.findOne({ postedBy: userId, climbingCenter: centerId });
             if (current) {
-                current.rating = req.body.rating
-                await current.save()
-                return res.status(200).json(current)
+                current.rating = req.body.rating;
+                await current.save();
+            } else {
+                const centerRate = new ClimbingCenterRateModel({
+                    climbingCenter: centerId,
+                    postedBy: userId,
+                    rating: req.body.rating
+                });
+                await centerRate.save();
             }
-            const centerRate = new ClimbingCenterRateModel({
-                climbingCenter: centerId,
-                postedBy: userId,
-                rating: req.body.rating
-            })
-            await centerRate.save()
-            return res.status(201).json(centerRating)
-        }
-        catch (err) {
+
+            const ratings = await ClimbingCenterRateModel.find({ climbingCenter: centerId });
+            const sum = ratings.reduce((res, rating) => res + rating.rating, 0);
+            const average = sum / ratings.length;
+
+            await ClimbingCenterModel.findByIdAndUpdate(centerId, { rating: average });
+
+            return res.status(200).json({
+                message: "Rating updated successfully.",
+                averageRating: average
+            });
+        } catch (err) {
             return res.status(500).json({
                 message: "Rating center failed.",
-                error: err
-            })
+                error: err.message || err
+            });
         }
     }
 };
