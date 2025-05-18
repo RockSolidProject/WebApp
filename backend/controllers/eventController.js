@@ -12,16 +12,16 @@ module.exports = {
      * eventController.list()
      */
     list: async function (req, res) { // TODO
-        EventModel.find(function (err, events) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting event.',
-                    error: err
-                });
-            }
-
+        try {
+            var events = await EventModel.find();
             return res.json(events);
-        });
+        } catch (err) {
+            return res.status(500).json({
+                message: 'Error when getting event.',
+                error: err
+            })
+        }
+
     },
 
     /**
@@ -52,33 +52,37 @@ module.exports = {
      * eventController.create()
      */
     create: async function (req, res) { // TODO
-        var groups = req.body.groups;
-        var centers = req.body.climbingCenters;
-        var areas = req.body.climbingAreas
-        if (groups.length === 0 || (centers.length === 0 && areas.length === 0)) {
+        var groups = req.body.groups ? req.body.groups : [];
+        var centers = req.body.climbingCenters ? req.body.climbingCenters : [];
+        var areas = req.body.climbingAreas ? req.body.climbingAreas:[];
+        /*if (groups.length === 0 || (centers.length === 0 && areas.length === 0)) {
             return res.status(400).json({
                 message: 'Event must have at least one group',
                 error: new Error('cannot create an event and center'),
             })
-        }
+        }*/
         try {
             const ownedGroups = await GroupModel.find({owner: req.user.id, _id: {$in: groups}});
+
             if (groups.length !== ownedGroups.length) {
                 return res.status(400).json({
                     message: 'Cannot add a group that doesn\'t belong to you',
                     error: new Error('Cannot create event')
                 })
             }
+            console.log("tukaj")
             var event = new EventModel({
                 climbingAreas: areas,
                 climbingCenters: centers,
                 groups: groups,
                 name: req.body.name,
                 description: req.body.description,
-                date: req.body.date,
-                photo: req.body.photo
+                date: Date.now(),
+                photo: req.body.photo,
+                user: req.user.id,
             });
-            var savedEvent = event.save()
+            console.log('event created');
+            var savedEvent = await event.save()
             return res.json(savedEvent)
 
         } catch (err) {

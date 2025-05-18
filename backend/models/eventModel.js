@@ -23,7 +23,11 @@ var eventSchema = new Schema({
 		type: Date,
 		required: true
 	},
-	'photo' : String
+	'photo' : String,
+	'owner' : {
+		type: Schema.Types.ObjectId,
+		ref: 'user'
+	}
 });
 
 module.exports = mongoose.model('event', eventSchema);
