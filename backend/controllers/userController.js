@@ -73,6 +73,11 @@ module.exports = {
             return res.status(201).json(savedUser)
         }
         catch(err){
+            if (err.code === 11000 && err.keyPattern && err.keyPattern.username) {
+                return res.status(409).json({
+                    message: 'Username already exists'
+                });
+            }
             return res.status(500).json({
                 message: 'Error when creating user',
                 error: err
