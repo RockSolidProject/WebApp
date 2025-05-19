@@ -19,6 +19,27 @@ module.exports = {
             })
         }
     },
+    getByProximity: async function (req, res) {
+        try {
+            var latitude = parseFloat(req.body.latitude);
+            var longitude = parseFloat(req.body.longitude);
+            const climbingAreas = await ClimbingareaModel
+                .find()
+                .populate("postedBy")
+            climbingAreas.sort((a,b) => {
+                var distA = Math.hypot(a.latitude - latitude, a.longitude - longitude);
+                var distB =Math.hypot(b.latitude - latitude, b.longitude - longitude)
+                return  distA - distB ;
+            });
+            return res.json(climbingAreas)
+        }
+        catch (err) {
+            return res.status(500).json({
+                message: 'Error when getting climbing areas.',
+                error: err
+            })
+        }
+    },
 
     /**
      * climbingAreaController.show()
