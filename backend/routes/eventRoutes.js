@@ -19,11 +19,6 @@ router.get('/:id',auth, eventController.show);
 router.post('/', auth, eventController.create);
 
 /*
- * PUT
- */
-router.put('/:id', eventController.update);
-
-/*
  * DELETE
  */
 router.delete('/:id', eventController.remove);

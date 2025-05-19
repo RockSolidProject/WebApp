@@ -11,12 +11,16 @@ router.get('/', groupController.list);
 /*
  * GET
  */
-router.get('/:id', groupController.show);
+router.get('/:id', auth, groupController.show);
 
 /*
  * POST
  */
 router.post('/', auth, groupController.create);
+
+router.post('/join', auth, groupController.join);
+
+router.post('/add', auth, groupController.addMember);
 
 
 /*
