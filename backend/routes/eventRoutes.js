@@ -11,7 +11,6 @@ router.get('/', auth, eventController.list);
 /*
  * GET
  */
-router.get('/:id',auth, eventController.show);
 
 /*
  * POST
@@ -21,6 +20,5 @@ router.post('/', auth, eventController.create);
 /*
  * DELETE
  */
-router.delete('/:id', eventController.remove);
 
 module.exports = router;

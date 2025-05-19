@@ -107,18 +107,4 @@ module.exports = {
     /**
      * groupMemberController.remove()
      */
-    remove: function (req, res) {
-        var id = req.params.id;
-
-        GroupmemberModel.findByIdAndRemove(id, function (err, groupMember) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when deleting the groupMember.',
-                    error: err
-                });
-            }
-
-            return res.status(204).json();
-        });
-    }
 };

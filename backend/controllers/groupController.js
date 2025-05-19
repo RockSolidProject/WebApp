@@ -26,25 +26,19 @@ module.exports = {
     /**
      * groupController.show()
      */
-    show: function (req, res) {
+    show: async function (req, res) {
+
         var id = req.params.id;
+        try {
+            var group = await GroupModel.findOne({_id: id})
+            return res.json(group)
+        } catch(err) {
+            return res.status(500).json({
+                error: err,
+                message: "failed to show groups"
+            })
+        }
 
-        GroupModel.findOne({_id: id}, function (err, group) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting group.',
-                    error: err
-                });
-            }
-
-            if (!group) {
-                return res.status(404).json({
-                    message: 'No such group'
-                });
-            }
-
-            return res.json(group);
-        });
     },
 
     /**
@@ -67,20 +61,7 @@ module.exports = {
         }
 
     },
-    remove: function (req, res) {
-        var id = req.params.id;
 
-        GroupModel.findByIdAndRemove(id, function (err, group) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when deleting the group.',
-                    error: err
-                });
-            }
-
-            return res.status(204).json();
-        });
-    },
     join: async function (req, res) {
         try {
             var groupId = req.body.groupId;

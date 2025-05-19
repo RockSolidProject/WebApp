@@ -25,28 +25,7 @@ module.exports = {
     },
 
     /**
-     * eventController.show()
-     */
-    show: function (req, res) { // TODO
-        var id = req.params.id;
-
-        EventModel.findOne({_id: id}, function (err, event) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting event.',
-                    error: err
-                });
-            }
-
-            if (!event) {
-                return res.status(404).json({
-                    message: 'No such event'
-                });
-            }
-
-            return res.json(event);
-        });
-    },
+     * eventController.s
 
     /**
      * eventController.create()
@@ -99,19 +78,6 @@ module.exports = {
     /**
      * eventController.remove()
      */
-    remove: function (req, res) { // TODO
-        var id = req.params.id;
 
-        EventModel.findByIdAndRemove(id, function (err, event) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when deleting the event.',
-                    error: err
-                });
-            }
-
-            return res.status(204).json();
-        });
-    }
 
 };
