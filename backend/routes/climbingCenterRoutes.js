@@ -16,9 +16,11 @@ router.get('/listBoulders', climbingCenterController.listBoulders);
 router.get('/listRoutes', climbingCenterController.listRoutes);
 router.get('/listSprayWalls', climbingCenterController.listSprayWall);
 router.get('/:id', climbingCenterController.show); // must be last
+
 /*
  * POST
  */
 router.post('/', auth, climbingCenterController.create);
+router.post('/byProximity', climbingCenterController.getByProximity);
 
 module.exports = router;
