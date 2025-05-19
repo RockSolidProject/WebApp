@@ -17,6 +17,7 @@ router.get('/:id', climbingAreaController.show);
  * POST
  */
 router.post('/', auth, climbingAreaController.create);
+router.post('/byProximity', climbingAreaController.getByProximity);
 
 
 module.exports = router;

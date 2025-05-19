@@ -22,6 +22,26 @@ module.exports = {
     /**
      * climbingCenterController.show()
      */
+    getByProximity: async function (req, res) {
+        var latitude = parseFloat(req.body.latitude);
+        var longitude = parseFloat(req.body.longitude);
+        try {
+            const climbingCenters = await climbingCenterModel
+                .find()
+                .populate("owner");
+            climbingCenters.sort((a,b) => {
+                    var distA = Math.hypot(a.latitude - latitude, a.longitude - longitude);
+                    var distB =Math.hypot(b.latitude - latitude, b.longitude - longitude)
+                    return  distA - distB ;
+                });
+            return res.json(climbingCenters);
+        } catch (err) {
+            return res.status(500).json({
+                message: 'Error when getting climbing centers.',
+                error: err.message || err
+            });
+        }
+    },
     show: async function (req, res) {
         var id = req.params.id;
 
