@@ -22,3 +22,4 @@ backend/public/images
 package-lock.json
 frontend/package-lock.json
 .vscode
+/backend/.env

@@ -17,6 +17,8 @@ var userRoutes = require('./routes/userRoutes');
 var climbingAreaRoutes = require('./routes/climbingAreaRoutes')
 var climbingRouteRoutes = require('./routes/climbingRouteRoutes')
 var routeConnectionRoutes = require('./routes/routeConnectionRoutes')
+var groupRoutes = require('./routes/groupRoutes');
+var eventRoutes = require('./routes/eventRoutes');
 var climbingCenterRoutes = require('./routes/climbingCenterRoutes')
 var climbingCenterRateComment = require('./routes/climbingCenterRateCommentRoutes');
 
@@ -55,6 +57,8 @@ app.use('/users', userRoutes);
 app.use('/climbingAreas', climbingAreaRoutes)
 app.use('/climbingRoutes', climbingRouteRoutes)
 app.use('/routeConnections', routeConnectionRoutes)
+app.use('/groups', groupRoutes)
+app.use('/events', eventRoutes)
 app.use('/climbingCenter', climbingCenterRoutes);
 app.use('/centerConnections', climbingCenterRateComment);
 
