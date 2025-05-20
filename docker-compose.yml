@@ -15,7 +15,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
-      - ./backend/.env
+      - backend/.env.production
     volumes:
       - ./backend:/app #da docker uporabi datoteke iz backenda
       - /app/node_modules # docker uporabi svojo verzijo node_modules
@@ -29,7 +29,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
-      - ./frontend/.env
+      - frontend/.env.production
     volumes:
       - ./frontend:/app
       - /app/node_modules

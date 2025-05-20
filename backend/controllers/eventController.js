@@ -11,7 +11,7 @@ module.exports = {
     /**
      * eventController.list()
      */
-    list: async function (req, res) { // TODO
+    list: async function (req, res) {
         try {
             var events = await EventModel.find();
             return res.json(events);
@@ -30,7 +30,7 @@ module.exports = {
     /**
      * eventController.create()
      */
-    create: async function (req, res) { // TODO
+    create: async function (req, res) {
         var groups = req.body.groups ? req.body.groups : [];
         var centers = req.body.climbingCenters ? req.body.climbingCenters : [];
         var areas = req.body.climbingAreas ? req.body.climbingAreas:[];
