@@ -22,7 +22,7 @@ var userSchema = new Schema({
 		required: true,
 		default: 'images/default-avatar.png'
 	},
-	'createdAt' : {
+	'dateTime' : {
 		type: Date,
 		required: true,
 		default: Date.now

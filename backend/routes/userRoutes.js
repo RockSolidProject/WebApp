@@ -24,7 +24,7 @@ router.post('/login', userController.login);
 /*
  * PUT
  */
-router.put('/:id', auth, userController.update);
+//router.put('/:id', auth, userController.update);
 router.put('/avatar/:id', auth, userController.setAvatar);
 /*
  * DELETE
