@@ -111,7 +111,7 @@ module.exports = {
                 id: user._id,
                 username: user.username,
                 email: user.email,
-                avatar: user.avarar
+                avatar: user.avatar
             }
 
             return res.json({token: jwtToken, userData: userData})

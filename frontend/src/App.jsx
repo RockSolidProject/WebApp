@@ -1,6 +1,11 @@
 // src/App.jsx
 import React, { useEffect } from 'react';
+import {Routes, Route} from 'react-router-dom';
+
 import Header from './components/Header';
+import HomePage from './components/HomePage'
+import LoginPage from './components/LoginPage';
+import RegisterPage from './components/RegisterPage';
 
 const App = () => {
     useEffect(() => {
@@ -13,7 +18,13 @@ const App = () => {
     return (
         <div>
             <Header />
-            <p>This is the main content of the app.</p>
+            <main>
+                 <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage/>}/>
+                </Routes>
+            </main>
         </div>
     );
 };
