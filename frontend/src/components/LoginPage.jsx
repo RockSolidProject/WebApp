@@ -1,9 +1,13 @@
 import React, {useState} from 'react';
+import { useNavigate } from 'react-router-dom';
+
 
 const LoginPage = () => {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
+
+    const navigate = useNavigate();
 
     async function handleLogin(e) {
         e.preventDefault()
@@ -31,6 +35,7 @@ const LoginPage = () => {
             setError("")
             localStorage.setItem("token", data.token)
             localStorage.setItem("user", JSON.stringify(data.userData))
+            navigate("/")
         }
         catch (error) {
             setError("Error while loggin in")
