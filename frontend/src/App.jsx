@@ -9,13 +9,6 @@ import RegisterPage from './components/RegisterPage';
 import ProfilePage from './components/ProfilePage'
 
 const App = () => {
-    useEffect(() => {
-        fetch('http://localhost:3001/users/test')
-            .then((response) => response.json())
-            .then((data) => console.log(data))
-            .catch((error) => console.error('Error:', error));
-    }, []);
-
     return (
         <div>
             <Header />

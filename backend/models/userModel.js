@@ -20,7 +20,7 @@ var userSchema = new Schema({
 	'avatar' : {
 		type: String,
 		required: true,
-		default: 'images/default-avatar.png'
+		default: '/images/default-avatar.png'
 	},
 	'dateTime' : {
 		type: Date,

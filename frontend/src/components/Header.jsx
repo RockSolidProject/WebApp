@@ -2,6 +2,8 @@
 import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const Header = () => {
     const [showMenu, setShowMenu] = useState(false);
     const navigate = useNavigate();
@@ -10,7 +12,7 @@ const Header = () => {
     const user = JSON.parse(localStorage.getItem("user"))   
     let image = ""
     if (user) {
-        image = "http://localhost:3001/"+user.avatar
+        image = backendUrl+user.avatar
     }
 
     function handleLogout() {

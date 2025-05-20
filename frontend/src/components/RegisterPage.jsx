@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const RegisterPage = () => {
     const [email, setEmail] = useState("")
     const [username, setUsername] = useState("")
@@ -13,7 +15,7 @@ const RegisterPage = () => {
         e.preventDefault()
 
         try {
-            const res =  await fetch(`http://localhost:3001/users/`, {
+            const res =  await fetch(`${backendUrl}/users/`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
