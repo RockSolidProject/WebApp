@@ -7,6 +7,7 @@ import HomePage from './components/HomePage'
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import ProfilePage from './components/ProfilePage'
+import AddClimbingAreaPage from './components/AddClimbingAreaPage'
 
 const App = () => {
     return (
@@ -18,6 +19,7 @@ const App = () => {
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage/>}/>
                     <Route path="/profile" element={<ProfilePage/>}/>
+                    <Route path="/addClimbingArea" element={<AddClimbingAreaPage/>}/>
                 </Routes>
             </main>
         </div>
