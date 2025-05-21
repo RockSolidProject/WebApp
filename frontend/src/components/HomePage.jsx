@@ -10,6 +10,8 @@ const HomePage = () => {
 
     const navigate = useNavigate()
 
+    const isLoggedIn = (localStorage.getItem("token") != null && localStorage.getItem("user") != null)
+
     useEffect(() => {
         getClimbingAreas()
     }, [])
@@ -19,13 +21,14 @@ const HomePage = () => {
                 const res = await fetch(`${backendUrl}/climbingAreas`, {
                     method: "GET",
                 })
-                const data = await res.json()
-                console.log(data)
 
                 if (!res.ok) {
                     setError("Getting climbing spots failed.")
                     return
                 }
+                const data = await res.json()
+                console.log(data)
+
                 setClimbingAreas(data)
             }
             catch (err) {
@@ -34,16 +37,31 @@ const HomePage = () => {
         }
     return (
         <div>
-            <h1>Home page</h1>
-            <ul>
+            <h1>Domača stran</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Plezališče</th>
+                        <th>Število poti</th>
+                        <th>Vrste poti</th>
+                    </tr>
+                </thead>
+                <tbody>
                 {climbingAreas.map( (climbingArea, index) => (
-                    <li key={index}>
-                        {climbingArea.name} 
-                        {" ("+climbingArea.latitude+ "," + climbingArea.longitude + ")"}
-                    </li>
+                    <tr key={index}>
+                        <td>{climbingArea.name}</td>
+                        <td>{climbingArea.routes? climbingArea.routes.length : 0}</td>
+                        <td>{(climbingArea.routes && climbingArea.routes.length > 0) ?(
+                            [...new Set(climbingArea.routes.map(route => route.type))].join(","))
+                        :"_"}</td>
+                        
+                        {/*" ("+climbingArea.latitude+ "," + climbingArea.longitude + ")"*/}
+                        
+                    </tr>
                 ))}
-            </ul>
-            <button onClick={()=>{navigate("/addClimbingArea")}}>Add climbing area</button>
+                </tbody>
+            </table>
+            {isLoggedIn? <button onClick={()=>{navigate("/addClimbingArea")}}>Add climbing area</button> : ""}
         </div>
         
         

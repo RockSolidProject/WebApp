@@ -10,6 +10,10 @@ module.exports = {
             const climbingAreas = await ClimbingareaModel
                 .find()
                 .populate("postedBy")
+                .populate({
+                    path: "routes",
+                    populate: { path: "postedBy" }
+                })
             return res.json(climbingAreas)
         }
         catch (err) {

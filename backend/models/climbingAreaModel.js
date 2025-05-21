@@ -23,6 +23,15 @@ var climbingAreaSchema = new Schema({
         type: Date,
         default: Date.now
     }
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
 });
+
+climbingAreaSchema.virtual("routes",{
+    ref: "climbingRoute",
+    localField: "_id",
+    foreignField: "climbingArea"
+})
 
 module.exports = mongoose.model('climbingArea', climbingAreaSchema);
