@@ -10,6 +10,7 @@ const HomePage = () => {
     const [requireBoulder, setRequireBoulder] = useState(false)
     const [requireLead, setRequireLead] = useState(false)
     const [requireUrban, setRequireUrban] = useState(false)
+    const [requiredNumberOfRoutes, setRequiredNumberOfRoutes] = useState(1)
 
 
     const [searchString, setSearchString] = useState("")
@@ -47,6 +48,7 @@ const HomePage = () => {
         let boulderGood = false
         let leadGood = false
         let urbanGood = false
+        let numberOfRoutesGood = (area.routes?.length || 0) >= requiredNumberOfRoutes
 
         const typesInArea = [...new Set(area.routes?.map(route => route.type))];
 
@@ -69,7 +71,7 @@ const HomePage = () => {
             urbanGood = typesInArea.includes("urban")
         }
         
-        return searchGood && boulderGood && leadGood && urbanGood
+        return searchGood && boulderGood && leadGood && urbanGood && numberOfRoutesGood
     });
 
     return (
@@ -94,6 +96,13 @@ const HomePage = () => {
                         Urbana pot
                         <br/>
                     </label>
+
+                    <h3>Število poti:</h3>
+                    <div>Vsaj: {requiredNumberOfRoutes}</div>
+                    <input type="range" min={0} max={Math.max(...climbingAreas.map(a => a.routes?.length || 0))}
+                        value={requiredNumberOfRoutes} onChange={(e) => setRequiredNumberOfRoutes(Number(e.target.value))}
+                    />
+                    
 
                     {isLoggedIn? <button style={{marginTop: "100%"}} onClick={()=>{navigate("/addClimbingArea")}}>Add climbing area</button> : ""}
                 </div>
