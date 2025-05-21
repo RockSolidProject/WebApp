@@ -8,6 +8,8 @@ const HomePage = () => {
     const [error, setError] = useState(null)
     const [climbingAreas, setClimbingAreas] = useState([])
 
+    const [searchString, setSearchString] = useState("")
+
     const navigate = useNavigate()
 
     const isLoggedIn = (localStorage.getItem("token") != null && localStorage.getItem("user") != null)
@@ -17,27 +19,35 @@ const HomePage = () => {
     }, [])
 
     async function getClimbingAreas(){
-            try {
-                const res = await fetch(`${backendUrl}/climbingAreas`, {
-                    method: "GET",
-                })
+        try {
+            const res = await fetch(`${backendUrl}/climbingAreas`, {
+                method: "GET",
+            })
 
-                if (!res.ok) {
-                    setError("Getting climbing spots failed.")
-                    return
-                }
-                const data = await res.json()
-                console.log(data)
+            if (!res.ok) {
+                setError("Getting climbing spots failed.")
+                return
+            }
+            const data = await res.json()
+            console.log(data)
 
-                setClimbingAreas(data)
-            }
-            catch (err) {
-                setError("Error getting climbing spots." + err.message)
-            }
+            setClimbingAreas(data)
         }
+        catch (err) {
+            setError("Error getting climbing spots." + err.message)
+        }
+    }
+
+    const filteredAreas = climbingAreas.filter(area =>
+        area.name.toLowerCase().includes(searchString.toLowerCase())
+    );
+
     return (
         <div>
             <h1>Domača stran</h1>
+
+            <input type="text" placeholder="Išči plezališče" value={searchString} onChange={(e) => setSearchString(e.target.value)}/>
+
             <table>
                 <thead>
                     <tr>
@@ -47,7 +57,7 @@ const HomePage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                {climbingAreas.map( (climbingArea, index) => (
+                {filteredAreas.map( (climbingArea, index) => (
                     <tr key={index}>
                         <td>{climbingArea.name}</td>
                         <td>{climbingArea.routes? climbingArea.routes.length : 0}</td>
