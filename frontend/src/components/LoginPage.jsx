@@ -23,8 +23,6 @@ const LoginPage = () => {
                 body: JSON.stringify({username, password})
             })
 
-            const data = await res.json()
-
             if (res.status === 401) {
                 setError("Invalid username or password")
                 return
@@ -33,12 +31,14 @@ const LoginPage = () => {
                 setError("Error logging in.")
                 return
             }
+            const data = await res.json()
+
             setError("")
             localStorage.setItem("token", data.token)
             localStorage.setItem("user", JSON.stringify(data.userData))
             navigate("/")
         }
-        catch (error) {
+        catch (err) {
             setError("Error while loggin in")
         }
     }

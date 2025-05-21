@@ -8,6 +8,8 @@ const HomePage = () => {
     const [error, setError] = useState(null)
     const [climbingAreas, setClimbingAreas] = useState([])
 
+    const navigate = useNavigate()
+
     useEffect(() => {
         getClimbingAreas()
     }, [])
@@ -41,6 +43,7 @@ const HomePage = () => {
                     </li>
                 ))}
             </ul>
+            <button onClick={()=>{navigate("/addClimbingArea")}}>Add climbing area</button>
         </div>
         
         

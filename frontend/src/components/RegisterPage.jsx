@@ -23,8 +23,6 @@ const RegisterPage = () => {
                 body: JSON.stringify({email, username, password})
             })
 
-            const data = await res.json();
-
             if (res.status === 409) {
                 setError("That username is already taken.")
                 return
@@ -33,6 +31,7 @@ const RegisterPage = () => {
                 setError("Registration failed.")
                 return
             }
+            const data = await res.json();
 
             navigate("/login")
         }
