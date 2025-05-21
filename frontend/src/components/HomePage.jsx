@@ -7,6 +7,10 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const HomePage = () => {
     const [error, setError] = useState(null)
     const [climbingAreas, setClimbingAreas] = useState([])
+    const [requireBoulder, setRequireBoulder] = useState(false)
+    const [requireLead, setRequireLead] = useState(false)
+    const [requireUrban, setRequireUrban] = useState(false)
+
 
     const [searchString, setSearchString] = useState("")
 
@@ -38,16 +42,59 @@ const HomePage = () => {
         }
     }
 
-    const filteredAreas = climbingAreas.filter(area =>
-        area.name.toLowerCase().includes(searchString.toLowerCase())
-    );
+    const filteredAreas = climbingAreas.filter(area => {
+        let searchGood = area.name.toLowerCase().includes(searchString.toLowerCase())
+        let boulderGood = false
+        let leadGood = false
+        let urbanGood = false
+
+        const typesInArea = [...new Set(area.routes?.map(route => route.type))];
+
+        if (!requireBoulder) {
+            boulderGood = true
+        }
+        else {
+            boulderGood = typesInArea.includes("boulder")
+        }
+        if (!requireLead) {
+            leadGood = true
+        }
+        else {
+            leadGood = typesInArea.includes("lead")
+        }
+        if (!requireUrban) {
+            urbanGood = true
+        }
+        else {
+            urbanGood = typesInArea.includes("urban")
+        }
+        
+        return searchGood && boulderGood && leadGood && urbanGood
+    });
 
     return (
         <div>
             <h1>Plezališča v Sloveniji</h1>
             <div style={{ display: 'flex', height: '70vh' }}>
                 <div style={{width: "200px", maxWidth: "20%", padding: "20px", height: "100%", marginRight: "15px", backgroundColor: "grey"}}> 
-                    <h3>Filtri:</h3>
+                    <h2>Filtri:</h2>
+                    <h3>Glede na vrto poti: </h3>
+                    <label>
+                        <input type="checkbox" checked={requireBoulder} onChange={()=>setRequireBoulder(!requireBoulder)}/>
+                        Balvanska pot
+                        <br/>
+                    </label>
+                    <label>
+                        <input type="checkbox" checked={requireLead} onChange={()=>setRequireLead(!requireLead)}/>
+                        Športna pot
+                        <br/>
+                    </label>
+                    <label>
+                        <input type="checkbox" checked={requireUrban} onChange={()=>setRequireUrban(!requireUrban)}/>
+                        Urbana pot
+                        <br/>
+                    </label>
+
                     {isLoggedIn? <button style={{marginTop: "100%"}} onClick={()=>{navigate("/addClimbingArea")}}>Add climbing area</button> : ""}
                 </div>
                 
