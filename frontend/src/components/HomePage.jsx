@@ -107,7 +107,7 @@ const HomePage = () => {
 
                     <h3>Število poti:</h3>
                     <div>Vsaj: {requiredNumberOfRoutes}</div>
-                    <input type="range" min={0} max={Math.max(...climbingAreas.map(a => a.routes?.length || 0))}
+                    <input type="range" min={0} max={Math.max(1, ...climbingAreas.map(a => a.routes?.length || 0))}
                         value={requiredNumberOfRoutes} onChange={(e) => setRequiredNumberOfRoutes(Number(e.target.value))}
                     />
                     <h3>Razdalja: </h3>
