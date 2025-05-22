@@ -11,7 +11,10 @@ const HomePage = () => {
     const [requireLead, setRequireLead] = useState(false)
     const [requireUrban, setRequireUrban] = useState(false)
     const [requiredNumberOfRoutes, setRequiredNumberOfRoutes] = useState(1)
-
+    const [latitude, setLatitude] = useState(46.1199444)
+    const [longitude, setLongitude] = useState(14.8153333)
+    const [distance, setDistance] = useState(500)
+    const [distanceTmp, setDistanceTmp] = useState(distance)
 
     const [searchString, setSearchString] = useState("")
 
@@ -21,24 +24,29 @@ const HomePage = () => {
 
     useEffect(() => {
         getClimbingAreas()
-    }, [])
+    }, [distance, latitude, longitude])
 
     async function getClimbingAreas(){
         try {
-            const res = await fetch(`${backendUrl}/climbingAreas`, {
-                method: "GET",
+            const res = await fetch(`${backendUrl}/climbingAreas/byProximity`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({latitude, longitude, distance})
             })
-
             if (!res.ok) {
                 setError("Getting climbing spots failed.")
                 return
             }
             const data = await res.json()
-            console.log(data)
+            //console.log(data) 
+            setError("")
 
             setClimbingAreas(data)
         }
         catch (err) {
+            //console.log("LLLLLLLLl")
             setError("Error getting climbing spots." + err.message)
         }
     }
@@ -102,13 +110,34 @@ const HomePage = () => {
                     <input type="range" min={0} max={Math.max(...climbingAreas.map(a => a.routes?.length || 0))}
                         value={requiredNumberOfRoutes} onChange={(e) => setRequiredNumberOfRoutes(Number(e.target.value))}
                     />
-                    
-
-                    {isLoggedIn? <button style={{marginTop: "100%"}} onClick={()=>{navigate("/addClimbingArea")}}>Add climbing area</button> : ""}
+                    <h3>Razdalja: </h3>
+                    <div>Vsaj: {distanceTmp}km</div>
+                    <input type="range" min={0} max={500} step={5}
+                        value={distanceTmp} 
+                        onTouchEnd={() => setDistance(distanceTmp)}
+                        onMouseUp={() => setDistance(distanceTmp)}
+                        onChange={(e) => setDistanceTmp(Number(e.target.value))}
+                    /><br/>
+                    <label>
+                        Latitude: <br />
+                        <input
+                            type="number" value={latitude} onChange={(e) => setLatitude(parseFloat(e.target.value))}
+                            step="any" required
+                        />
+                    </label>
+                    <label>
+                        Longitude: <br />
+                        <input
+                            type="number" value={longitude} onChange={(e) => setLongitude(parseFloat(e.target.value))}
+                            step="any" required
+                        />
+                    </label>
+                    {isLoggedIn? <button onClick={()=>{navigate("/addClimbingArea")}}>Add climbing area</button> : ""}
                 </div>
                 
                 <div style={{flex: 1}}>
                     <input type="text" placeholder="Išči plezališče" value={searchString} onChange={(e) => setSearchString(e.target.value)}/>            
+                    {error ? <p style={{color: "red"}}>{error}</p> :""}
                     <table>
                         <thead>
                             <tr>
