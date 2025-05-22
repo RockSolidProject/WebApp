@@ -1,4 +1,5 @@
 var ClimbingareaModel = require('../models/climbingAreaModel.js');
+const haversine = require('haversine-distance');
 
 module.exports = {
 
@@ -27,15 +28,27 @@ module.exports = {
         try {
             var latitude = parseFloat(req.body.latitude);
             var longitude = parseFloat(req.body.longitude);
+            var maxDistance = parseFloat(req.body.distance);
+
+            if (isNaN(latitude) || isNaN(longitude) || isNaN(maxDistance)) {
+                return res.status(400).json({ 
+                    message: "Invalid coordinates or distance" 
+                });
+            }
+            const userLocation = { lat: latitude, lon: longitude };
             const climbingAreas = await ClimbingareaModel
                 .find()
                 .populate("postedBy")
-            climbingAreas.sort((a,b) => {
-                var distA = Math.hypot(a.latitude - latitude, a.longitude - longitude);
-                var distB =Math.hypot(b.latitude - latitude, b.longitude - longitude)
-                return  distA - distB ;
-            });
-            return res.json(climbingAreas)
+                .populate({
+                    path: "routes",
+                    populate: { path: "postedBy" }
+                })
+            const nerbyAreas = climbingAreas.filter(area => {
+                const areaLocation = { lat: area.latitude, lon: area.longitude}
+                const distance = haversine(userLocation, areaLocation) / 1000
+                return distance <= maxDistance
+            })
+            return res.json(nerbyAreas)
         }
         catch (err) {
             return res.status(500).json({
