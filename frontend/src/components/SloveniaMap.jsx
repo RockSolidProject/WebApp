@@ -18,11 +18,16 @@ const SloveniaMap = ({ climbingAreas }) => {
 
             {climbingAreas.map((area) => {
                 {/*iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",*/}
-                const iconUrl = (area.routes?.length || 0) > 10 
+                /*const iconUrl = (area.routes?.length || 0) > 10 
                 ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png'
                 : ((area.routes?.length || 0) > 5 
                 ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png'
-                : 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png')
+                : 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png')*/
+                const iconUrl = (area.routes?.length || 0) > 10 
+                ? '/public/markers/marker_area_orange.png'
+                : ((area.routes?.length || 0) > 5 
+                ? '/public/markers/marker_area_yellow.png'
+                : '/public/markers/marker_area_beige.png')
                 return (
                     <Marker 
                         key={area._id} 
@@ -31,6 +36,9 @@ const SloveniaMap = ({ climbingAreas }) => {
                             iconUrl: iconUrl,
                             iconSize: [24, 30],
                             iconAnchor: [12, 30],
+                            shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
+                            popupAnchor: [0, -34],
+                            shadowSize: [40, 30]
                         })}
                         >
                         <Popup>
