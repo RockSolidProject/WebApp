@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
+import SloveniaMap from './SloveniaMap';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -136,6 +137,7 @@ const HomePage = () => {
                 </div>
                 
                 <div style={{flex: 1}}>
+                    <SloveniaMap climbingAreas={filteredAreas} />
                     <input type="text" placeholder="Išči plezališče" value={searchString} onChange={(e) => setSearchString(e.target.value)}/>            
                     {error ? <p style={{color: "red"}}>{error}</p> :""}
                     <table>
