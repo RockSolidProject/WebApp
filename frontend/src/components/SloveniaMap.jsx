@@ -1,9 +1,11 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import MapResetButton from './MapResetButton';
 import leaflet from 'leaflet';
 
 const SloveniaMap = ({ climbingAreas }) => {
+    const center = [46.14, 15.0153333]
     return (
-        <MapContainer center={[46.14, 15.0153333]} zoom={8} minZoom={8} style={{ height: '400px', width: '600px' }}>
+        <MapContainer center={center} zoom={8} minZoom={8} maxBounds={[[45, 13.2],[47.3, 17.0]]} maxBoundsViscosity={1.0} style={{ height: '400px', width: '600px' }}>
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; OpenStreetMap contributors'
@@ -12,6 +14,8 @@ const SloveniaMap = ({ climbingAreas }) => {
                 url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                 attribution='&copy; OpenStreetMap contributors & Carto'
             />*/}
+            <MapResetButton center={center} zoom={8}/>
+
             {climbingAreas.map((area) => {
                 {/*iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",*/}
                 const iconUrl = (area.routes?.length || 0) > 10 
