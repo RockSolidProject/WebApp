@@ -1,0 +1,12 @@
+{
+    local_certs
+}
+
+app.localhost {
+    encode gzip
+    reverse_proxy frontend:5173
+}
+
+api.app.localhost {
+    reverse_proxy api:3001
+}

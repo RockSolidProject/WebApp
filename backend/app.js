@@ -25,7 +25,12 @@ var climbingCenterRateComment = require('./routes/climbingCenterRateCommentRoute
 var app = express();
 
 var cors = require('cors');
-var allowedOrigins = ['http://localhost:5173', 'http://localhost:3001'];
+var allowedOrigins = [
+  'https://app.localhost',
+  'https://api.app.localhost',
+  'http://localhost:5173',
+  'http://localhost:3001'
+];
 app.use(cors({
   credentials: true,
   origin: function(origin, callback){

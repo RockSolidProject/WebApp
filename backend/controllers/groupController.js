@@ -45,7 +45,7 @@ module.exports = {
      * groupController.create()
      */
     create: async function (req, res) {
-        var group = new GroupModel({//TODO
+        var group = new GroupModel({
             name: req.body.name,
             isPrivate: req.body.isPrivate,
             owner: req.user.id
