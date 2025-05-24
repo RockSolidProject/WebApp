@@ -14,7 +14,6 @@ dist/
 build/
 .vite/
 
-.env
 # System files
 .DS_Store
 
@@ -23,4 +22,5 @@ backend/public/images
 package-lock.json
 frontend/package-lock.json
 .vscode
-/backend/.env.production
+.env*
+package.json

@@ -66,8 +66,6 @@ module.exports = {
                 username : req.body.username,
                 email : req.body.email,
                 password : hashedPassword,
-                avatar : req.body.avatar,
-                createdAt : new Date()
             });
             const savedUser = await user.save()
             return res.status(201).json(savedUser)
@@ -111,7 +109,7 @@ module.exports = {
                 id: user._id,
                 username: user.username,
                 email: user.email,
-                avatar: user.avarar
+                avatar: user.avatar
             }
 
             return res.json({token: jwtToken, userData: userData})
@@ -129,7 +127,7 @@ module.exports = {
     /**
      * userController.update()
      */
-    update: async function (req, res) {
+    /*update: async function (req, res) {
         var id = req.params.id;
         try {
             const user = await UserModel.findById(id)
@@ -159,7 +157,7 @@ module.exports = {
             })
         }
 
-    },
+    },*/
 
     /**
      * userController.remove()
