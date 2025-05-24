@@ -26,8 +26,8 @@ var app = express();
 
 var cors = require('cors');
 var allowedOrigins = [
-  'https://app.localhost',
-  'https://api.app.localhost',
+  'http://52.166.14.239/api',
+  'http://52.166.14.239',
   'http://localhost:5173',
   'http://localhost:3001'
 ];
