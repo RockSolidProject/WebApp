@@ -13,9 +13,10 @@ const HomePage = () => {
     const [requireUrban, setRequireUrban] = useState(false)
     const [requiredNumberOfRoutes, setRequiredNumberOfRoutes] = useState(1)
     const [latitude, setLatitude] = useState(46.1199444)
-    const [longitude, setLongitude] = useState(14.8153333)
-    const [distance, setDistance] = useState(500)
+    const [longitude, setLongitude] = useState(15)
+    const [distance, setDistance] = useState(135)
     const [distanceTmp, setDistanceTmp] = useState(distance)
+    const [choosingLocation, setChoosingLocation] = useState(false);
 
     const [searchString, setSearchString] = useState("")
 
@@ -113,12 +114,14 @@ const HomePage = () => {
                     />
                     <h3>Razdalja: </h3>
                     <div>Vsaj: {distanceTmp}km</div>
-                    <input type="range" min={0} max={500} step={5}
+                    <input type="range" min={5} max={135} step={1}
                         value={distanceTmp} 
                         onTouchEnd={() => setDistance(distanceTmp)}
                         onMouseUp={() => setDistance(distanceTmp)}
                         onChange={(e) => setDistanceTmp(Number(e.target.value))}
                     /><br/>
+                    <h4 style={{marginBottom: 0}}>Lokacija:</h4>
+                    <button onClick={() => setChoosingLocation(!choosingLocation)}>📌</button><br/>
                     <label>
                         Latitude: <br />
                         <input
@@ -133,11 +136,21 @@ const HomePage = () => {
                             step="any" required
                         />
                     </label>
+                    <br/><br/><br/>
                     {isLoggedIn? <button onClick={()=>{navigate("/addClimbingArea")}}>Add climbing area</button> : ""}
                 </div>
                 
                 <div style={{flex: 1}}>
-                    <SloveniaMap climbingAreas={filteredAreas} />
+                    <SloveniaMap 
+                        climbingAreas={filteredAreas}
+                        latitude={latitude}
+                        setLatitude={setLatitude}
+                        longitude={longitude}
+                        setLongitude={setLongitude}
+                        distance={distanceTmp}
+                        choosingLocation={choosingLocation}
+                        setChoosingLocation={setChoosingLocation}
+                    />
                     <input type="text" placeholder="Išči plezališče" value={searchString} onChange={(e) => setSearchString(e.target.value)}/>            
                     {error ? <p style={{color: "red"}}>{error}</p> :""}
                     <table>

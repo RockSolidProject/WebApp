@@ -1,11 +1,26 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle } from 'react-leaflet';
+import React, {useState} from 'react';
 import MapResetButton from './MapResetButton';
 import leaflet from 'leaflet';
 
-const SloveniaMap = ({ climbingAreas }) => {
+const SloveniaMap = ({ climbingAreas, latitude, longitude, setLatitude, setLongitude, distance, choosingLocation, setChoosingLocation }) => {
     const center = [46.14, 15.0153333]
+
+    function ClickHandler({ setLatitude, setLongitude, setChoosingLocation }) {
+        useMapEvents({
+            click(e) {
+                setLatitude(e.latlng.lat);
+                setLongitude(e.latlng.lng);
+                setChoosingLocation(false)
+            }
+        });
+        return null;
+    }
+
     return (
-        <MapContainer center={center} zoom={8} minZoom={8} maxBounds={[[45, 13.2],[47.3, 17.0]]} maxBoundsViscosity={1.0} style={{ height: '400px', width: '600px' }}>
+        <MapContainer center={center} zoom={8} minZoom={8} maxBounds={[[45, 13.2],[47.3, 17.0]]} 
+            maxBoundsViscosity={1.0} style={{ height: '400px', width: '600px' }}
+            doubleClickZoom={false} >
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; OpenStreetMap contributors'
@@ -16,6 +31,28 @@ const SloveniaMap = ({ climbingAreas }) => {
             />*/}
             <MapResetButton center={center} zoom={8}/>
 
+            {!choosingLocation ? "" : <ClickHandler setLatitude={setLatitude} setLongitude={setLongitude}setChoosingLocation={setChoosingLocation} /> }
+
+            <Marker 
+                position={[latitude, longitude]}
+                icon={leaflet.icon({
+                    iconUrl: "/markers/marker_blue.png",
+                    iconSize: [8, 8],
+                    })}
+                >
+                <Popup>Center of search</Popup>
+            </Marker>
+
+              <Circle
+                center={[latitude, longitude]}
+                radius={distance * 1000}
+                pathOptions={{
+                    color: 'blue',
+                    fillColor: 'blue',
+                    fillOpacity: 0.07
+                }}
+            />
+
             {climbingAreas.map((area) => {
                 {/*iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",*/}
                 /*const iconUrl = (area.routes?.length || 0) > 10 
@@ -24,10 +61,10 @@ const SloveniaMap = ({ climbingAreas }) => {
                 ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png'
                 : 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png')*/
                 const iconUrl = (area.routes?.length || 0) > 10 
-                ? '/public/markers/marker_area_orange.png'
+                ? '/markers/marker_area_orange.png'
                 : ((area.routes?.length || 0) > 5 
-                ? '/public/markers/marker_area_yellow.png'
-                : '/public/markers/marker_area_beige.png')
+                ? '/markers/marker_area_yellow.png'
+                : '/markers/marker_area_beige.png')
                 return (
                     <Marker 
                         key={area._id} 
