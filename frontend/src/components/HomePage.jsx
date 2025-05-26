@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import SloveniaMap from './SloveniaMap';
+import FilterSidebar from "./FilterSidebar.jsx";
+import ClimbingAreaTable from "./ClimbingAreaTable.jsx";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -88,58 +90,30 @@ const HomePage = () => {
         <div>
             <h1>Plezališča v Sloveniji</h1>
             <div style={{ display: 'flex', height: '70vh' }}>
-                <div style={{width: "200px", maxWidth: "20%", padding: "20px", height: "100%", marginRight: "15px", backgroundColor: "grey"}}> 
-                    <h2>Filtri:</h2>
-                    <h3>Glede na vrto poti: </h3>
-                    <label>
-                        <input type="checkbox" checked={requireBoulder} onChange={()=>setRequireBoulder(!requireBoulder)}/>
-                        Balvanska pot
-                        <br/>
-                    </label>
-                    <label>
-                        <input type="checkbox" checked={requireLead} onChange={()=>setRequireLead(!requireLead)}/>
-                        Športna pot
-                        <br/>
-                    </label>
-                    <label>
-                        <input type="checkbox" checked={requireUrban} onChange={()=>setRequireUrban(!requireUrban)}/>
-                        Urbana pot
-                        <br/>
-                    </label>
 
-                    <h3>Število poti:</h3>
-                    <div>Vsaj: {requiredNumberOfRoutes}</div>
-                    <input type="range" min={0} max={Math.max(1, ...climbingAreas.map(a => a.routes?.length || 0))}
-                        value={requiredNumberOfRoutes} onChange={(e) => setRequiredNumberOfRoutes(Number(e.target.value))}
-                    />
-                    <h3>Razdalja: </h3>
-                    <div>Vsaj: {distanceTmp}km</div>
-                    <input type="range" min={5} max={135} step={1}
-                        value={distanceTmp} 
-                        onTouchEnd={() => setDistance(distanceTmp)}
-                        onMouseUp={() => setDistance(distanceTmp)}
-                        onChange={(e) => setDistanceTmp(Number(e.target.value))}
-                    /><br/>
-                    <h4 style={{marginBottom: 0}}>Lokacija:</h4>
-                    <button onClick={() => setChoosingLocation(!choosingLocation)}>📌</button><br/>
-                    <label>
-                        Latitude: <br />
-                        <input
-                            type="number" value={latitude} onChange={(e) => setLatitude(parseFloat(e.target.value))}
-                            step="any" required
-                        />
-                    </label>
-                    <label>
-                        Longitude: <br />
-                        <input
-                            type="number" value={longitude} onChange={(e) => setLongitude(parseFloat(e.target.value))}
-                            step="any" required
-                        />
-                    </label>
-                    <br/><br/><br/>
-                    {isLoggedIn? <button onClick={()=>{navigate("/addClimbingArea")}}>Add climbing area</button> : ""}
-                </div>
-                
+                <FilterSidebar
+                    requireBoulder = {requireBoulder}
+                    setRequireBoulder = {setRequireBoulder}
+                    requireLead = {requireLead}
+                    setRequireLead = {setRequireLead}
+                    requireUrban = {requireUrban}
+                    setRequireUrban = {setRequireUrban}
+                    requiredNumberOfRoutes = {requiredNumberOfRoutes}
+                    setRequiredNumberOfRoutes = {setRequiredNumberOfRoutes}
+                    distanceTmp = {distanceTmp}
+                    setDistanceTmp = {setDistanceTmp}
+                    setDistance={setDistance}
+                    latitude={latitude}
+                    setLatitude={setLatitude}
+                    longitude={longitude}
+                    setLongitude={setLongitude}
+                    choosingLocation={choosingLocation}
+                    setChoosingLocation={setChoosingLocation}
+                    isLoggedIn={isLoggedIn}
+                    navigate={navigate}
+                    climbingAreas={climbingAreas}
+                />
+
                 <div style={{flex: 1}}>
                     <SloveniaMap 
                         climbingAreas={filteredAreas}
@@ -153,29 +127,10 @@ const HomePage = () => {
                     />
                     <input type="text" placeholder="Išči plezališče" value={searchString} onChange={(e) => setSearchString(e.target.value)}/>            
                     {error ? <p style={{color: "red"}}>{error}</p> :""}
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Plezališče</th>
-                                <th>Število poti</th>
-                                <th>Vrste poti</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {filteredAreas.map( (climbingArea, index) => (
-                            <tr key={index}>
-                                <td>{climbingArea.name}</td>
-                                <td>{climbingArea.routes? climbingArea.routes.length : 0}</td>
-                                <td>{(climbingArea.routes && climbingArea.routes.length > 0) ?(
-                                    [...new Set(climbingArea.routes.map(route => route.type))].join(","))
-                                :"_"}</td>
-                                
-                                {/*" ("+climbingArea.latitude+ "," + climbingArea.longitude + ")"*/}
-                                
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
+
+                    <ClimbingAreaTable
+                        filteredAreas={filteredAreas}
+                    />
                 </div>
             </div>
         </div>
