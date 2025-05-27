@@ -1,9 +1,8 @@
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle } from 'react-leaflet';
-import React, {useState} from 'react';
 import MapResetButton from './MapResetButton';
 import leaflet from 'leaflet';
 
-const SloveniaMap = ({ climbingAreas, latitude, longitude, setLatitude, setLongitude, distance, choosingLocation, setChoosingLocation }) => {
+const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, setLongitude, distance, choosingLocation, setChoosingLocation }) => {
     const center = [46.14, 15.0153333]
 
     function ClickHandler({ setLatitude, setLongitude, setChoosingLocation }) {
@@ -55,19 +54,19 @@ const SloveniaMap = ({ climbingAreas, latitude, longitude, setLatitude, setLongi
 
             {climbingAreas.map((area) => {
                 {/*iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",*/}
-                /*const iconUrl = (area.routes?.length || 0) > 10 
+                /*const iconUrl = (area.routes?.length || 0) > 10
                 ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png'
-                : ((area.routes?.length || 0) > 5 
+                : ((area.routes?.length || 0) > 5
                 ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png'
                 : 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png')*/
-                const iconUrl = (area.routes?.length || 0) > 10 
+                const iconUrl = (area.routes?.length || 0) > 10
                 ? '/markers/marker_area_orange.png'
-                : ((area.routes?.length || 0) > 5 
+                : ((area.routes?.length || 0) > 5
                 ? '/markers/marker_area_yellow.png'
                 : '/markers/marker_area_beige.png')
                 return (
                     <Marker 
-                        key={area._id} 
+                        key={area._id}
                         position={[area.latitude, area.longitude]}
                         icon={leaflet.icon({
                             iconUrl: iconUrl,
@@ -81,6 +80,37 @@ const SloveniaMap = ({ climbingAreas, latitude, longitude, setLatitude, setLongi
                         <Popup>
                             <strong>{area.name}</strong><br/>
                             {area.routes?.length || 0} routes
+                        </Popup>
+                    </Marker>
+                )
+            })}
+            {climbingCenters.map((center) => {
+                {/*iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",*/}
+                /*const iconUrl = (center.routes?.length || 0) > 10
+                ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png'
+                : ((center.routes?.length || 0) > 5
+                ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png'
+                : 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png')*/
+                const iconUrl = (center.routes?.length || 0) > 10
+                    ? '/markers/marker_area_orange.png'
+                    : ((center.routes?.length || 0) > 5
+                        ? '/markers/marker_area_yellow.png'
+                        : '/markers/marker_area_beige.png')
+                return (
+                    <Marker
+                        key={center._id}
+                        position={[center.latitude, center.longitude]}
+                        icon={leaflet.icon({
+                            iconUrl: iconUrl,
+                            iconSize: [24, 30],
+                            iconAnchor: [12, 30],
+                            shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
+                            popupAnchor: [0, -34],
+                            shadowSize: [40, 30]
+                        })}
+                    >
+                        <Popup>
+                            <strong>{center.name}</strong><br/>
                         </Popup>
                     </Marker>
                 )

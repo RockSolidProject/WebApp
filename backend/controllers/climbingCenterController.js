@@ -23,18 +23,29 @@ module.exports = {
      * climbingCenterController.show()
      */
     getByProximity: async function (req, res) {
-        var latitude = parseFloat(req.body.latitude);
-        var longitude = parseFloat(req.body.longitude);
         try {
+            const latitude = parseFloat(req.body.latitude);
+            const longitude = parseFloat(req.body.longitude);
+            const maxDistance = parseFloat(req.body.distance);
+
+            if (isNaN(latitude) || isNaN(longitude) || isNaN(maxDistance)) {
+                return res.status(400).json({
+                    message: "Invalid coordinates or distance"
+                });
+            }
+
+            const userLocation = { latitude, longitude };
             const climbingCenters = await climbingCenterModel
                 .find()
                 .populate("owner");
-            climbingCenters.sort((a,b) => {
-                    var distA = Math.hypot(a.latitude - latitude, a.longitude - longitude);
-                    var distB =Math.hypot(b.latitude - latitude, b.longitude - longitude)
-                    return  distA - distB ;
-                });
-            return res.json(climbingCenters);
+
+            const nearbyCenters = climbingCenters.filter(center => {
+                const centerLocation = { latitude: center.latitude, longitude: center.longitude };
+                const distance = haversine(userLocation, centerLocation);
+                return distance <= maxDistance;
+            });
+
+            return res.json(nearbyCenters);
         } catch (err) {
             return res.status(500).json({
                 message: 'Error when getting climbing centers.',
@@ -76,7 +87,8 @@ module.exports = {
             hasBoulders : req.body.hasBoulders,
             hasRoutes : req.body.hasRoutes,
             hasMoonboard : req.body.hasMoonboard,
-            hasSprayWall : req.body.hasSprayWall
+            hasSprayWall : req.body.hasSprayWall,
+            hasKilter : req.body.hasKilter
         });
         try {
             const savedclimbingCenter = await climbingCenter.save();

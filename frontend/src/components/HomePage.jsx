@@ -10,9 +10,15 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const HomePage = () => {
     const [error, setError] = useState(null)
     const [climbingAreas, setClimbingAreas] = useState([])
+    const [climbingCenters, setClimbingCenters] = useState([])
     const [requireBoulder, setRequireBoulder] = useState(false)
     const [requireLead, setRequireLead] = useState(false)
     const [requireUrban, setRequireUrban] = useState(false)
+    const [requireMoonboard, setRequireMoonboard] = useState(false);
+    const [requireSpraywall, setRequireSpraywall] = useState(false);
+    const [requireLeadCenter, setRequireLeadCenter] = useState(false);
+    const [requireBoulders, setRequireBoulders] = useState(false);
+    const [requireKilter, setRequireKilter] = useState(false);
     const [requiredNumberOfRoutes, setRequiredNumberOfRoutes] = useState(1)
     const [latitude, setLatitude] = useState(46.1199444)
     const [longitude, setLongitude] = useState(15)
@@ -28,6 +34,7 @@ const HomePage = () => {
 
     useEffect(() => {
         getClimbingAreas()
+        getClimbingCenters()
     }, [distance, latitude, longitude])
 
     async function getClimbingAreas(){
@@ -48,6 +55,30 @@ const HomePage = () => {
             setError("")
 
             setClimbingAreas(data)
+        }
+        catch (err) {
+            //console.log("LLLLLLLLl")
+            setError("Error getting climbing spots." + err.message)
+        }
+    }
+    async function getClimbingCenters(){
+        try {
+            const res = await fetch(`${backendUrl}/climbingCenter/byProximity`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({latitude, longitude, distance})
+            })
+            if (!res.ok) {
+                setError("Getting climbing spots failed.")
+                return
+            }
+            const data = await res.json()
+            console.log(data)
+            setError("")
+
+            setClimbingCenters(data)
         }
         catch (err) {
             //console.log("LLLLLLLLl")
@@ -85,6 +116,16 @@ const HomePage = () => {
         
         return searchGood && boulderGood && leadGood && urbanGood && numberOfRoutesGood
     });
+    const filteredCenters = climbingCenters.filter(center => {
+        let searchGood = center.name.toLowerCase().includes(searchString.toLowerCase());
+        let moonboardGood = !requireMoonboard || center.hasMoonboard;
+        let spraywallGood = !requireSpraywall || center.hasSprayWall;
+        let leadGood = !requireLeadCenter || center.hasRoutes;
+        let bouldersGood = !requireBoulders || center.hasBoulders;
+        let kilterGood = !requireKilter || center.hasKilter;
+
+        return searchGood && moonboardGood && spraywallGood && leadGood && bouldersGood && kilterGood;
+    });
 
     return (
         <div>
@@ -112,11 +153,22 @@ const HomePage = () => {
                     isLoggedIn={isLoggedIn}
                     navigate={navigate}
                     climbingAreas={climbingAreas}
+                    setRequireMoonboard={setRequireMoonboard}
+                    requireMoonboard={requireMoonboard}
+                    setRequireSpraywall={setRequireSpraywall}
+                    requireSpraywall={requireSpraywall}
+                    setRequireLeadCenter={setRequireLeadCenter}
+                    requireLeadCenter={requireLeadCenter}
+                    setRequireBoulders={setRequireBoulders}
+                    requireBoulders={requireBoulders}
+                    setRequireKilter={setRequireKilter}
+                    requireKilter={requireKilter}
                 />
 
                 <div style={{flex: 1}}>
                     <SloveniaMap 
                         climbingAreas={filteredAreas}
+                        climbingCenters={filteredCenters}
                         latitude={latitude}
                         setLatitude={setLatitude}
                         longitude={longitude}
@@ -131,6 +183,7 @@ const HomePage = () => {
                     <ClimbingAreaTable
                         filteredAreas={filteredAreas}
                     />
+
                 </div>
             </div>
         </div>

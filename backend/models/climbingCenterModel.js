@@ -38,6 +38,10 @@ var climbingCenterSchema = new Schema({
 	'hasSprayWall' : {
 		type: Boolean,
 		default: false
+	},
+	'hasKilter' : {
+		type: Boolean,
+		default: false
 	}
 });
 
