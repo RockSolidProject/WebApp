@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import SloveniaMap from './SloveniaMap';
+import FilterSidebar from "./FilterSidebar.jsx";
+import ClimbingAreaTable from "./ClimbingAreaTable.jsx";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -8,9 +10,15 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const HomePage = () => {
     const [error, setError] = useState(null)
     const [climbingAreas, setClimbingAreas] = useState([])
+    const [climbingCenters, setClimbingCenters] = useState([])
     const [requireBoulder, setRequireBoulder] = useState(false)
     const [requireLead, setRequireLead] = useState(false)
     const [requireUrban, setRequireUrban] = useState(false)
+    const [requireMoonboard, setRequireMoonboard] = useState(false);
+    const [requireSpraywall, setRequireSpraywall] = useState(false);
+    const [requireLeadCenter, setRequireLeadCenter] = useState(false);
+    const [requireBoulders, setRequireBoulders] = useState(false);
+    const [requireKilter, setRequireKilter] = useState(false);
     const [requiredNumberOfRoutes, setRequiredNumberOfRoutes] = useState(1)
     const [latitude, setLatitude] = useState(46.1199444)
     const [longitude, setLongitude] = useState(15)
@@ -26,6 +34,7 @@ const HomePage = () => {
 
     useEffect(() => {
         getClimbingAreas()
+        getClimbingCenters()
     }, [distance, latitude, longitude])
 
     async function getClimbingAreas(){
@@ -46,6 +55,30 @@ const HomePage = () => {
             setError("")
 
             setClimbingAreas(data)
+        }
+        catch (err) {
+            //console.log("LLLLLLLLl")
+            setError("Error getting climbing spots." + err.message)
+        }
+    }
+    async function getClimbingCenters(){
+        try {
+            const res = await fetch(`${backendUrl}/climbingCenter/byProximity`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({latitude, longitude, distance})
+            })
+            if (!res.ok) {
+                setError("Getting climbing spots failed.")
+                return
+            }
+            const data = await res.json()
+            console.log(data)
+            setError("")
+
+            setClimbingCenters(data)
         }
         catch (err) {
             //console.log("LLLLLLLLl")
@@ -83,66 +116,59 @@ const HomePage = () => {
         
         return searchGood && boulderGood && leadGood && urbanGood && numberOfRoutesGood
     });
+    const filteredCenters = climbingCenters.filter(center => {
+        let searchGood = center.name.toLowerCase().includes(searchString.toLowerCase());
+        let moonboardGood = !requireMoonboard || center.hasMoonboard;
+        let spraywallGood = !requireSpraywall || center.hasSprayWall;
+        let leadGood = !requireLeadCenter || center.hasRoutes;
+        let bouldersGood = !requireBoulders || center.hasBoulders;
+        let kilterGood = !requireKilter || center.hasKilter;
+
+        return searchGood && moonboardGood && spraywallGood && leadGood && bouldersGood && kilterGood;
+    });
 
     return (
         <div>
             <h1>Plezališča v Sloveniji</h1>
             <div style={{ display: 'flex', height: '70vh' }}>
-                <div style={{width: "200px", maxWidth: "20%", padding: "20px", height: "100%", marginRight: "15px", backgroundColor: "grey"}}> 
-                    <h2>Filtri:</h2>
-                    <h3>Glede na vrto poti: </h3>
-                    <label>
-                        <input type="checkbox" checked={requireBoulder} onChange={()=>setRequireBoulder(!requireBoulder)}/>
-                        Balvanska pot
-                        <br/>
-                    </label>
-                    <label>
-                        <input type="checkbox" checked={requireLead} onChange={()=>setRequireLead(!requireLead)}/>
-                        Športna pot
-                        <br/>
-                    </label>
-                    <label>
-                        <input type="checkbox" checked={requireUrban} onChange={()=>setRequireUrban(!requireUrban)}/>
-                        Urbana pot
-                        <br/>
-                    </label>
 
-                    <h3>Število poti:</h3>
-                    <div>Vsaj: {requiredNumberOfRoutes}</div>
-                    <input type="range" min={0} max={Math.max(1, ...climbingAreas.map(a => a.routes?.length || 0))}
-                        value={requiredNumberOfRoutes} onChange={(e) => setRequiredNumberOfRoutes(Number(e.target.value))}
-                    />
-                    <h3>Razdalja: </h3>
-                    <div>Vsaj: {distanceTmp}km</div>
-                    <input type="range" min={5} max={135} step={1}
-                        value={distanceTmp} 
-                        onTouchEnd={() => setDistance(distanceTmp)}
-                        onMouseUp={() => setDistance(distanceTmp)}
-                        onChange={(e) => setDistanceTmp(Number(e.target.value))}
-                    /><br/>
-                    <h4 style={{marginBottom: 0}}>Lokacija:</h4>
-                    <button onClick={() => setChoosingLocation(!choosingLocation)}>📌</button><br/>
-                    <label>
-                        Latitude: <br />
-                        <input
-                            type="number" value={latitude} onChange={(e) => setLatitude(parseFloat(e.target.value))}
-                            step="any" required
-                        />
-                    </label>
-                    <label>
-                        Longitude: <br />
-                        <input
-                            type="number" value={longitude} onChange={(e) => setLongitude(parseFloat(e.target.value))}
-                            step="any" required
-                        />
-                    </label>
-                    <br/><br/><br/>
-                    {isLoggedIn? <button onClick={()=>{navigate("/addClimbingArea")}}>Add climbing area</button> : ""}
-                </div>
-                
+                <FilterSidebar
+                    requireBoulder = {requireBoulder}
+                    setRequireBoulder = {setRequireBoulder}
+                    requireLead = {requireLead}
+                    setRequireLead = {setRequireLead}
+                    requireUrban = {requireUrban}
+                    setRequireUrban = {setRequireUrban}
+                    requiredNumberOfRoutes = {requiredNumberOfRoutes}
+                    setRequiredNumberOfRoutes = {setRequiredNumberOfRoutes}
+                    distanceTmp = {distanceTmp}
+                    setDistanceTmp = {setDistanceTmp}
+                    setDistance={setDistance}
+                    latitude={latitude}
+                    setLatitude={setLatitude}
+                    longitude={longitude}
+                    setLongitude={setLongitude}
+                    choosingLocation={choosingLocation}
+                    setChoosingLocation={setChoosingLocation}
+                    isLoggedIn={isLoggedIn}
+                    navigate={navigate}
+                    climbingAreas={climbingAreas}
+                    setRequireMoonboard={setRequireMoonboard}
+                    requireMoonboard={requireMoonboard}
+                    setRequireSpraywall={setRequireSpraywall}
+                    requireSpraywall={requireSpraywall}
+                    setRequireLeadCenter={setRequireLeadCenter}
+                    requireLeadCenter={requireLeadCenter}
+                    setRequireBoulders={setRequireBoulders}
+                    requireBoulders={requireBoulders}
+                    setRequireKilter={setRequireKilter}
+                    requireKilter={requireKilter}
+                />
+
                 <div style={{flex: 1}}>
                     <SloveniaMap 
                         climbingAreas={filteredAreas}
+                        climbingCenters={filteredCenters}
                         latitude={latitude}
                         setLatitude={setLatitude}
                         longitude={longitude}
@@ -153,29 +179,11 @@ const HomePage = () => {
                     />
                     <input type="text" placeholder="Išči plezališče" value={searchString} onChange={(e) => setSearchString(e.target.value)}/>            
                     {error ? <p style={{color: "red"}}>{error}</p> :""}
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Plezališče</th>
-                                <th>Število poti</th>
-                                <th>Vrste poti</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {filteredAreas.map( (climbingArea, index) => (
-                            <tr key={index}>
-                                <td>{climbingArea.name}</td>
-                                <td>{climbingArea.routes? climbingArea.routes.length : 0}</td>
-                                <td>{(climbingArea.routes && climbingArea.routes.length > 0) ?(
-                                    [...new Set(climbingArea.routes.map(route => route.type))].join(","))
-                                :"_"}</td>
-                                
-                                {/*" ("+climbingArea.latitude+ "," + climbingArea.longitude + ")"*/}
-                                
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
+
+                    <ClimbingAreaTable
+                        filteredAreas={filteredAreas}
+                    />
+
                 </div>
             </div>
         </div>
