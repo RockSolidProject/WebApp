@@ -9,7 +9,7 @@ const ClimbingAreaTable = ({ filteredAreas }) => {
                 {isTableVisible ? "Skrij zunanja plezališča" : "Pokaži zunanja plezališča"}
             </button>
             {isTableVisible && (
-                <table>
+                <table className="tabela">
                     <thead>
                     <tr>
                         <th>Plezališče</th>

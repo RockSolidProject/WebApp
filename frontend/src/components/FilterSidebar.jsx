@@ -141,6 +141,7 @@ const FilterSidebar = ({requireBoulder, setRequireBoulder, requireLead, setRequi
             </label>
             <br/><br/><br/>
             {isLoggedIn? <button onClick={()=>{navigate("/addClimbingArea")}}>Add climbing area</button> : ""}
+            {isLoggedIn? <button onClick={()=>{navigate("/addClimbingCenter")}}>Add climbing center</button> : ""}
         </div>
     );
 };

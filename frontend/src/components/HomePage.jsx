@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import SloveniaMap from './SloveniaMap';
 import FilterSidebar from "./FilterSidebar.jsx";
 import ClimbingAreaTable from "./ClimbingAreaTable.jsx";
+import ClimbingCenterTable from "./ClimbingCenterTable.jsx";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -182,6 +183,9 @@ const HomePage = () => {
 
                     <ClimbingAreaTable
                         filteredAreas={filteredAreas}
+                    />
+                    <ClimbingCenterTable
+                        filteredCenters={filteredCenters}
                     />
 
                 </div>
