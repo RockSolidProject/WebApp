@@ -30,7 +30,22 @@ module.exports = {
 
         var id = req.params.id;
         try {
-            var group = await GroupModel.findOne({_id: id})
+            var group = await GroupModel
+                .findOne({_id: id})
+                .populate('owner')
+            if(group && !group.isPrivate) {
+                var groupMembers = await GroupMemberModel
+                    .find({group: group._id})
+                    .populate('member')
+                const groupObj = group.toObject();
+                groupObj.members = groupMembers;
+                return res.json(groupObj)
+            }
+            else if (!group) {
+                return res.status(404).json({
+                    message: 'Group does not exist'
+                })
+            }
             return res.json(group)
         } catch(err) {
             return res.status(500).json({
@@ -64,20 +79,21 @@ module.exports = {
 
     join: async function (req, res) {
         try {
-            var groupId = req.body.groupId;
-            var group = await GroupModel.findOne({_id: groupId, isPrivate: false});
+            const groupId = req.body.groupId;
+            const group = await GroupModel.findOne({_id: groupId, isPrivate: false});
             if (!group) {
                 return res.status(400).json({
                     message: 'Cannot join a private group or a nonexistent one',
                     error: new Error('')
                 });
             }
-            var groupMember = await GroupMemberModel.findOne({group: groupId, member: req.user.id})
+            let groupMember = await GroupMemberModel.findOne({group: groupId, member: req.user.id});
             if (!groupMember) {
                 groupMember = new GroupMemberModel({
                     member: req.user.id,
                     group: groupId,
                 })
+                await groupMember.save()
                 return res.json(groupMember);
             } else {
                 return res.status(400).json({
