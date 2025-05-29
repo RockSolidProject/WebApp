@@ -9,6 +9,8 @@ import RegisterPage from './components/RegisterPage';
 import ProfilePage from './components/ProfilePage'
 import AddClimbingAreaPage from './components/AddClimbingAreaPage'
 import AddClimbingCenterPage from './components/AddClimbingCenterPage.jsx'
+import ClimbingAreaPage from './components/ClimbingAreaPage';
+import ClimbingRoutePage from './components/ClimbingRoutePage';
 
 const App = () => {
     return (
@@ -22,6 +24,8 @@ const App = () => {
                     <Route path="/profile" element={<ProfilePage/>}/>
                      <Route path="/addClimbingArea" element={<AddClimbingAreaPage/>}/>
                      <Route path="/addClimbingCenter" element={<AddClimbingCenterPage/>}/>
+                     <Route path="/climbingAreas/:id" element={<ClimbingAreaPage />} />
+                     <Route path="/climbingRoutes/:id" element={<ClimbingRoutePage />} />
                 </Routes>
             </main>
         </div>

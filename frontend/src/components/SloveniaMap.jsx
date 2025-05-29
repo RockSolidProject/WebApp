@@ -1,9 +1,11 @@
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle } from 'react-leaflet';
 import MapResetButton from './MapResetButton';
 import leaflet from 'leaflet';
+import { useNavigate } from 'react-router-dom';
 
 const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, setLongitude, distance, choosingLocation, setChoosingLocation }) => {
     const center = [46.14, 15.0153333]
+    const navigate = useNavigate();
 
     function ClickHandler({ setLatitude, setLongitude, setChoosingLocation }) {
         useMapEvents({
@@ -17,7 +19,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
     }
 
     return (
-        <MapContainer center={center} zoom={8} minZoom={8} maxBounds={[[45, 13.2],[47.3, 17.0]]} 
+        <MapContainer center={center} zoom={8} minZoom={8} maxBounds={[[45, 13.2],[47.3, 17.0]]}
             maxBoundsViscosity={1.0} style={{ height: '400px', width: '600px' }}
             doubleClickZoom={false} >
             <TileLayer
@@ -32,7 +34,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
 
             {!choosingLocation ? "" : <ClickHandler setLatitude={setLatitude} setLongitude={setLongitude}setChoosingLocation={setChoosingLocation} /> }
 
-            <Marker 
+            <Marker
                 position={[latitude, longitude]}
                 icon={leaflet.icon({
                     iconUrl: "/markers/marker_blue.png",
@@ -78,8 +80,13 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                         })}
                         >
                         <Popup>
-                            <strong>{area.name}</strong><br/>
-                            {area.routes?.length || 0} routes
+                            <div
+                                style={{ cursor: "pointer", fontWeight: "bold", color: "blue"}}
+                                onClick={() => navigate(`/climbingAreas/${area._id}`)}
+                            >
+                                {area.name}
+                            </div>
+                            <div>{area.routes?.length || 0} routes</div>
                         </Popup>
                     </Marker>
                 )
