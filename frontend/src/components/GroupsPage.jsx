@@ -22,7 +22,7 @@ const GroupsPage = () => {
     return (
         <>
             {groups.map((group) => (
-                <Group group={group} key={group.id} />
+                <Group group={group} key={group._id} />
             ))}
         </>
     );

@@ -10,6 +10,7 @@ import ProfilePage from './components/ProfilePage'
 import AddClimbingAreaPage from './components/AddClimbingAreaPage'
 import GroupsPage from "./components/GroupsPage.jsx";
 import GroupDetailPage from "./components/GroupDetailPage.jsx";
+import CreateGroupPage from "./components/CreateGroupPage.jsx";
 
 const App = () => {
     return (
@@ -24,6 +25,7 @@ const App = () => {
                     <Route path="/addClimbingArea" element={<AddClimbingAreaPage/>}/>
                     <Route path="/groups" element={<GroupsPage/>}/>
                     <Route path="/groupDetail/:id" element={<GroupDetailPage/>}/>
+                    <Route path="/createGroup" element={<CreateGroupPage/>}/>
                 </Routes>
             </main>
         </div>

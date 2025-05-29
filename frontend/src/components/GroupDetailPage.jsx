@@ -19,7 +19,17 @@ function GroupDetailPage() {
                         "Content-Type": "application/json",
                     },
                 });
-                if (!res.ok) throw new Error("Failed to fetch group");
+                if (res.status === 401 || res.status === 403) {
+                    localStorage.removeItem("token")
+                    localStorage.removeItem("user")
+                    setError("")
+                    navigate("/login")
+                    return
+                }
+                if (!res.ok) {
+                    setError("Error adding climbing area.")
+                    return
+                }
                 const data = await res.json();
                 setGroup(data);
             } catch (err) {
@@ -50,9 +60,16 @@ function GroupDetailPage() {
                 }),
             });
 
+            if (res.status === 401 || res.status === 403) {
+                localStorage.removeItem("token")
+                localStorage.removeItem("user")
+                setError("")
+                navigate("/login")
+                return
+            }
             if (!res.ok) {
-                setError("Error joining group");
-                return;
+                setError("Error adding climbing area.")
+                return
             }
 
             setError("");
@@ -68,7 +85,7 @@ function GroupDetailPage() {
         <div>
             <h1>Name: {group.name}</h1>
             {group.description && <h3>Description: {group.description}</h3>}
-            {group.owner && <p>Owner: {group.owner.username}</p>}
+            {group.owner && <h3>Owner: {group.owner.username}</h3>}
             {group.isPrivate&&<h3>Private 🔒</h3>}
             {!group.isPrivate && (
                 <>
