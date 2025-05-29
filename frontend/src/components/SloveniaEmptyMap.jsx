@@ -27,7 +27,7 @@ const SloveniaEmptyMap = ({ latitude, longitude, setLatitude, setLongitude }) =>
                 maxBoundsViscosity={1}
             >
 
-            <MapResetButton bounds={bounds}/>
+            <MapResetButton bounds={bounds} setLatitude={setLatitude} setLongitude={setLongitude} defaultLatitude={46.1199444} defaultLongitude={15}/>
 
             <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

@@ -1,8 +1,15 @@
 import {useMap} from 'react-leaflet'
 
-const MapResetButton = ({ bounds }) => {
+const MapResetButton = ({ bounds, defaultLatitude, defaultLongitude, defaultDistance, setLatitude, setLongitude, setDistance, setDistanceTmp  }) => {
     const map = useMap();
     const handleReset = () => {
+        if (setLatitude && defaultLatitude) setLatitude(defaultLatitude)
+        if (setLongitude && defaultLatitude) setLongitude(defaultLongitude)
+        if (setDistance && defaultDistance && setDistanceTmp) {
+            setDistance(defaultDistance)
+            setDistanceTmp(defaultDistance)
+        }  
+
         map.fitBounds(bounds)
     };
 

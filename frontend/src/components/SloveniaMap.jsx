@@ -2,7 +2,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle } from 're
 import MapResetButton from './MapResetButton';
 import leaflet from 'leaflet';
 
-const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, setLongitude, distance, choosingLocation, setChoosingLocation }) => {
+const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, setLongitude, distance, setDistanceTmp,  setDistance, choosingLocation, setChoosingLocation }) => {
     const bounds = [[45.37, 13.3],[46.89, 16.6]]
 
     function ClickHandler({ setLatitude, setLongitude, setChoosingLocation }) {
@@ -11,7 +11,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                 if (e.originalEvent?.target?.id == "map-reset-button"){
                     return
                 }
-                
+
                 setLatitude(e.latlng.lat);
                 setLongitude(e.latlng.lng);
                 setChoosingLocation(false)
@@ -36,7 +36,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                 url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                 attribution='&copy; OpenStreetMap contributors & Carto'
             />*/}
-            <MapResetButton bounds={bounds}/>
+            <MapResetButton bounds={bounds} defaultLatitude={46.1199444} defaultLongitude={15} defaultDistance={135} setLatitude={setLatitude} setLongitude={setLongitude} setDistance={setDistance} setDistanceTmp={setDistanceTmp}/>
 
             {!choosingLocation ? "" : <ClickHandler setLatitude={setLatitude} setLongitude={setLongitude}setChoosingLocation={setChoosingLocation} /> }
 
