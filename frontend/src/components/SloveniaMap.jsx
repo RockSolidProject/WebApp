@@ -3,11 +3,15 @@ import MapResetButton from './MapResetButton';
 import leaflet from 'leaflet';
 
 const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, setLongitude, distance, choosingLocation, setChoosingLocation }) => {
-    const center = [46.14, 15.0153333]
+    const bounds = [[45.37, 13.3],[46.89, 16.6]]
 
     function ClickHandler({ setLatitude, setLongitude, setChoosingLocation }) {
         useMapEvents({
             click(e) {
+                if (e.originalEvent?.target?.id == "map-reset-button"){
+                    return
+                }
+                
                 setLatitude(e.latlng.lat);
                 setLongitude(e.latlng.lng);
                 setChoosingLocation(false)
@@ -17,9 +21,13 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
     }
 
     return (
-        <MapContainer center={center} zoom={8} minZoom={8} maxBounds={[[45, 13.2],[47.3, 17.0]]} 
-            maxBoundsViscosity={1.0} style={{ height: '400px', width: '600px' }}
-            doubleClickZoom={false} >
+        <MapContainer 
+                bounds={bounds}
+                maxBounds={[[45.37, 13.3],[46.89, 16.6]]}
+                style={{ height: '400px', width: '600px' }}
+                doubleClickZoom={false}
+                maxBoundsViscosity={1}
+            >
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; OpenStreetMap contributors'
@@ -28,7 +36,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                 url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                 attribution='&copy; OpenStreetMap contributors & Carto'
             />*/}
-            <MapResetButton center={center} zoom={8}/>
+            <MapResetButton bounds={bounds}/>
 
             {!choosingLocation ? "" : <ClickHandler setLatitude={setLatitude} setLongitude={setLongitude}setChoosingLocation={setChoosingLocation} /> }
 
