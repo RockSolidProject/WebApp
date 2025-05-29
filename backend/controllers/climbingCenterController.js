@@ -1,4 +1,5 @@
 const climbingCenterModel = require("../models/climbingCenterModel");
+const haversine = require('haversine-distance');
 
 module.exports = {
 
@@ -26,7 +27,7 @@ module.exports = {
         try {
             const latitude = parseFloat(req.body.latitude);
             const longitude = parseFloat(req.body.longitude);
-            const maxDistance = parseFloat(req.body.distance);
+            const maxDistance = parseFloat(req.body.distance) * 1000;
 
             if (isNaN(latitude) || isNaN(longitude) || isNaN(maxDistance)) {
                 return res.status(400).json({
@@ -35,9 +36,7 @@ module.exports = {
             }
 
             const userLocation = { latitude, longitude };
-            const climbingCenters = await climbingCenterModel
-                .find()
-                .populate("owner");
+            const climbingCenters = await climbingCenterModel.find().populate("owner");
 
             const nearbyCenters = climbingCenters.filter(center => {
                 const centerLocation = { latitude: center.latitude, longitude: center.longitude };
