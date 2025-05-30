@@ -2,80 +2,83 @@ import React, {useState} from 'react';
 
 const FilterSidebar = ({requireBoulder, setRequireBoulder, requireLead, setRequireLead, requireUrban, setRequireUrban, requiredNumberOfRoutes, setRequiredNumberOfRoutes,
       distanceTmp, setDistanceTmp, setDistance, latitude, setLatitude, longitude, setLongitude, choosingLocation, setChoosingLocation, isLoggedIn, navigate, climbingAreas, setRequireMoonboard, requireMoonboard,
-      setRequireSpraywall, requireSpraywall, setRequireLeadCenter, requireLeadCenter, setRequireBoulders, requireBoulders, setRequireKilter, requireKilter
+      setRequireSpraywall, requireSpraywall, setRequireLeadCenter, requireLeadCenter, setRequireBoulders, requireBoulders, setRequireKilter, requireKilter, setShowClimbingAreas,
+      showClimbingAreas, showClimbingCenters, setShowClimbingCenters
 }) => {
-    const [showOutdoorFilters, setShowOutdoorFilters] = useState(false);
-    const [showCenterFilters, setShowCenterFilters] = useState(false);
     return (
         <div style={{
-            width: "200px",
+            width: "250px",
             maxWidth: "20%",
             padding: "20px",
             height: "100%",
             marginRight: "15px",
             backgroundColor: "grey"}}>
             <h2>Filters:</h2>
-            <label style={{ display: "block", marginBottom: "10px" }}>
+            <label style={{ display: "block", marginBottom: "5px" }}>
                 <input
                     type="checkbox"
-                    checked={showOutdoorFilters}
-                    onChange={() => setShowOutdoorFilters(!showOutdoorFilters)}
+                    checked={showClimbingAreas}
+                    onChange={() => setShowClimbingAreas(!showClimbingAreas)}
                 />
-                Outdoor Climbing Areas
+                <span style={{ fontSize: "1.3em", fontWeight: 650 }}>Zunanja plezališča</span>
             </label>
-            {showOutdoorFilters && (
-                <div style={{ padding: "10px", marginBottom: "15px" }}>
-                    <h3>By Route Type:</h3>
-                    <label>
+
+            {showClimbingAreas && (
+                <div style={{ paddingLeft: "2em" }}>
+                    <span style={{ fontSize: "1.2em", fontWeight: 550 }}>Vsebuje: </span><br/>
+                    <div style={{ paddingLeft: "1em" }}>
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={requireBoulder}
+                                onChange={() => setRequireBoulder(!requireBoulder)}
+                            />
+                            Balvane
+                            <br />
+                        </label>
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={requireLead}
+                                onChange={() => setRequireLead(!requireLead)}
+                            />
+                            Športne poti
+                            <br />
+                        </label>
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={requireUrban}
+                                onChange={() => setRequireUrban(!requireUrban)}
+                            />
+                            Urbane poti
+                            <br />
+                        </label>
+                    </div>
+                    <span style={{ fontSize: "1.2em", fontWeight: 550 }}>Število poti: </span><br/>
+                    <div style={{ paddingLeft: "1em" }}>
+                    <div>Vsaj: {requiredNumberOfRoutes}</div>
                         <input
-                            type="checkbox"
-                            checked={requireBoulder}
-                            onChange={() => setRequireBoulder(!requireBoulder)}
+                            type="range"
+                            min={0}
+                            max={Math.max(1, ...climbingAreas.map(a => a.routes?.length || 0))}
+                            value={requiredNumberOfRoutes}
+                            onChange={(e) => setRequiredNumberOfRoutes(Number(e.target.value))}
                         />
-                        Boulder Route
-                        <br />
-                    </label>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={requireLead}
-                            onChange={() => setRequireLead(!requireLead)}
-                        />
-                        Lead Route
-                        <br />
-                    </label>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={requireUrban}
-                            onChange={() => setRequireUrban(!requireUrban)}
-                        />
-                        Urban Route
-                        <br />
-                    </label>
-                    <h3>Number of Routes:</h3>
-                    <div>At least: {requiredNumberOfRoutes}</div>
-                    <input
-                        type="range"
-                        min={0}
-                        max={Math.max(1, ...climbingAreas.map(a => a.routes?.length || 0))}
-                        value={requiredNumberOfRoutes}
-                        onChange={(e) => setRequiredNumberOfRoutes(Number(e.target.value))}
-                    />
+                    </div>
                 </div>
             )}
 
             <label style={{ display: "block", marginBottom: "10px" }}>
                 <input
                     type="checkbox"
-                    checked={showCenterFilters}
-                    onChange={() => setShowCenterFilters(!showCenterFilters)}
+                    checked={showClimbingCenters}
+                    onChange={() => setShowClimbingCenters(!showClimbingCenters)}
                 />
-                Climbing Centers
+                <span style={{ fontSize: "1.3em", fontWeight: 650 }}>Plezalni centri</span>
             </label>
-            {showCenterFilters && (
-                <div style={{ padding: "10px", marginBottom: "15px" }}>
-                    <h3>By Features:</h3>
+            {showClimbingCenters && (
+                <div style={{ paddingLeft: "2em" }}>
                     <label>
                         <input type="checkbox"
                                checked={requireMoonboard}

@@ -10,6 +10,8 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const HomePage = () => {
     const [error, setError] = useState(null)
+    const [showClimbingAreas, setShowClimbingAreas] = useState(true)
+    const [showClimbingCenters, setShowClimbingCenters] = useState(true)
     const [climbingAreas, setClimbingAreas] = useState([])
     const [climbingCenters, setClimbingCenters] = useState([])
     const [requireBoulder, setRequireBoulder] = useState(false)
@@ -115,7 +117,7 @@ const HomePage = () => {
             urbanGood = typesInArea.includes("urban")
         }
         
-        return searchGood && boulderGood && leadGood && urbanGood && numberOfRoutesGood
+        return showClimbingAreas && searchGood && boulderGood && leadGood && urbanGood && numberOfRoutesGood
     });
     const filteredCenters = climbingCenters.filter(center => {
         let searchGood = center.name.toLowerCase().includes(searchString.toLowerCase());
@@ -125,7 +127,7 @@ const HomePage = () => {
         let bouldersGood = !requireBoulders || center.hasBoulders;
         let kilterGood = !requireKilter || center.hasKilter;
 
-        return searchGood && moonboardGood && spraywallGood && leadGood && bouldersGood && kilterGood;
+        return showClimbingCenters && searchGood && moonboardGood && spraywallGood && leadGood && bouldersGood && kilterGood;
     });
 
     return (
@@ -164,6 +166,10 @@ const HomePage = () => {
                     requireBoulders={requireBoulders}
                     setRequireKilter={setRequireKilter}
                     requireKilter={requireKilter}
+                    showClimbingAreas={showClimbingAreas}
+                    setShowClimbingAreas={setShowClimbingAreas}
+                    showClimbingCenters={showClimbingCenters}
+                    setShowClimbingCenters={setShowClimbingCenters}
                 />
 
                 <div style={{flex: 1}}>
