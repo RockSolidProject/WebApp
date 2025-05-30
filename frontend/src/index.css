@@ -66,3 +66,83 @@ input[type=checkbox] {
     font-weight: bold;
     color: #009879;
 }
+
+/* Climbing Area Detail Card Styles */
+.climbing-area-card {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    background: #fff;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.climbing-area-title {
+    margin-bottom: 12px;
+    color: #2d3a4a;
+}
+
+.climbing-area-info {
+    margin: 8px 0;
+    color: #444;
+}
+
+.climbing-area-routes-list {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0;
+}
+
+.climbing-area-route-item {
+    background: #f5f7fa;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.climbing-area-route-type {
+    color: #888;
+}
+
+.climbing-area-route-author {
+    margin-left: 8px;
+    color: #2d7a4a;
+}
+
+.climbing-area-error {
+    color: red;
+    text-align: center;
+}
+
+.climbing-area-loading {
+    text-align: center;
+}
+
+.comment-container {
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    max-width: 500px;
+}
+
+.comment-author {
+    font-weight: bold;
+    color: #2d7a4a;
+    margin-bottom: 4px;
+}
+
+.comment-content {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+}
+
+.comment-date {
+    font-size: 0.85em;
+    color: #888;
+    text-align: right;
+}

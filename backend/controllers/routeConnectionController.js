@@ -173,7 +173,7 @@ module.exports = {
                 rating: req.body.rating
             })
             await routeRate.save()
-            return res.status(201).json(routeRating)
+            return res.status(201).json(routeRate)
         }
         catch (err) {
             return res.status(500).json({

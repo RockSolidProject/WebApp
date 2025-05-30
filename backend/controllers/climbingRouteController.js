@@ -51,6 +51,22 @@ module.exports = {
         }
     },
 
+    getByClimbingArea: async function (req, res) {
+        const areaId = req.params.areaId;
+        try {
+            const routes = await ClimbingrouteModel
+                .find({ climbingArea: areaId })
+                .populate("postedBy")
+                .populate("climbingArea");
+            return res.json(routes);
+        } catch (err) {
+            return res.status(500).json({
+                message: "Error getting routes for climbing area.",
+                error: err
+            });
+        }
+    },
+
     /**
      * climbingRouteController.create()
      */

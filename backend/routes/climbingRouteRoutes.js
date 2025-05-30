@@ -12,7 +12,7 @@ router.get('/', climbingRouteController.list);
  * GET
  */
 router.get('/:id', climbingRouteController.show);
-
+router.get('/byArea/:areaId', climbingRouteController.getByClimbingArea);
 /*
  * POST
  */
