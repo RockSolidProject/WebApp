@@ -99,11 +99,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                 : ((center.routes?.length || 0) > 5
                 ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png'
                 : 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png')*/
-                const iconUrl = (center.routes?.length || 0) > 10
-                    ? '/markers/marker_area_orange.png'
-                    : ((center.routes?.length || 0) > 5
-                        ? '/markers/marker_area_yellow.png'
-                        : '/markers/marker_area_beige.png')
+                const iconUrl = '/markers/marker_center.png'
                 return (
                     <Marker
                         key={center._id}
