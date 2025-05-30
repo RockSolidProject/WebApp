@@ -115,30 +115,6 @@ const FilterSidebar = ({requireBoulder, setRequireBoulder, requireLead, setRequi
                 </div>
             )}
 
-            <h3>Razdalja: </h3>
-            <div>Vsaj: {distanceTmp}km</div>
-            <input type="range" min={5} max={135} step={1}
-                   value={distanceTmp}
-                   onTouchEnd={() => setDistance(distanceTmp)}
-                   onMouseUp={() => setDistance(distanceTmp)}
-                   onChange={(e) => setDistanceTmp(Number(e.target.value))}
-            /><br/>
-            <h4 style={{marginBottom: 0}}>Lokacija:</h4>
-            <button onClick={() => setChoosingLocation(!choosingLocation)}>📌</button><br/>
-            <label>
-                Latitude: <br />
-                <input
-                    type="number" value={latitude} onChange={(e) => setLatitude(parseFloat(e.target.value))}
-                    step="any" required
-                />
-            </label>
-            <label>
-                Longitude: <br />
-                <input
-                    type="number" value={longitude} onChange={(e) => setLongitude(parseFloat(e.target.value))}
-                    step="any" required
-                />
-            </label>
             <br/><br/><br/>
             {isLoggedIn? <button onClick={()=>{navigate("/addClimbingArea")}}>Add climbing area</button> : ""}
             {isLoggedIn? <button onClick={()=>{navigate("/addClimbingCenter")}}>Add climbing center</button> : ""}

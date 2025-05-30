@@ -2,7 +2,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle } from 're
 import MapResetButton from './MapResetButton';
 import leaflet from 'leaflet';
 
-const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, setLongitude, distance, setDistanceTmp,  setDistance, choosingLocation, setChoosingLocation }) => {
+const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, setLongitude, distanceTmp,  setDistanceTmp,  setDistance, choosingLocation, setChoosingLocation }) => {
     const bounds = [[45.37, 13.3],[46.89, 16.6]]
 
     function ClickHandler({ setLatitude, setLongitude, setChoosingLocation }) {
@@ -21,6 +21,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
     }
 
     return (
+    <div style={{ width: '600px'}}>
         <MapContainer 
                 bounds={bounds}
                 maxBounds={[[45.37, 13.3],[46.89, 16.6]]}
@@ -52,7 +53,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
 
               <Circle
                 center={[latitude, longitude]}
-                radius={distance * 1000}
+                radius={distanceTmp * 1000}
                 pathOptions={{
                     color: 'blue',
                     fillColor: 'blue',
@@ -120,7 +121,48 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                 )
             })}
         </MapContainer>
-    );
+        <div 
+            style={{
+                boxSizing: 'border-box',
+                display: 'flex',
+                alignItems: "center",
+                justifyContent: "flex-start",
+                gap: '20px',
+                padding: '10px',
+                background: '#f2f2f2',
+                border: '1px solid black',
+                width: '600px',
+                fontSize: 16
+            }}  
+        >   
+            <div style={{alignItems: "center", display: "flex"}}>
+                Točka:
+                <button onClick={() => setChoosingLocation(!choosingLocation)}
+                    style={{ 
+                    fontSize: 20, padding: 2, background: choosingLocation ? "#009879" : "#f2f2f2", color: "black",
+                    borderRadius: 0, border: "2px solid black", marginLeft: 10
+                    }}>
+                    📌
+                </button>
+            </div>
+            
+            <div 
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px"
+                }}
+            >
+                <div>Odaljenost: {distanceTmp}km</div>
+                <input type="range" min={5} max={135} step={1}
+                    value={distanceTmp}
+                    onTouchEnd={() => setDistance(distanceTmp)}
+                    onMouseUp={() => setDistance(distanceTmp)}
+                    onChange={(e) => setDistanceTmp(Number(e.target.value))}
+                /> 
+            </div>
+        </div>
+    </div>);
 };
 
 export default SloveniaMap;
