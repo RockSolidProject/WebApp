@@ -3,13 +3,19 @@ import MapResetButton from './MapResetButton';
 import leaflet from 'leaflet';
 import { useNavigate } from 'react-router-dom';
 
-const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, setLongitude, distance, choosingLocation, setChoosingLocation }) => {
+const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, setLongitude, distance, setDistanceTmp,  setDistance, choosingLocation, setChoosingLocation }) => {
     const center = [46.14, 15.0153333]
     const navigate = useNavigate();
+    const bounds = [[45.37, 13.3],[46.89, 16.6]]
+
 
     function ClickHandler({ setLatitude, setLongitude, setChoosingLocation }) {
         useMapEvents({
             click(e) {
+                if (e.originalEvent?.target?.id == "map-reset-button"){
+                    return
+                }
+
                 setLatitude(e.latlng.lat);
                 setLongitude(e.latlng.lng);
                 setChoosingLocation(false)
@@ -19,9 +25,14 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
     }
 
     return (
-        <MapContainer center={center} zoom={8} minZoom={8} maxBounds={[[45, 13.2],[47.3, 17.0]]}
-            maxBoundsViscosity={1.0} style={{ height: '400px', width: '600px' }}
-            doubleClickZoom={false} >
+
+        <MapContainer 
+                bounds={bounds}
+                maxBounds={[[45.37, 13.3],[46.89, 16.6]]}
+                style={{ height: '400px', width: '600px' }}
+                doubleClickZoom={false}
+                maxBoundsViscosity={1}
+            >
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; OpenStreetMap contributors'
@@ -30,7 +41,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                 url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                 attribution='&copy; OpenStreetMap contributors & Carto'
             />*/}
-            <MapResetButton center={center} zoom={8}/>
+            <MapResetButton bounds={bounds} defaultLatitude={46.1199444} defaultLongitude={15} defaultDistance={135} setLatitude={setLatitude} setLongitude={setLongitude} setDistance={setDistance} setDistanceTmp={setDistanceTmp}/>
 
             {!choosingLocation ? "" : <ClickHandler setLatitude={setLatitude} setLongitude={setLongitude}setChoosingLocation={setChoosingLocation} /> }
 
@@ -98,11 +109,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                 : ((center.routes?.length || 0) > 5
                 ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png'
                 : 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png')*/
-                const iconUrl = (center.routes?.length || 0) > 10
-                    ? '/markers/marker_area_orange.png'
-                    : ((center.routes?.length || 0) > 5
-                        ? '/markers/marker_area_yellow.png'
-                        : '/markers/marker_area_beige.png')
+                const iconUrl = '/markers/marker_center.png'
                 return (
                     <Marker
                         key={center._id}
