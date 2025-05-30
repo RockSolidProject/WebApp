@@ -175,6 +175,8 @@ const HomePage = () => {
                         longitude={longitude}
                         setLongitude={setLongitude}
                         distance={distanceTmp}
+                        setDistanceTmp = {setDistanceTmp}
+                        setDistance={setDistance}
                         choosingLocation={choosingLocation}
                         setChoosingLocation={setChoosingLocation}
                     />
