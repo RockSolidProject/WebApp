@@ -42,6 +42,8 @@ const ClimbingAreaPage = () => {
         getRoutes();
     }, [id]);
 
+
+
     if (error) return <div className="climbing-area-error">{error}</div>;
     if (!area) return <div className="climbing-area-loading">Loading...</div>;
 
@@ -72,6 +74,7 @@ const ClimbingAreaPage = () => {
             ) : (
                 <p className="climbing-area-info" style={{color: '#888'}}>No routes available.</p>
             )}
+
         </div>
     );
 };
