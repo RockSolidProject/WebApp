@@ -19,6 +19,7 @@ export default function ClimbingRoutePage() {
     const [selectedGrade, setSelectedGrade] = useState("");
     const [attempts, setAttempts] = useState("");
     const [userClimbed, setUserClimbed] = useState(null);
+    const [averageGrade, setAverageGrade] = useState("No ratings yet.");
     const fileInputRef = useRef();
 
     const ropeGrades = [
@@ -27,18 +28,30 @@ export default function ClimbingRoutePage() {
         "6a", "6a+", "6b", "6b+", "6c", "6c+",
         "7a", "7a+", "7b", "7b+", "7c", "7c+",
         "8a", "8a+", "8b", "8b+", "8c", "8c+",
-        "9a", "9a+", "9b", "9b+", "9c"
+        "9a", "9a+", "9b", "9b+", "9c", "9c+"
     ];
     const boulderGrades = [
         "3", "3+", "4", "4+", "5", "5+",
         "6A", "6A+", "6B", "6B+", "6C", "6C+",
         "7A", "7A+", "7B", "7B+", "7C", "7C+",
-        "8A", "8A+", "8B", "8B+", "8C", "8C+"
+        "8A", "8A+", "8B", "8B+", "8C", "8C+", "9A"
     ];
     const urbanGrades = [
         "I", "II", "III", "IV", "IV+", "V", "V+", "VI", "VI+",
         "VII", "VII+", "VIII", "VIII+", "IX", "IX+", "X", "X+", "XI", "XI+"
     ];
+
+    async function fetchAverageGrade(){
+        try {
+            const res = await fetch(`${backendUrl}/routeConnections/averageGrade/${id}`);
+            if (!res.ok) return;
+            const data = await res.json();
+            setAverageGrade(data.average)
+        } catch (err) {
+            setError('Error fetching climbed.');
+        }
+    }
+
     useEffect(() => {
         async function fetchRoute() {
             try {
@@ -102,13 +115,16 @@ export default function ClimbingRoutePage() {
                 const data = await res.json();
                 const climbed = data.find(rc => rc.climbingRoute?._id === id);
                 if (climbed) setUserClimbed(climbed);
-            } catch {}
+            } catch (err) {
+                setError('Error fetching climbed.');
+            }
         }
+
         fetchRoute();
         fetchRatings();
         fetchComments();
         fetchUserClimbed();
-
+        fetchAverageGrade();
     }, [id]);
 
     async function handleRatingChange(value) {
@@ -137,8 +153,17 @@ export default function ClimbingRoutePage() {
                 return;
             }
             setUserRating(value);
-            const data = await res.json();
-            setAverageRating(data.rating || data.averageRating || value);
+
+            const ratingsRes = await fetch(`${backendUrl}/routeConnections/rating/${id}`);
+            if (ratingsRes.ok) {
+                const ratingsData = await ratingsRes.json();
+                if (ratingsData.length > 0) {
+                    const avg = ratingsData.reduce((acc, r) => acc + r.rating, 0) / ratingsData.length;
+                    setAverageRating(avg);
+                } else {
+                    setAverageRating(0);
+                }
+            }
         } catch (err) {
             setError("Error submitting rating.");
         }
@@ -241,8 +266,17 @@ export default function ClimbingRoutePage() {
                 setError(data.message || "Failed to mark as climbed.");
                 return;
             }
+            const climbedRes = await fetch(`${backendUrl}/routeConnections/climbed`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (climbedRes.ok) {
+                const climbedData = await climbedRes.json();
+                const climbed = climbedData.find(rc => rc.climbingRoute?._id === id);
+                if (climbed) setUserClimbed(climbed);
+            }
             setIsClimbed(false);
             setError("");
+            fetchAverageGrade();
         } catch (err) {
             setError("Error marking as climbed.");
         }
@@ -271,7 +305,9 @@ export default function ClimbingRoutePage() {
                 />
                 <br />
                 <span style={{ marginLeft: 8 }}>{userRating ? `(Your rating: ${userRating})` : ""}</span>
+                <br />
             </div>
+
             {userClimbed ? (
                 <div style={{margin: "16px 0", color: "#2d7a4a"}}>
                     <strong>You have already climbed this route.</strong><br />
@@ -310,6 +346,8 @@ export default function ClimbingRoutePage() {
                     Mark as Climbed
                 </button>
             )}
+            <div style={{ margin: "16px 0" }}></div>
+            <span>Average grade: {averageGrade}</span>
             <h3 style={{ marginTop: 32 }}>Add a Comment</h3>
             <form onSubmit={handleAddComment} style={{ marginBottom: 24 }}>
                 <textarea
