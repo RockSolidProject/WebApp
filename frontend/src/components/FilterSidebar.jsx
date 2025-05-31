@@ -7,11 +7,11 @@ const FilterSidebar = ({requireBoulder, setRequireBoulder, requireLead, setRequi
 }) => {
     return (
         <div style={{
-            width: "250px",
-            maxWidth: "20%",
+            width: "100%",
             padding: "20px",
-            height: "100%",
-            marginRight: "15px",
+            paddingRight: "30px",
+            boxSizing: "border-box",
+            height: "auto",
             backgroundColor: "grey"}}>
             <h2>Filters:</h2>
             <label style={{ display: "block", marginBottom: "5px" }}>
@@ -119,7 +119,7 @@ const FilterSidebar = ({requireBoulder, setRequireBoulder, requireLead, setRequi
             )}
 
             <br/><br/><br/>
-            {isLoggedIn? <button onClick={()=>{navigate("/addClimbingArea")}}>Add climbing area</button> : ""}
+            {isLoggedIn? <button onClick={()=>{navigate("/addClimbingArea")}}>Add climbing area</button> : ""}<br/>
             {isLoggedIn? <button onClick={()=>{navigate("/addClimbingCenter")}}>Add climbing center</button> : ""}
         </div>
     );
