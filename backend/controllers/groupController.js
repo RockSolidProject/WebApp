@@ -22,6 +22,46 @@ module.exports = {
             })
         }
     },
+    listSearch: async function (req, res) {
+        try {
+            const userId = req.user.id;
+            const limit = parseInt(req.query.limit) || 10;
+            const pattern = req.query.pattern || "";
+            console.log("here");
+
+            // Filter by name prefix if pattern provided
+            const nameFilter = { name: { $regex: `^${pattern}`, $options: "i" } };
+
+            // Get owned groups matching pattern
+            const ownedGroups = await GroupModel.find({
+                owner: userId,
+                ...nameFilter,
+            });
+
+            // Get groups where the user is a member, populate the group
+            const memberships = await GroupMemberModel.find({ member: userId }).populate({
+                path: "group",
+                match: nameFilter,
+            });
+
+            const memberGroups = memberships
+                .map(m => m.group)
+                .filter(group => group && group.owner.toString() !== userId);
+
+            // Merge and deduplicate (optional but safe)
+            const allGroups = [...ownedGroups, ...memberGroups];
+
+            // Apply limit
+            const limitedGroups = allGroups.slice(0, limit);
+
+            return res.json(limitedGroups);
+        } catch (err) {
+            return res.status(500).json({
+                error: err,
+                message: "Failed to list groups"
+            });
+        }
+    },
     listByUser: async function (req, res) {
         try {
             const userId = req.user.id;

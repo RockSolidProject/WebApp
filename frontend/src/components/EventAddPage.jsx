@@ -1,70 +1,132 @@
-import React, { useState, useEffect } from "react";
-import {
-    Container,
-    TextField,
-    Button,
-    Typography,
-    Box,
-    Autocomplete,
-} from "@mui/material";
+import React, {useState} from "react";
+import {Autocomplete, Box, Button, Container, TextField, Typography,} from "@mui/material";
+import {useNavigate} from "react-router-dom";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const token = localStorage.getItem("token");
 
-function AddEventForm({ onSubmit }) {
+function EventAddPage() {
+    const navigate = useNavigate();
     const [eventData, setEventData] = useState({
         name: "",
         date: "",
         description: "",
-        climbingSpot: null,
-        climbingCenter: null,
-        group: null,
+        climbingSpots: [],
+        climbingCenters: [],
+        groups: [],
     });
 
     const [spotOptions, setSpotOptions] = useState([]);
     const [centerOptions, setCenterOptions] = useState([]);
+    const [groupOptions, setGroupOptions] = useState([]);
+    const [error, setError] = useState("");
 
-    // Helper function to fetch filtered spots
-    async function fetchSpots(query) {
-        const res = await fetch(
-            `${backendUrl}/climbingSpots?search=${encodeURIComponent(query)}`
-        );
-        const data = await res.json();
-        return data; // expected array of { _id, name }
-    }
 
-    // Helper function to fetch filtered centers
-    async function fetchCenters(query) {
-        const res = await fetch(
-            `${backendUrl}/climbingCenters?search=${encodeURIComponent(query)}`
-        );
-        const data = await res.json();
-        return data;
-    }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`${backendUrl}/events/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    name: eventData.name,
+                    description: eventData.description,
+                    climbingAreas: eventData.climbingSpots.map((spot) => spot._id),
+                    climbingCenters: eventData.climbingCenters.map((center) => center._id),
+                    groups: eventData.groups.map((group) => group._id),
+                })
+            });
+
+            if (response.status === 401 || response.status === 403) {
+                navigate("/login");
+                return;
+            }
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Something went wrong");
+            }
+
+            const newEvent = await response.json();
+            console.log("Event created:", newEvent);
+            navigate("/events");
+        } catch (err) {
+            setError(err.message);
+        }
+    };
 
     // For spot search input change
     const handleSpotInputChange = async (event, value) => {
         if (value.length < 2) {
-            setSpotOptions([]); // clear options if less than 2 chars
+            setCenterOptions([]);
             return;
         }
-        const spots = await fetchSpots(value);
-        setSpotOptions(spots);
+        try {
+            const res = await fetch(`${backendUrl}/climbingAreas/find?pattern=${value}&limit=${6}`)
+            if (!res.ok) {
+                setError("some issue with fetching centers");
+                return;
+            }
+            const data = await res.json();
+            setSpotOptions(data);
+        } catch (error) {
+            setError(error);
+        }
     };
 
     // For center search input change
     const handleCenterInputChange = async (event, value) => {
+
         if (value.length < 2) {
             setCenterOptions([]);
             return;
         }
-        const centers = await fetchCenters(value);
-        setCenterOptions(centers);
+        try {
+            const res = await fetch(`${backendUrl}/climbingCenter/find?pattern=${value}&limit=${6}`)
+            if (!res.ok) {
+                setError("some issue with fetching centers");
+                return;
+            }
+            const data = await res.json();
+            setCenterOptions(data);
+        } catch (error) {
+            setError(error);
+        }
+
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (onSubmit) onSubmit(eventData);
-    };
+    const handleGroupInputChange = async (event, value) => {
+        if (value.length < 2) {
+            setGroupOptions([]);
+            return;
+        }
+        try {
+            const res = await fetch(`${backendUrl}/groups/find?pattern=${value}&limit=${6}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                }
+            })
+            if (res.status === 401 || res.status === 403) {
+                navigate("/login");
+                return;
+            } else if (!res.ok) {
+                return setError(`Issue adding a member ${res.error || res.message}`)
+            }
+            const data = await res.json();
+            setGroupOptions(data);
+
+        } catch (error) {
+            setError(`Error geting groups ${error}`);
+            setGroupOptions([]);
+        }
+    }
+
+
 
     return (
         <Container maxWidth="sm">
@@ -74,7 +136,7 @@ function AddEventForm({ onSubmit }) {
             <Box
                 component="form"
                 onSubmit={handleSubmit}
-                sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}
+                sx={{mt: 2, display: "flex", flexDirection: "column", gap: 2}}
             >
                 <TextField
                     name="name"
@@ -82,7 +144,7 @@ function AddEventForm({ onSubmit }) {
                     fullWidth
                     value={eventData.name}
                     onChange={(e) =>
-                        setEventData({ ...eventData, name: e.target.value })
+                        setEventData({...eventData, name: e.target.value})
                     }
                     required
                 />
@@ -93,12 +155,13 @@ function AddEventForm({ onSubmit }) {
                     fullWidth
                     value={eventData.date}
                     onChange={(e) =>
-                        setEventData({ ...eventData, date: e.target.value })
+                        setEventData({...eventData, date: e.target.value})
                     }
-                    InputLabelProps={{ shrink: true }}
+                    InputLabelProps={{shrink: true}}
                     required
                 />
                 <TextField
+
                     name="description"
                     label="Description"
                     multiline
@@ -106,45 +169,57 @@ function AddEventForm({ onSubmit }) {
                     fullWidth
                     value={eventData.description}
                     onChange={(e) =>
-                        setEventData({ ...eventData, description: e.target.value })
+                        setEventData({...eventData, description: e.target.value})
                     }
                 />
 
-                {/* Async Autocomplete for Climbing Spot */}
                 <Autocomplete
+                    multiple
                     getOptionLabel={(option) => option.name || ""}
                     options={spotOptions}
                     onInputChange={handleSpotInputChange}
                     onChange={(e, value) =>
-                        setEventData({ ...eventData, climbingSpot: value })
+                        setEventData({...eventData, climbingSpots: value})
                     }
-                    value={eventData.climbingSpot}
+                    value={eventData.climbingSpots}
                     renderInput={(params) => (
-                        <TextField {...params} label="Climbing Spot" fullWidth />
+                        <TextField {...params} label="Climbing Areas" fullWidth/>
                     )}
                     isOptionEqualToValue={(option, value) => option._id === value._id}
-                    noOptionsText="No spots found"
                 />
 
-                {/* Async Autocomplete for Climbing Center */}
                 <Autocomplete
+                    multiple
                     getOptionLabel={(option) => option.name || ""}
                     options={centerOptions}
                     onInputChange={handleCenterInputChange}
                     onChange={(e, value) =>
-                        setEventData({ ...eventData, climbingCenter: value })
+                        setEventData({...eventData, climbingCenters: value})
                     }
-                    value={eventData.climbingCenter}
+                    value={eventData.climbingCenters}
                     renderInput={(params) => (
-                        <TextField {...params} label="Climbing Center" fullWidth />
+                        <TextField {...params} label="Climbing Centers" fullWidth/>
                     )}
                     isOptionEqualToValue={(option, value) => option._id === value._id}
-                    noOptionsText="No centers found"
                 />
 
-                {/* You can do a similar autocomplete for Groups */}
+                <Autocomplete
+                    multiple
+                    getOptionLabel={(option) => option.name || ""}
+                    options={groupOptions}
+                    onInputChange={handleGroupInputChange}
+                    onChange={(e, value) =>
+                        setEventData({...eventData, groups: value})
+                    }
+                    value={eventData.groups}
+                    renderInput={(params) => (
+                        <TextField {...params} label="Groups" fullWidth/>
+                    )}
+                    isOptionEqualToValue={(option, value) => option._id === value._id}
+                />
 
-                <Button type="submit" variant="contained" color="primary">
+                <Typography>{error}</Typography>
+                <Button type="submit" variant="contained" color="primary" onSubmit={handleSubmit}>
                     Create Event
                 </Button>
             </Box>
@@ -152,4 +227,4 @@ function AddEventForm({ onSubmit }) {
     );
 }
 
-export default AddEventForm;
+export default EventAddPage;

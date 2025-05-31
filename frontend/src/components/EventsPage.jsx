@@ -90,6 +90,8 @@ function EventsPage() {
             </Grid>
 
             <Button
+                component={RouterLink}
+                to={`/eventAdd`}
                 variant="contained"
                 color="primary"
                 sx={{mt: 3}}

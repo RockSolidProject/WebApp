@@ -1,4 +1,4 @@
 function eventDetailPage(){
-    return (<div>vsebina</div>)
+    return (<div>detail</div>)
 }
 export default eventDetailPage;

@@ -11,6 +11,7 @@ router.get('/', climbingAreaController.list);
 /*
  * GET
  */
+router.get('/find', climbingAreaController.listSearch)
 router.get('/:id', climbingAreaController.show);
 
 /*

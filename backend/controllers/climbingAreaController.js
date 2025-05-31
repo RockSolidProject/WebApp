@@ -6,6 +6,30 @@ module.exports = {
     /**
      * climbingAreaController.list()
      */
+    listSearch: async function (req, res) {
+        try {
+            const limit = parseInt(req.query.limit) || 10;
+            const pattern = req.query.pattern || "";
+            const nameFilter = { name: { $regex: `^${pattern}`, $options: "i" } };
+
+            const climbingAreas = await ClimbingareaModel
+                .find(nameFilter)
+                .limit(limit)
+                .populate("postedBy")
+                .populate({
+                    path: "routes",
+                    populate: { path: "postedBy" }
+                });
+
+            return res.json(climbingAreas);
+        }
+        catch (err) {
+            return res.status(500).json({
+                message: 'Error when getting climbing areas.',
+                error: err.message || err
+            });
+        }
+    },
     list: async function (req, res) {
         try {
             const climbingAreas = await ClimbingareaModel
