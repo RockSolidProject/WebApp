@@ -114,8 +114,8 @@ function GroupDetailPage() {
             }
 
             setError("");
-            const updated = await res.json();
-            setGroup(updated);
+            await res.json();
+            await getGroup()
         } catch (e) {
             setError(e.message || "An error occurred");
         }

@@ -22,10 +22,24 @@ module.exports = {
             })
         }
     },
-    listMine: async function (req, res) {
+    listByUser: async function (req, res) {
         try {
-            const groups = await GroupModel.find({owner: req.user.id})
-            return res.json(groups)
+            const userId = req.user.id;
+
+            // 1. Groups the user owns
+            const ownedGroups = await GroupModel.find({ owner: userId });
+
+            // 2. Membership records where the user is a member
+            const memberships = await GroupMemberModel.find({ member: userId }).populate('group');
+
+            const memberGroups = memberships
+                .map(m => m.group)
+                .filter(group => group.owner.toString() !== userId);
+
+            return res.json({
+                owned: ownedGroups,
+                membered: memberGroups
+            });
         } catch (err) {
             return res.status(500).json({
                 error: err,
