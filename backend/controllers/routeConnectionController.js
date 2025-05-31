@@ -215,7 +215,8 @@ module.exports = {
             })
 
             const addedComment = await comment.save()
-            return res.status(201).json(addedComment)
+            await addedComment.populate('postedBy');
+            return res.status(201).json(addedComment);
         }
         catch (err) {
             return res.status(500).json({
