@@ -10,16 +10,30 @@ const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
  * @description :: Server-side logic for managing users.
  */
 module.exports = {
-
+    list: async (req, res) => {
+        try {
+            const limit = parseInt(req.query.limit);
+            const search = req.query.search;
+            const users = await UserModel.find({
+                username: {$regex: search, $options: 'i'}
+            }).limit(limit);
+            res.json(users);
+        } catch (err) {
+            return res.status(500).send({
+                error: err,
+                message: 'Something went wrong'
+            })
+        }
+    },
     /**
      * userController.show()
      */
-    show: async function(req, res) {
+    show: async function (req, res) {
         const id = req.params.id;
         try {
             const user = await UserModel.findById(id);
             if (!user) {
-                return res.status(404).json({ message: 'No such user' });
+                return res.status(404).json({message: 'No such user'});
             }
             if (user._id.toString() !== req.user.id) {
                 return res.status(403).json({message: "Access denied: Wrong user."})
@@ -34,13 +48,13 @@ module.exports = {
         }
     },
 
-    setAvatar: async function(req, res) {
+    setAvatar: async function (req, res) {
         const id = req.params.id;
         const avatar = req.body.avatar;
         try {
             const user = await UserModel.findById(id);
             if (!user) {
-                return res.status(404).json({ message: 'User not found' });
+                return res.status(404).json({message: 'User not found'});
             }
             if (user._id.toString() !== req.user.id) {
                 return res.status(403).json({message: "Access denied: Wrong user."})
@@ -63,14 +77,13 @@ module.exports = {
         try {
             const hashedPassword = await bcrypt.hash(req.body.password, 10);
             var user = new UserModel({
-                username : req.body.username,
-                email : req.body.email,
-                password : hashedPassword,
+                username: req.body.username,
+                email: req.body.email,
+                password: hashedPassword,
             });
             const savedUser = await user.save()
             return res.status(201).json(savedUser)
-        }
-        catch(err){
+        } catch (err) {
             if (err.code === 11000 && err.keyPattern && err.keyPattern.username) {
                 return res.status(409).json({
                     message: 'Username already exists'
@@ -86,9 +99,9 @@ module.exports = {
     login: async function (req, res) {
         var username = req.body.username;
         var password = req.body.password;
-        try{
+        try {
             const user = await UserModel.findOne({username: username});
-            if(!user){
+            if (!user) {
                 return res.status(401).json({
                     message: 'Invalid username or password'
                 })
@@ -96,10 +109,10 @@ module.exports = {
             const isMatch = await bcrypt.compare(password, user.password)
             if (!isMatch) {
                 return res.status(401).json({
-                message: 'Invalid username or password'
+                    message: 'Invalid username or password'
                 })
             }
-            
+
             const jwtToken = jwt.sign({
                 id: user._id,
                 username: username
@@ -114,8 +127,7 @@ module.exports = {
 
             return res.json({token: jwtToken, userData: userData})
 
-        }
-        catch(err){
+        } catch (err) {
             return res.status(500).json({
                 message: 'Error when logging in',
                 error: err
@@ -162,12 +174,12 @@ module.exports = {
     /**
      * userController.remove()
      */
-    remove: async function(req, res) {
+    remove: async function (req, res) {
         const id = req.params.id;
         try {
             const user = await UserModel.findByIdAndDelete(id);
             if (!user) {
-                return res.status(404).json({ message: 'No such user' });
+                return res.status(404).json({message: 'No such user'});
             }
             if (user._id.toString() !== req.user.id) {
                 return res.status(403).json({message: "Access denied: Wrong user."})

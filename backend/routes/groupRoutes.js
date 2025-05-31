@@ -11,7 +11,9 @@ router.get('/', groupController.list);
 /*
  * GET
  */
+router.get('/userGroups', auth, groupController.listByUser);
 router.get('/:id', auth, groupController.show);
+
 
 /*
  * POST
