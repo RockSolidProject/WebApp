@@ -251,5 +251,36 @@ module.exports = {
                 error: err
             })
         }
+    },
+    getGradesOverTime: async function(req, res) {
+        const routeId = req.params.routeId;
+        try {
+            const rates = await RouteClimbedModel.find({ climbingRoute: routeId }).populate("climbingRoute");
+            if (!rates.length) return res.json([]);
+
+            const routeType = rates[0].climbingRoute.type;
+            let gradeList = [];
+            if (routeType === "boulder") gradeList = boulderGrades;
+            else if (routeType === "lead") gradeList = ropeGrades;
+            else if (routeType === "urban") gradeList = urbanGrades;
+
+            const grouped = {};
+            rates.forEach(r => {
+                const period = r._id.getTimestamp ? r._id.getTimestamp().toISOString().slice(0, 7)
+                    : (r.dateTime ? r.dateTime.toISOString().slice(0, 7) : "unknown");
+                if (!grouped[period]) grouped[period] = [];
+                const idx = gradeList.indexOf(r.gradeOpinion);
+                if (idx !== -1) grouped[period].push(idx);
+            });
+
+            const result = Object.entries(grouped).map(([period, idxs]) => ({
+                period,
+                avgGradeIndex: idxs.reduce((a, b) => a + b, 0) / idxs.length
+            }));
+
+            res.json(result);
+        } catch (err) {
+            res.status(500).json({ message: "Error getting grades over time.", error: err });
+        }
     }
 }

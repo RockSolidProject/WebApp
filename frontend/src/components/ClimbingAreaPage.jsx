@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import ShowLocationOnMap from "./ShowLocationOnMap.jsx";
-
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const ClimbingAreaPage = () => {
@@ -55,6 +55,9 @@ const ClimbingAreaPage = () => {
             <div className="climbing-area-info"><strong>Longitude:</strong> {area.longitude}</div>
             <div className="climbing-area-info"><strong>Posted by:</strong> {area.postedBy?.username || 'Unknown'}</div>
             <ShowLocationOnMap latitude={area.latitude} longitude={area.longitude} />
+            <Link to={`/climbingAreas/${id}/addRoute`}>
+                <button style={{ marginBottom: 16 }}>Add New Route</button>
+            </Link>
             <h3 style={{marginTop: '24px', color: '#2d3a4a'}}>Routes</h3>
             {routes && routes.length > 0 ? (
                 <ul className="climbing-area-routes-list">

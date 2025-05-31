@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import CustomRating from './Rating';
 import Comments from "./Comments.jsx";
+import AnimatedGradesChart from './AnimatedGradesChart.jsx';
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function ClimbingRoutePage() {
@@ -348,6 +349,7 @@ export default function ClimbingRoutePage() {
             )}
             <div style={{ margin: "16px 0" }}></div>
             <span>Average grade: {averageGrade}</span>
+            <AnimatedGradesChart routeId={id} />
             <h3 style={{ marginTop: 32 }}>Add a Comment</h3>
             <form onSubmit={handleAddComment} style={{ marginBottom: 24 }}>
                 <textarea
