@@ -1,7 +1,7 @@
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle } from 'react-leaflet';
 import MapResetButton from './MapResetButton';
 import leaflet from 'leaflet';
-import { useEffect, useState } from 'react';
+import {Collapse,Box,Typography,FormControlLabel,Checkbox,Slider,Divider,Button,Stack, useMediaQuery, useTheme} from '@mui/material';
 
 const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, setLongitude, distanceTmp,  setDistanceTmp,  setDistance, choosingLocation, setChoosingLocation }) => {
     const bounds = [[45.37, 13.3],[46.89, 16.6]]
@@ -142,11 +142,14 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                 }}
             >
                 <div>{distanceTmp}km</div>
-                <input type="range" min={5} max={135} step={1}
+                <Slider 
+                    min={5} max={135} step={1}
                     value={distanceTmp}
                     onTouchEnd={() => setDistance(distanceTmp)}
                     onMouseUp={() => setDistance(distanceTmp)}
                     onChange={(e) => setDistanceTmp(Number(e.target.value))}
+                    size='small'
+                    sx={{ width: 150 }}
                 /> 
             </div>
         </div>

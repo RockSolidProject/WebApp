@@ -46,18 +46,11 @@ const FilterSidebar = ({requireBoulder, setRequireBoulder, requireLead, setRequi
                         label="Urbane poti"
                     />
                 </Stack>
-                <Typography fontWeight={550} variant="h6" gutterBottom>Število poti:</Typography>
+                <Box style={{display: 'flex', alignItems: 'center', gap: 2}}>
+                    <Typography fontWeight={550} variant="h6" gutterBottom>Število poti: </Typography>
+                    <Typography fontWeight={550} variant="h6" gutterBottom> {requiredNumberOfRoutes}</Typography>
+                </Box>
                 <Box sx={{pl: 1}}>
-                    {/*<div>Vsaj: {requiredNumberOfRoutes}</div>
-                    <input
-                        type="range"
-                        min={0}
-                        max={Math.max(1, ...climbingAreas.map(a => a.routes?.length || 0))}
-                        value={requiredNumberOfRoutes}
-                        onChange={(e) => setRequiredNumberOfRoutes(Number(e.target.value))}
-                        valueLabelDisplay="on"
-                        sx={{ mt: 1 }}
-                    />*/}
                     <Box sx={{ width: "50%" }}>
                     <Slider
                         type="range"
@@ -66,8 +59,6 @@ const FilterSidebar = ({requireBoulder, setRequireBoulder, requireLead, setRequi
                         value={requiredNumberOfRoutes}
                         onChange={(e) => setRequiredNumberOfRoutes(Number(e.target.value))}
                         size='small'
-                        valueLabelDisplay="auto"
-                        label={requiredNumberOfRoutes}
                     />
                     </Box>
                 </Box>
