@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {Box,Typography,FormControlLabel,Checkbox,Slider,Divider,Button,Stack} from '@mui/material';
 
 const FilterSidebar = ({requireBoulder, setRequireBoulder, requireLead, setRequireLead, requireUrban, setRequireUrban, requiredNumberOfRoutes, setRequiredNumberOfRoutes,
       distanceTmp, setDistanceTmp, setDistance, latitude, setLatitude, longitude, setLongitude, choosingLocation, setChoosingLocation, isLoggedIn, navigate, climbingAreas, setRequireMoonboard, requireMoonboard,
@@ -6,122 +7,122 @@ const FilterSidebar = ({requireBoulder, setRequireBoulder, requireLead, setRequi
       showClimbingAreas, showClimbingCenters, setShowClimbingCenters
 }) => {
     return (
-        <div style={{
-            width: "100%",
-            padding: "20px",
-            paddingRight: "30px",
-            boxSizing: "border-box",
-            height: "auto",
-            backgroundColor: "grey"}}>
-            <h2>Filters:</h2>
-            <label style={{ display: "block", marginBottom: "5px" }}>
-                <input
-                    type="checkbox"
-                    checked={showClimbingAreas}
-                    onChange={() => setShowClimbingAreas(!showClimbingAreas)}
-                />
-                <span style={{ fontSize: "1.3em", fontWeight: 650 }}>Zunanja plezališča</span>
-            </label>
+        <Box sx={{ width: '100%', p: 2, paddingRight: 1, bgcolor: 'grey.100', borderRadius: 2,boxSizing: "border-box" }}>
+            <Typography variant="h5" fontWeight={550} gutterBottom>Filtri</Typography>
+
+            <FormControlLabel
+                control={
+                    <Checkbox checked={showClimbingAreas} onChange={() => setShowClimbingAreas(!showClimbingAreas)} />
+                }
+                label={
+                    <Typography variant='h6' fontWeight={550}>Zunanja plezališča</Typography>
+                }
+            />
 
             {showClimbingAreas && (
-                <div style={{ paddingLeft: "2em" }}>
-                    <span style={{ fontSize: "1.2em", fontWeight: 550 }}>Vsebuje: </span><br/>
-                    <div style={{ paddingLeft: "1em" }}>
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={requireBoulder}
-                                onChange={() => setRequireBoulder(!requireBoulder)}
-                            />
-                            Balvane
-                            <br />
-                        </label>
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={requireLead}
-                                onChange={() => setRequireLead(!requireLead)}
-                            />
-                            Športne poti
-                            <br />
-                        </label>
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={requireUrban}
-                                onChange={() => setRequireUrban(!requireUrban)}
-                            />
-                            Urbane poti
-                            <br />
-                        </label>
-                    </div>
-                    <span style={{ fontSize: "1.2em", fontWeight: 550 }}>Število poti: </span><br/>
-                    <div style={{ paddingLeft: "1em" }}>
-                    <div>Vsaj: {requiredNumberOfRoutes}</div>
+                <Box pl={2}>
+                    <Typography fontWeight={550} variant="h6" gutterBottom>Vsebujejo:</Typography>
+                    <Stack direction="column" spacing={0}>
+                        <FormControlLabel sx={{ mt: -1 }}
+                            control={
+                                <Checkbox size="small" checked={requireBoulder} onChange={() => setRequireBoulder(!requireBoulder)} />
+                            }
+                            label="Balvane"
+                        />
+                        <FormControlLabel sx={{ mt: -1 }}
+                            control={
+                                <Checkbox size="small" checked={requireLead} onChange={() => setRequireLead(!requireLead)} />
+                            }
+                            label="Športne poti"
+                        />
+                        <FormControlLabel sx={{ mt: -1 }}
+                            control={
+                                <Checkbox size="small" checked={requireUrban} onChange={() => setRequireUrban(!requireUrban)} />
+                            }
+                            label="Urbane poti"
+                        />
+                    </Stack>
+                    <Typography fontWeight={550} variant="h6" gutterBottom>Število poti:</Typography>
+                    <Box sx={{pl: 1}}>
+                        {/*<div>Vsaj: {requiredNumberOfRoutes}</div>
                         <input
                             type="range"
                             min={0}
                             max={Math.max(1, ...climbingAreas.map(a => a.routes?.length || 0))}
                             value={requiredNumberOfRoutes}
                             onChange={(e) => setRequiredNumberOfRoutes(Number(e.target.value))}
+                            valueLabelDisplay="on"
+                            sx={{ mt: 1 }}
+                        />*/}
+                        <Box sx={{ width: "50%" }}>
+                        <Slider
+                            type="range"
+                            min={0}
+                            max={Math.max(1, ...climbingAreas.map(a => a.routes?.length || 0))}
+                            value={requiredNumberOfRoutes}
+                            onChange={(e) => setRequiredNumberOfRoutes(Number(e.target.value))}
+                            size='small'
+                            valueLabelDisplay="auto"
+                            label={requiredNumberOfRoutes}
                         />
-                    </div>
-                </div>
+                        </Box>
+                    </Box>
+                </Box>
             )}
 
-            <label style={{ display: "block", marginBottom: "10px" }}>
-                <input
-                    type="checkbox"
-                    checked={showClimbingCenters}
-                    onChange={() => setShowClimbingCenters(!showClimbingCenters)}
-                />
-                <span style={{ fontSize: "1.3em", fontWeight: 650 }}>Plezalni centri</span>
-            </label>
+            <Divider sx={{ my: 2 }} />
+
+            <FormControlLabel
+                control={
+                    <Checkbox checked={showClimbingCenters} onChange={() => setShowClimbingCenters(!showClimbingCenters)} />
+                }
+                label={
+                    <Typography variant='h6' fontWeight={550}>Plezalni centri</Typography>
+                }
+            />
             {showClimbingCenters && (
-                <div style={{ paddingLeft: "2em" }}>
-                    <label>
-                        <input type="checkbox"
-                               checked={requireMoonboard}
-                               onChange={() => setRequireMoonboard(!requireMoonboard)}
-                        />
-                        Moonboard
-                        <br />
-                    </label>
-                    <label>
-                        <input type="checkbox"
-                               checked={requireSpraywall}
-                               onChange={() => setRequireSpraywall(!requireSpraywall)}/>
-                        Spraywall
-                        <br />
-                    </label>
-                    <label>
-                        <input type="checkbox"
-                               checked={requireLeadCenter}
-                               onChange={() => setRequireLeadCenter(!requireLeadCenter)}/>
-                        Lead
-                        <br />
-                    </label>
-                    <label>
-                        <input type="checkbox"
-                               checked={requireBoulders}
-                               onChange={() => setRequireBoulders(!requireBoulders)}/>
-                        Boulders
-                        <br />
-                    </label>
-                    <label>
-                        <input type="checkbox"
-                               checked={requireKilter}
-                               onChange={() => setRequireKilter(!requireKilter)}/>
-                        Kilter
-                        <br />
-                    </label>
-                </div>
+                <Stack pl={2} direction="column" spacing={0}>
+                    <FormControlLabel sx={{ mt: -1 }}
+                        control={
+                            <Checkbox size="small" checked={requireLeadCenter} onChange={() => setRequireLeadCenter(!requireLeadCenter)} />
+                        }
+                        label="Športne stene"
+                    /> 
+                    <FormControlLabel sx={{ mt: -1 }}
+                        control={
+                            <Checkbox size="small" checked={requireBoulders} onChange={() => setRequireBoulders(!requireBoulders)} />
+                        }
+                        label="Balvanske stene"
+                    />
+                    <FormControlLabel sx={{ mt: -1 }}
+                        control={
+                            <Checkbox size="small" checked={requireSpraywall} onChange={() => setRequireSpraywall(!requireSpraywall)} />
+                        }
+                        label="Šutalnica"
+                    />
+                    <FormControlLabel sx={{ mt: -1 }}
+                        control={
+                            <Checkbox size="small" checked={requireMoonboard} onChange={() => setRequireMoonboard(!requireMoonboard)} />
+                        }
+                        label="Moonboard"
+                    />
+                    <FormControlLabel sx={{ mt: -1 }}
+                        control={
+                            <Checkbox size="small" checked={requireKilter} onChange={() => setRequireKilter(!requireKilter)} />
+                        }
+                        label="Kilterboard"
+                    />
+                </Stack>
             )}
+            <Divider sx={{ mt: 4, mb: 3 }} />
 
-            <br/><br/><br/>
-            {isLoggedIn? <button onClick={()=>{navigate("/addClimbingArea")}}>Add climbing area</button> : ""}<br/>
-            {isLoggedIn? <button onClick={()=>{navigate("/addClimbingCenter")}}>Add climbing center</button> : ""}
-        </div>
+            {isLoggedIn && 
+                <Stack direction="column" spacing={2} px={2}>
+                    <Button variant="contained" onClick={() => navigate('/addClimbingArea')}>Dodaj plezališče</Button>
+                    <Button variant="contained" onClick={() => navigate('/addClimbingCenter')}>Dodaj center</Button>
+                </Stack>
+            }
+        </Box>
     );
 };
 
