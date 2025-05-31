@@ -37,6 +37,7 @@ function EventAddPage() {
                     climbingAreas: eventData.climbingSpots.map((spot) => spot._id),
                     climbingCenters: eventData.climbingCenters.map((center) => center._id),
                     groups: eventData.groups.map((group) => group._id),
+                    date: eventData.date,
                 })
             });
 

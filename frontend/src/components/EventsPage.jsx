@@ -78,7 +78,14 @@ function EventsPage() {
                             <Card>
                                 <CardContent sx={{flexGrow: 1}}>
                                     <Typography variant="h6">{event.name}</Typography>
-                                    <Typography color="text.secondary">{event.date}</Typography>
+                                    <Typography color="text.secondary">
+                                        {new Date(event.date).toLocaleDateString(undefined, {
+                                            weekday: 'short',
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric',
+                                        })}
+                                    </Typography>
                                     <Typography variant="body3">
                                         {event.description || "No description provided."}
                                     </Typography>
