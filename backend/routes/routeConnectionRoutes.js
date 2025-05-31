@@ -12,6 +12,7 @@ router.get('/wishlist', auth, routeConnectionController.getUsersWishlist)
  * GET
  */
 router.get('/climbed', auth, routeConnectionController.getUsersClimbedRoutes)
+router.get('/averageGrade/:routeId', routeConnectionController.getAverageGrade)
 
 /*
  * GET

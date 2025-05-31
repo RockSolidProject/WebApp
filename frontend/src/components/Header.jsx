@@ -1,6 +1,5 @@
-// src/components/Header.jsx
-import React, {useState} from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -8,30 +7,29 @@ const Header = () => {
     const [showMenu, setShowMenu] = useState(false);
     const navigate = useNavigate();
 
-    const isLoggedIn = (localStorage.getItem("token") != null && localStorage.getItem("user") != null)
-    const user = JSON.parse(localStorage.getItem("user"))   
-    let image = ""
-    if (user) {
-        image = backendUrl+user.avatar
-    }
+    const isLoggedIn = localStorage.getItem("token") && localStorage.getItem("user");
+    const user = isLoggedIn ? JSON.parse(localStorage.getItem("user")) : null;
+    const image = user ? backendUrl + user.avatar : "";
 
     function handleLogout() {
-        localStorage.removeItem("token")
-        localStorage.removeItem("user")
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
         navigate("/");
     }
 
     return (
         <nav style={{ padding: '10px', backgroundColor: '#f0f0f0', display: 'flex', justifyContent: 'space-around' }}>
-            <a href="/" style={{ textDecoration: 'none', color: 'black' }}>Home</a>
-            {isLoggedIn ? 
+            <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>Home</Link>
+            <Link to="/groups" style={{ textDecoration: 'none', color: 'black' }}>Groups</Link>
+
+            {isLoggedIn ? (
                 <div style={{ position: 'relative' }}>
-                    <span onClick={() => setShowMenu(!showMenu)}>
+                    <span onClick={() => setShowMenu(!showMenu)} style={{ cursor: 'pointer' }}>
                         {user.username}
-                        <img src={image} alt="Profile picture" width="30" height="30"></img>
+                        <img src={image} alt="Profile" width="30" height="30" style={{ marginLeft: '8px' }} />
                     </span>
 
-                    {showMenu ? 
+                    {showMenu && (
                         <div style={{
                             position: 'absolute',
                             top: '100%',
@@ -42,17 +40,18 @@ const Header = () => {
                             borderRadius: '4px',
                             zIndex: 1,
                         }}>
-                            <button onClick={() => navigate("/profile")} style={{ display: 'block', width: '100%', marginBottom: '5px' }}> Profile </button>
-                            <button onClick={handleLogout} style={{ display: 'block', width: '100%', background: "#faa" }}> Logout</button>
+                            <button onClick={() => navigate("/profile")} style={{ display: 'block', width: '100%', marginBottom: '5px' }}>Profile</button>
+                            <button onClick={() => navigate("/userGroups")} style={{ display: 'block', width: '100%', marginBottom: '5px' }}>My Groups</button>
+                            <button onClick={handleLogout} style={{ display: 'block', width: '100%', background: "#faa" }}>Logout</button>
                         </div>
-                    : ""}
-                </div>:
+                    )}
+                </div>
+            ) : (
                 <>
-                    <a href="/login" style={{ textDecoration: 'none', color: 'black' }}>Login</a>
-                    <a href="/register" style={{ textDecoration: 'none', color: 'black' }}>Register</a>
+                    <Link to="/login" style={{ textDecoration: 'none', color: 'black' }}>Login</Link>
+                    <Link to="/register" style={{ textDecoration: 'none', color: 'black' }}>Register</Link>
                 </>
-            }
-            
+            )}
         </nav>
     );
 };

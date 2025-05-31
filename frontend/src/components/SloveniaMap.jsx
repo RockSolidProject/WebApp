@@ -1,10 +1,13 @@
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle } from 'react-leaflet';
 import MapResetButton from './MapResetButton';
 import leaflet from 'leaflet';
-import {Collapse,Box,Typography,FormControlLabel,Checkbox,Slider,Divider,Button,Stack, useMediaQuery, useTheme} from '@mui/material';
+import {Slider} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, setLongitude, distanceTmp,  setDistanceTmp,  setDistance, choosingLocation, setChoosingLocation }) => {
+    const navigate = useNavigate();
     const bounds = [[45.37, 13.3],[46.89, 16.6]]
+
 
     function ClickHandler({ setLatitude, setLongitude, setChoosingLocation }) {
         useMapEvents({
@@ -22,7 +25,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
     }
 
     return (
-    <div style={{ /*width: "600px", height: "400px"*/ width: "100%", height: "100%" }}>
+    <div style={{ width: "100%", height: "100%" }}>
         <MapContainer 
                 bounds={bounds}
                 maxBounds={[[45.37, 13.3],[46.89, 16.6]]}
@@ -42,7 +45,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
 
             {!choosingLocation ? "" : <ClickHandler setLatitude={setLatitude} setLongitude={setLongitude}setChoosingLocation={setChoosingLocation} /> }
 
-            <Marker 
+            <Marker
                 position={[latitude, longitude]}
                 icon={leaflet.icon({
                     iconUrl: "/markers/marker_blue.png",
@@ -82,8 +85,13 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                         })}
                         >
                         <Popup>
-                            <strong>{area.name}</strong><br/>
-                            {area.routes?.length || 0} routes
+                            <div
+                                style={{ cursor: "pointer", fontWeight: "bold", color: "blue"}}
+                                onClick={() => navigate(`/climbingAreas/${area._id}`)}
+                            >
+                                {area.name}
+                            </div>
+                            <div>{area.routes?.length || 0} routes</div>
                         </Popup>
                     </Marker>
                 )
