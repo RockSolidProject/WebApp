@@ -19,6 +19,10 @@ var routeClimbedSchema = new Schema({
 	'gradeOpinion' : {
         type: String,
         required: true
+    },
+    'dateTime' : {
+        type: Date,
+        default: Date.now
     }
 });
 

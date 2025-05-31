@@ -178,7 +178,7 @@ module.exports = {
             return res.status(400).json({message: "Invalid urban grade."})
         }
         if(req.body.gradeOpinion === "rope" && req.body.attempts < 1) {}
-        try{            
+        try{
             const current = await RouteClimbedModel.findOne({postedBy: userId, climbingRoute: routeId})
             if (current) {
                 return res.status(400).json({message: "Already marked this route as climbed."})
@@ -256,7 +256,7 @@ module.exports = {
         const routeId = req.params.routeId;
         try {
             const rates = await RouteClimbedModel.find({ climbingRoute: routeId }).populate("climbingRoute");
-            if (!rates.length) return res.json([]);
+            if (!rates.length) return res.json({ data: [], routeType: null });
 
             const routeType = rates[0].climbingRoute.type;
             let gradeList = [];
@@ -264,21 +264,29 @@ module.exports = {
             else if (routeType === "lead") gradeList = ropeGrades;
             else if (routeType === "urban") gradeList = urbanGrades;
 
+            // Group by period and count grades
             const grouped = {};
             rates.forEach(r => {
-                const period = r._id.getTimestamp ? r._id.getTimestamp().toISOString().slice(0, 7)
-                    : (r.dateTime ? r.dateTime.toISOString().slice(0, 7) : "unknown");
-                if (!grouped[period]) grouped[period] = [];
-                const idx = gradeList.indexOf(r.gradeOpinion);
-                if (idx !== -1) grouped[period].push(idx);
+                let date = r.dateTime || (r.createdAt ? r.createdAt : (r._id.getTimestamp ? r._id.getTimestamp() : null));
+                let period = date ? new Date(date).toISOString().slice(0, 7) : "unknown";
+                if (!grouped[period]) {
+                    grouped[period] = {};
+                    gradeList.forEach(g => grouped[period][g] = 0);
+                }
+                if (gradeList.includes(r.gradeOpinion)) {
+                    grouped[period][r.gradeOpinion]++;
+                }
             });
 
-            const result = Object.entries(grouped).map(([period, idxs]) => ({
-                period,
-                avgGradeIndex: idxs.reduce((a, b) => a + b, 0) / idxs.length
-            }));
+            const result = Object.entries(grouped)
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([period, grades]) => ({
+                    period,
+                    grades
+                }));
 
-            res.json(result);
+            // Return object with data array and routeType
+            res.json({ data: result, routeType });
         } catch (err) {
             res.status(500).json({ message: "Error getting grades over time.", error: err });
         }
