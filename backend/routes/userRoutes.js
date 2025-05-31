@@ -14,7 +14,7 @@ router.get('/test', function(req, res, next) {
  * GET
  */
 router.get('/:id', auth, userController.show);
-
+router.get('/', userController.list);
 /*
  * POST
  */

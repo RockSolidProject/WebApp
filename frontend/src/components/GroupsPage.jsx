@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Group from "./Group.jsx";
 
+
 const GroupsPage = () => {
     const [groups, setGroups] = useState([]);
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-function CreateGroupPage() {
+function GroupCreatePage() {
     const [name, setName] = useState('');
     const [isPrivate, setIsPrivate] = useState(false);
     const [description, setDescription] = useState('');
@@ -92,4 +92,4 @@ function CreateGroupPage() {
     );
 }
 
-export default CreateGroupPage;
+export default GroupCreatePage;
