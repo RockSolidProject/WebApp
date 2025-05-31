@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const ClimbingAreaTable = ({ filteredAreas }) => {
     const [isTableVisible, setIsTableVisible] = useState(false);
+    const navigate = useNavigate();
 
     return (
         <div>
@@ -9,7 +11,7 @@ const ClimbingAreaTable = ({ filteredAreas }) => {
                 {isTableVisible ? "Skrij zunanja plezališča" : "Pokaži zunanja plezališča"}
             </button>
             {isTableVisible && (
-                <table>
+                <table className="tabela">
                     <thead>
                     <tr>
                         <th>Plezališče</th>
@@ -19,8 +21,11 @@ const ClimbingAreaTable = ({ filteredAreas }) => {
                     </thead>
                     <tbody>
                     {filteredAreas.map((climbingArea, index) => (
-                        <tr key={index}>
-                            <td>{climbingArea.name}</td>
+                        <tr key={climbingArea._id}>
+                            <td
+                                key={index}
+                                style={{ cursor: "pointer", color: "blue" }}
+                                onClick={() => navigate(`/climbingAreas/${climbingArea._id}`)}>{climbingArea.name}</td>
                             <td>{climbingArea.routes ? climbingArea.routes.length : 0}</td>
                             <td>{(climbingArea.routes && climbingArea.routes.length > 0) ? (
                                 [...new Set(climbingArea.routes.map(route => route.type))].join(",")

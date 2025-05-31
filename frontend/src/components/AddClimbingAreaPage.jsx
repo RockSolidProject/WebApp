@@ -1,13 +1,14 @@
 import React, {useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
+import SloveniaEmptyMap from './SloveniaEmptyMap';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 
 const AddClimbingAreaPage = () => {
     const [name, setName] = useState("")    
-    const [latitude, setLatitude] = useState("")
-    const [longitude, setLongitude] = useState("")
+    const [latitude, setLatitude] = useState(46.1199444)
+    const [longitude, setLongitude] = useState(15)
     const [error, setError] = useState(null)
 
     const navigate = useNavigate()
@@ -70,6 +71,12 @@ const AddClimbingAreaPage = () => {
                     />
                     </label>
                 </div>
+                <SloveniaEmptyMap 
+                    latitude={latitude} 
+                    setLatitude={setLatitude}
+                    longitude={longitude}
+                    setLongitude={setLongitude}
+                />
                 <div>
                     <label>
                         Latidue: <br />

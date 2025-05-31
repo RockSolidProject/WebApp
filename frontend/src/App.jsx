@@ -8,6 +8,9 @@ import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import ProfilePage from './components/ProfilePage'
 import AddClimbingAreaPage from './components/AddClimbingAreaPage'
+import AddClimbingCenterPage from './components/AddClimbingCenterPage.jsx'
+import ClimbingAreaPage from './components/ClimbingAreaPage';
+import ClimbingRoutePage from './components/ClimbingRoutePage';
 import GroupsPage from "./components/GroupsPage.jsx";
 import GroupDetailPage from "./components/GroupDetailPage.jsx";
 import GroupCreatePage from "./components/GroupCreatePage.jsx";
@@ -26,6 +29,10 @@ const App = () => {
                     <Route path="/groups" element={<GroupsPage/>}/>
                     <Route path="/groupDetail/:id" element={<GroupDetailPage/>}/>
                     <Route path="/createGroup" element={<GroupCreatePage/>}/>
+                     <Route path="/addClimbingArea" element={<AddClimbingAreaPage/>}/>
+                     <Route path="/addClimbingCenter" element={<AddClimbingCenterPage/>}/>
+                     <Route path="/climbingAreas/:id" element={<ClimbingAreaPage />} />
+                     <Route path="/climbingRoutes/:id" element={<ClimbingRoutePage />} />
                 </Routes>
             </main>
         </div>
