@@ -134,7 +134,7 @@ const HomePage = () => {
 
     return (
         <Container maxWidth="lg">
-            <Typography variant="h4" gutterBottom>
+            <Typography variant="h4" mt={2} gutterBottom>
                 Plezališča v Sloveniji
             </Typography>
             <Grid container spacing={2} sx={{ height: '100%' }}>
