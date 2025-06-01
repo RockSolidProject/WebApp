@@ -28,7 +28,8 @@ function EventDetailPage() {
                     }
                 });
                 if(res.status === 401 || res.status === 403) {
-                    return navigate("/login")
+                    localStorage.removeItem("token");
+                    navigate("/login");
                 }
                 if (!res.ok) throw new Error("Could not fetch event details.");
                 const data = await res.json();
