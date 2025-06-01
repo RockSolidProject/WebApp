@@ -21,7 +21,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.2",
     "morgan": "~1.9.1",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "recharts": "^2.15.3"
   },
   "devDependencies": {
     "express-mongoose-generator": "^3.1.0"

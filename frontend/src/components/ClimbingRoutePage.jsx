@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Card, CardContent, Typography, Button, Box, TextField, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import CustomRating from './Rating';
 import Comments from "./Comments.jsx";
+import AnimatedGradesChart from './AnimatedGradesChart.jsx';
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function ClimbingRoutePage() {
@@ -288,103 +290,120 @@ export default function ClimbingRoutePage() {
     if (!route) return <div>Loading...</div>;
 
     return (
-        <div className="climbing-area-card">
-            <h2 className="climbing-area-title">{route.name}</h2>
-            <div className="climbing-area-info"><strong>Length:</strong> {route.length} m</div>
-            <div className="climbing-area-info"><strong>Type:</strong> {route.type}</div>
-            <div className="climbing-area-info"><strong>Posted by:</strong> {route.postedBy?.username || "Unknown"}</div>
-            <div className="climbing-area-info"><strong>Climbing Area:</strong> {route.climbingArea?.name || "Unknown"}</div>
-            <div className="climbing-area-info" style={{ marginTop: 16 }}>
-                <strong>Average Rating:</strong> {averageRating ? averageRating.toFixed(2) : "No ratings yet"}
-            </div>
-            <div style={{ margin: "8px 0" }}>
-                <CustomRating
-                    value={userRating}
-                    onChange={handleRatingChange}
-                    readonly={!localStorage.getItem("token")}
-                />
-                <br />
-                <span style={{ marginLeft: 8 }}>{userRating ? `(Your rating: ${userRating})` : ""}</span>
-                <br />
-            </div>
-
-            {userClimbed ? (
-                <div style={{margin: "16px 0", color: "#2d7a4a"}}>
-                    <strong>You have already climbed this route.</strong><br />
-                    Attempts: {userClimbed.attempts}<br />
-                    Your grade: {userClimbed.gradeOpinion}
-                </div>
-            ) : isClimbed ? (
-                <>
-                    <select
-                        value={selectedGrade}
-                        onChange={(e) => setSelectedGrade(e.target.value)}
-                    >
-                        {(route.type === "boulder" ? boulderGrades : route.type === "lead" ? ropeGrades
-                                : route.type === "urban" ? urbanGrades : []
-                        ).map((option, index) => (
-                            <option key={index} value={option}>{option}</option>
-                        ))}
-                    </select>
-                    <input
-                        type="number"
-                        min="1"
-                        placeholder="Number of attempts"
-                        value={attempts}
-                        onChange={e => setAttempts(e.target.value)}
-                        style={{ marginLeft: 8, width: 120 }}
-                    />
-                    <button
-                        style={{ marginLeft: 8 }}
-                        onClick={() => {handleMarkClimbed();}}
-                    >
-                        Submit
-                    </button>
-                </>
-            ) : (
-                <button onClick={() => setIsClimbed(true)}>
-                    Mark as Climbed
-                </button>
-            )}
-            <div style={{ margin: "16px 0" }}></div>
-            <span>Average grade: {averageGrade}</span>
-            <h3 style={{ marginTop: 32 }}>Add a Comment</h3>
-            <form onSubmit={handleAddComment} style={{ marginBottom: 24 }}>
-                <textarea
-                    value={newComment}
-                    onChange={e => setNewComment(e.target.value)}
-                    placeholder="Write your comment..."
-                    rows={3}
-                    style={{ width: "100%", borderRadius: 8, padding: 8, fontSize: 16, marginBottom: 8 }}
-                    required
-                />
-                <div>
-                    <button
-                        type="button"
-                        onClick={() => fileInputRef.current.click()}
-                        style={{ marginRight: 8 }}
-                    >
-                        Add Image
-                    </button>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        style={{ display: "none" }}
-                        ref={fileInputRef}
-                        onChange={handleImageChange}
-                    />
-                    {imagePreview && (
-                        <img
-                            src={imagePreview}
-                            alt="Preview"
-                            style={{ maxWidth: 200, marginTop: 8, display: "block", borderRadius: 8 }}
-                        />
+        <Box display="flex" justifyContent="center" mt={4}>
+            <Card sx={{ minWidth: 350, maxWidth: 800, width: '100%' }}>
+                <CardContent>
+                    <Typography variant="h4" gutterBottom>{route.name}</Typography>
+                    <Typography variant="body1"><strong>Length:</strong> {route.length} m</Typography>
+                    <Typography variant="body1"><strong>Type:</strong> {route.type}</Typography>
+                    <Typography variant="body1"><strong>Posted by:</strong> {route.postedBy?.username || "Unknown"}</Typography>
+                    <Typography variant="body1"><strong>Climbing Area:</strong> {route.climbingArea?.name || "Unknown"}</Typography>
+                    <Box mt={2} mb={2}>
+                        <Typography variant="body1"><strong>Average Rating:</strong> {averageRating ? averageRating.toFixed(2) : "No ratings yet"}</Typography>
+                        <Box display="flex" alignItems="center" mt={1}>
+                            <CustomRating
+                                value={userRating}
+                                onChange={handleRatingChange}
+                                readonly={!localStorage.getItem("token")}
+                            />
+                            {userRating ? (
+                                <Typography variant="body2" sx={{ ml: 2 }}>
+                                    (Your rating: {userRating})
+                                </Typography>
+                            ) : null}
+                        </Box>
+                    </Box>
+                    {userClimbed ? (
+                        <Box my={2} color="success.main">
+                            <Typography variant="body1"><strong>You have already climbed this route.</strong></Typography>
+                            <Typography variant="body2">Attempts: {userClimbed.attempts}</Typography>
+                            <Typography variant="body2">Your grade: {userClimbed.gradeOpinion}</Typography>
+                        </Box>
+                    ) : isClimbed ? (
+                        <Box display="flex" alignItems="center" gap={2} my={2}>
+                            <FormControl sx={{ minWidth: 120 }}>
+                                <InputLabel>Grade</InputLabel>
+                                <Select
+                                    value={selectedGrade}
+                                    label="Grade"
+                                    onChange={e => setSelectedGrade(e.target.value)}
+                                >
+                                    {(route.type === "boulder" ? boulderGrades : route.type === "lead" ? ropeGrades
+                                            : route.type === "urban" ? urbanGrades : []
+                                    ).map((option, index) => (
+                                        <MenuItem key={index} value={option}>{option}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <TextField
+                                type="number"
+                                label="Attempts"
+                                value={attempts}
+                                onChange={e => setAttempts(e.target.value)}
+                                inputProps={{ min: 1 }}
+                                sx={{ width: 120 }}
+                            />
+                            <Button
+                                variant="contained"
+                                onClick={handleMarkClimbed}
+                            >
+                                Submit
+                            </Button>
+                        </Box>
+                    ) : (
+                        <Button
+                            variant="contained"
+                            onClick={() => setIsClimbed(true)}
+                            sx={{ my: 2 }}
+                        >
+                            Mark as Climbed
+                        </Button>
                     )}
-                </div>
-                <button type="submit" style={{ marginTop: 8 }}>Add Comment</button>
-            </form>
-            <h3>Comments</h3>
-            <Comments comments={comments} />
-        </div>
+                    <Typography variant="body2" sx={{ mt: 2 }}>Average grade: {averageGrade}</Typography>
+                    <AnimatedGradesChart routeId={id} />
+                    <Typography variant="h6" sx={{ mt: 4 }}>Add a Comment</Typography>
+                    <Box component="form" onSubmit={handleAddComment} sx={{ mb: 3 }}>
+                        <TextField
+                            multiline
+                            minRows={3}
+                            fullWidth
+                            label="Write your comment..."
+                            value={newComment}
+                            onChange={e => setNewComment(e.target.value)}
+                            sx={{ mb: 2 }}
+                            required
+                        />
+                        <Box display="flex" alignItems="center" gap={2}>
+                            <Button
+                                variant="outlined"
+                                component="span"
+                                onClick={() => fileInputRef.current.click()}
+                            >
+                                Add Image
+                            </Button>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                style={{ display: "none" }}
+                                ref={fileInputRef}
+                                onChange={handleImageChange}
+                            />
+                            {imagePreview && (
+                                <Box>
+                                    <img
+                                        src={imagePreview}
+                                        alt="Preview"
+                                        style={{ maxWidth: 200, borderRadius: 8 }}
+                                    />
+                                </Box>
+                            )}
+                        </Box>
+                        <Button type="submit" variant="contained" sx={{ mt: 2 }}>Add Comment</Button>
+                    </Box>
+                    <Typography variant="h6">Comments</Typography>
+                    <Comments comments={comments} />
+                </CardContent>
+            </Card>
+        </Box>
     );
 }
