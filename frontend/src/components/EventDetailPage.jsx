@@ -32,12 +32,11 @@ function EventDetailPage() {
                 }
                 if (!res.ok) throw new Error("Could not fetch event details.");
                 const data = await res.json();
-                if(!data[0]){
+                if(!data){
                     return setError("missing data");
                 }
-                console.log(data.name?data.name:"name not found!");
-                console.log(data[0])
-                setEvent(data[0]);
+                console.log(data.groups)
+                setEvent(data);
             } catch (err) {
                 setError(err.message);
             }

@@ -36,7 +36,7 @@ function EventsPage() {
                         "Content-Type": "application/json",
                     },
                 });
-                if(res.status ===403 || res.status === 401) {
+                if (res.status === 403 || res.status === 401) {
                     localStorage.removeItem("token");
                     navigate("/login");
                     return;
@@ -51,6 +51,7 @@ function EventsPage() {
                 setLoading(false);
             }
         }
+
         getEvents();
     }, []);
 
@@ -74,24 +75,24 @@ function EventsPage() {
                         variant="outlined"
                         underline="none"
                     >
-                        <Grid item xs={12} sm={6} md={4} key={event._id}>
-                            <Card>
-                                <CardContent sx={{flexGrow: 1}}>
-                                    <Typography variant="h6">{event.name}</Typography>
-                                    <Typography color="text.secondary">
-                                        {new Date(event.date).toLocaleDateString(undefined, {
-                                            weekday: 'short',
-                                            year: 'numeric',
-                                            month: 'short',
-                                            day: 'numeric',
-                                        })}
-                                    </Typography>
-                                    <Typography variant="body3">
-                                        {event.description || "No description provided."}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
+
+                        <Card>
+                            <CardContent sx={{flexGrow: 1}}>
+                                <Typography variant="h6">{event.name}</Typography>
+                                <Typography color="text.secondary">
+                                    {new Date(event.date).toLocaleDateString(undefined, {
+                                        weekday: 'short',
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric',
+                                    })}
+                                </Typography>
+                                <Typography variant="body3">
+                                    {event.description || "No description provided."}
+                                </Typography>
+                            </CardContent>
+                        </Card>
+
                     </Link>
                 ))}
             </Grid>

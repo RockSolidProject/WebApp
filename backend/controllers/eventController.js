@@ -14,15 +14,15 @@ module.exports = {
     show: async function (req, res) {
         try {
             const event = await EventModel.findOne({_id:req.params.id})
-                .populate("climbingareas")
-                .populate("climbingcenters")
+                .populate("climbingAreas")
+                .populate("climbingCenters")
                 .populate("groups");
 
-            if (!event[0]) {
+
+            if (!event) {
                 return res.status(404).json({ message: "Event not found" });
             }
-
-            return res.json(event[0]);
+            return res.json(event);
         } catch (err) {
             return res.status(500).json({
                 message: "Error when fetching event.",

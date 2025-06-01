@@ -38,7 +38,7 @@ module.exports = {
                 ...nameFilter,
             });
 
-            // Get groups where the user is a member, populate the group
+            /*// Get groups where the user is a member, populate the group
             const memberships = await GroupMemberModel.find({ member: userId }).populate({
                 path: "group",
                 match: nameFilter,
@@ -49,10 +49,10 @@ module.exports = {
                 .filter(group => group && group.owner.toString() !== userId);
 
             // Merge and deduplicate (optional but safe)
-            const allGroups = [...ownedGroups, ...memberGroups];
+            const allGroups = [...ownedGroups, ...memberGroups];*/
 
             // Apply limit
-            const limitedGroups = allGroups.slice(0, limit);
+            const limitedGroups = ownedGroups.slice(0, limit);
 
             return res.json(limitedGroups);
         } catch (err) {

@@ -4,15 +4,15 @@ var Schema   = mongoose.Schema;
 var eventSchema = new Schema({
 	'climbingAreas' : [{
 		type: Schema.Types.ObjectId,
-		ref: 'climbingAreas'
+		ref: 'climbingArea'
 	}],
 	'climbingCenters' : [{
 		type: Schema.Types.ObjectId,
-		ref: 'climbingCenters'
+		ref: 'climbingCenter'
 	}],
 	'groups' : [{
 		type: Schema.Types.ObjectId,
-		ref: 'groups'
+		ref: 'group'
 	}],
 	'name' : {
 		type: String,
