@@ -49,7 +49,7 @@ const Header = () => {
                                 backgroundColor: 'grey.50', 
                                 }
                         }}>
-                            Groups
+                            Skupine
                         </Button>
                     </Box>
                     <Box display="flex" alignItems="center" gap={1}>
@@ -66,23 +66,23 @@ const Header = () => {
                                     transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                                 >
                                     <MenuItem onClick={() => { navigate("/profile"); handleMenuClose(); }}>
-                                        Profile
+                                        Profil
                                     </MenuItem>
                                     <MenuItem onClick={() => { navigate("/userGroups"); handleMenuClose(); }}>
-                                        My Groups
+                                        Moje skupine
                                     </MenuItem>
                                     <MenuItem onClick={handleLogout}>
-                                        <Typography color="error">Logout</Typography>
+                                        <Typography color="error">Odjava</Typography>
                                     </MenuItem>
                                 </Menu>
                         </>
                         ) : (
                             <>
                                 <Button component={Link} to="/login" variant="outlined" color="primary">
-                                    Login
+                                    Prijava
                                 </Button>
                                 <Button component={Link} to="/register" variant="contained" color="primary">
-                                    Register
+                                    Registracija
                                 </Button>
                             </>
                         )}
