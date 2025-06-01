@@ -1,5 +1,6 @@
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents} from 'react-leaflet';
 import MapResetButton from './MapResetButton';
+import leaflet from 'leaflet';
 
 const SloveniaEmptyMap = ({ latitude, longitude, setLatitude, setLongitude }) => {
     const bounds = [[45.37, 13.3],[46.89, 16.6]]
@@ -22,7 +23,7 @@ const SloveniaEmptyMap = ({ latitude, longitude, setLatitude, setLongitude }) =>
         <MapContainer
                 bounds={bounds}
                 maxBounds={[[45.37, 13.3],[46.89, 16.6]]}
-                style={{ height: '400px', width: '600px' }}
+                style={{ width: '100%', aspectRatio: "3 / 2" }}
                 doubleClickZoom={false}
                 maxBoundsViscosity={1}
             >
@@ -36,7 +37,16 @@ const SloveniaEmptyMap = ({ latitude, longitude, setLatitude, setLongitude }) =>
             
             <ClickHandler setLatitude={setLatitude} setLongitude={setLongitude}/>
 
-            <Marker position={[latitude, longitude]}>
+            <Marker position={[latitude, longitude]}
+                icon={leaflet.icon({
+                    iconUrl: "/markers/default-marker.png",
+                    iconSize: [25, 42],
+                    iconAnchor: [12.5, 42],
+                    shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
+                    popupAnchor: [0, -34],
+                    shadowSize: [40, 30]
+                })}
+            >
                 <Popup>Center of search</Popup>
             </Marker>
         </MapContainer>
