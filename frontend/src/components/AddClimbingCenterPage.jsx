@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import SloveniaEmptyMap from './SloveniaEmptyMap';
+import {Container,TextField,Typography,Button, Box, FormControlLabel, Checkbox, Stack} from '@mui/material';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -74,78 +75,88 @@ const AddClimbingCenterPage = () => {
     }
 
     return (
-        <>
-            <h1>Add Climbing Center</h1>
-            <form onSubmit={handleAddingClimbingCenter}>
-                <div>
-                    <label>
-                        Name: <br />
-                        <input type="text" value={name}
-                               onChange={e => setName(e.target.value)} required
-                        />
-                    </label>
-                </div>
+        <Container maxWidth="sm">
+            <Typography variant="h4" mt={2} gutterBottom>
+                Dodajanje plezalnega centra
+            </Typography>
+            <Box
+                component="form"
+                onSubmit={handleAddingClimbingCenter}
+                sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: "100%" }}
+            >
                 <SloveniaEmptyMap 
                     latitude={latitude} 
                     setLatitude={setLatitude}
                     longitude={longitude}
                     setLongitude={setLongitude}
                 />
-                <div>
-                    <label>
-                        Latitude: <br />
-                        <input type="text" value={latitude}
-                               onChange={e => setLatitude(e.target.value)} required
-                        />
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Longitude: <br />
-                        <input type="text" value={longitude}
-                               onChange={e => setLongitude(e.target.value)} required
-                        />
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        <input type="checkbox" checked={hasBoulders}
-                               onChange={e => setHasBoulders(e.target.checked)} />
-                        Has Boulders
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        <input type="checkbox" checked={hasRoutes}
-                               onChange={e => setHasRoutes(e.target.checked)} />
-                        Has Routes
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        <input type="checkbox" checked={hasMoonboard}
-                               onChange={e => setHasMoonboard(e.target.checked)} />
-                        Has Moonboard
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        <input type="checkbox" checked={hasSprayWall}
-                               onChange={e => setHasSprayWall(e.target.checked)} />
-                        Has Spray Wall
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        <input type="checkbox" checked={hasKilter}
-                               onChange={e => setHasKilter(e.target.checked)} />
-                        Has Kilter
-                    </label>
-                </div>
-                <button type="submit">Add Climbing Center</button>
-            </form>
+                <TextField
+                    label="Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    fullWidth
+                />
+
+                <Stack direction="column" spacing={0}>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                            checked={hasBoulders}
+                            onChange={(e) => setHasBoulders(e.target.checked)}
+                            />
+                        }
+                        sx={{ mt: -1 }}
+                        label="Has Boulders"
+                    />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                            checked={hasRoutes}
+                            onChange={(e) => setHasRoutes(e.target.checked)}
+                            />
+                        }
+                        sx={{ mt: -1 }}
+                        label="Has Routes"
+                    />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                            checked={hasMoonboard}
+                            onChange={(e) => setHasMoonboard(e.target.checked)}
+                            />
+                        }
+                        sx={{ mt: -1 }}
+                        label="Has Moonboard"
+                    />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                            checked={hasSprayWall}
+                            onChange={(e) => setHasSprayWall(e.target.checked)}
+                            />
+                        }
+                        sx={{ mt: -1 }}
+                        label="Has Spray Wall"
+                    />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                            checked={hasKilter}
+                            onChange={(e) => setHasKilter(e.target.checked)}
+                            />
+                        }
+                        sx={{ mt: -1 }}
+                        label="Has Kilter"
+                    />
+                </Stack>
+
+                <Button type="submit" variant="contained" color="primary">
+                    Dodaj plezalni center
+                </Button>
+            </Box>
             {error ? <p style={{color: "red"}}>{error}</p> : ""}
-        </>
+        </Container>
     );
 };
 

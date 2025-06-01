@@ -85,7 +85,7 @@ const AddClimbingAreaPage = () => {
                     fullWidth
                 />
                 <Button type="submit" variant="contained" color="primary">
-                    Add climbing area
+                    Dodaj plezališče
                 </Button>
             </Box>
 
