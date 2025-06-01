@@ -10,6 +10,7 @@ import {
     Label,
     CartesianGrid
 } from "recharts";
+import { Box, Typography, Button, CircularProgress } from "@mui/material";
 
 const ropeGrades = [
     "3", "3+", "4a", "4b", "4c",
@@ -32,8 +33,8 @@ const urbanGrades = [
 
 function getGradesByType(type) {
     if (type === "boulder") return boulderGrades;
-    if (type === "lead")    return ropeGrades;
-    if (type === "urban")   return urbanGrades;
+    if (type === "lead") return ropeGrades;
+    if (type === "urban") return urbanGrades;
     return [];
 }
 
@@ -43,54 +44,61 @@ export default function GradesOverTimeChart({ routeId }) {
     const [dataOverTime, setDataOverTime] = useState([]);
     const [routeType, setRouteType] = useState(null);
     const [chartData, setChartData] = useState([]);
-    const [currentPeriod, setCurrentPeriod] = useState("");
+    const [currentMonth, setCurrentMonth] = useState("");
     const [yMax, setYMax] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
+    const [isPlaying, setIsPlaying] = useState(false);
 
     const indexRef = useRef(0);
     const intervalRef = useRef(null);
 
     useEffect(() => {
         if (!routeId) return;
-
         setIsLoading(true);
 
         fetch(`${backendUrl}/routeConnections/gradesOverTime/${routeId}`)
             .then(async (res) => {
                 if (!res.ok) {
                     const text = await res.text();
-                    throw new Error(`Server napaka: ${res.status} – ${text}`);
+                    throw new Error(`Error when getting data for chart: ${res.status} – ${text}`);
                 }
                 return res.json();
             })
-            .then((resp) => {
-                const arr = Array.isArray(resp.data) ? resp.data : [];
-                const rt = resp.routeType;
+            .then((response) => {
+                const arr = Array.isArray(response.data) ? response.data : [];
+                const rType = response.routeType;
 
                 setDataOverTime(arr);
-                setRouteType(rt);
+                setRouteType(rType);
 
-                if (!arr.length || !rt) {
+                if (!arr.length || !rType) {
                     setChartData([]);
                     setYMax(1);
                     return;
                 }
 
-                let maxVal = 1;
-                arr.forEach(entry => {
-                    Object.values(entry.grades).forEach(count => {
-                        if (count > maxVal) maxVal = count;
+                const gradesList = getGradesByType(rType);
+                const cumulativeCounts = {};
+                gradesList.forEach(grade => cumulativeCounts[grade] = 0);
+
+                let maxCumulative = 1;
+                arr.forEach(entry => { // Get max value on chart
+                    gradesList.forEach(grade => {
+                        cumulativeCounts[grade] += entry.grades[grade] || 0;
+                        if (cumulativeCounts[grade] > maxCumulative) {
+                            maxCumulative = cumulativeCounts[grade];
+                        }
                     });
                 });
-                setYMax(maxVal);
 
-                const gradesList = getGradesByType(rt);
-                const initialData = gradesList.map(grade => ({
+                setYMax(maxCumulative);
+
+                const startData = gradesList.map(grade => ({
                     grade,
                     count: 0
                 }));
-                setChartData(initialData);
-                setCurrentPeriod(arr[0]?.period || "");
+                setChartData(startData);
+                setCurrentMonth(arr[0]?.period || "");
             })
             .catch((err) => {
                 console.error("Fetch napaka:", err.message);
@@ -100,65 +108,82 @@ export default function GradesOverTimeChart({ routeId }) {
             .finally(() => setIsLoading(false));
     }, [routeId]);
 
-    useEffect(() => {
-        if (isLoading || !routeType || dataOverTime.length === 0) return;
+    function startAnimation() {
+        if (!routeType || dataOverTime.length === 0) return;
 
         clearInterval(intervalRef.current);
         indexRef.current = 0;
 
         const gradesList = getGradesByType(routeType);
         setChartData(gradesList.map(grade => ({ grade, count: 0 })));
-        setCurrentPeriod(dataOverTime[0].period);
+        setCurrentMonth(dataOverTime[0].period);
+
+        setIsPlaying(true);
+
+        const animationTime = 3000 / dataOverTime.length;
 
         intervalRef.current = setInterval(() => {
-            const idx = indexRef.current;
+            const index = indexRef.current;
 
-            if (idx >= dataOverTime.length) {
+            if (index >= dataOverTime.length) {
                 clearInterval(intervalRef.current);
+                setIsPlaying(false);
                 return;
             }
 
-            const entry = dataOverTime[idx];
-            setCurrentPeriod(entry.period);
+            const entry = dataOverTime[index];
+            setCurrentMonth(entry.period);
 
-            setChartData(prev => {
-                return prev.map(item => ({
+            setChartData(previous => {
+                return previous.map(item => ({
                     ...item,
                     count: item.count + (entry.grades[item.grade] || 0),
                 }));
             });
 
             indexRef.current += 1;
-        }, 500);
+        }, animationTime);
+    }
+
+    useEffect(() => {
+        if (isLoading) return;
+        if (!routeType || dataOverTime.length === 0) return;
+
+        startAnimation();
 
         return () => clearInterval(intervalRef.current);
-    }, [dataOverTime, routeType, isLoading]);
+    }, [isLoading, routeType, dataOverTime]);
 
-    // DEBUG: odstrani kasneje
-    console.log("chartData:", chartData);
-    console.log("dataOverTime:", dataOverTime);
-    console.log("routeType:", routeType);
-    console.log("yMax:", yMax);
+    const formatYAxis = (value) => {
+        return Number.isInteger(value) ? value : '';
+    };
 
     if (isLoading) {
-        return <div className="p-4 text-center">Nalaganje podatkov...</div>;
+        return <Box p={4} textAlign="center"><CircularProgress /></Box>;
     }
 
     if (!chartData.length || !routeType) {
-        return <div className="p-4 text-center">Ni podatkov za prikaz</div>;
+        return <Box p={4} textAlign="center">Ni podatkov za prikaz</Box>;
     }
+    const generateYAxisScale = (max) => {
+        const scale = [];
+        for (let i = 0; i <= max; i++) {
+            scale.push(i);
+        }
+        return scale;
+    };
 
     return (
-        <div className="w-full h-full flex flex-col">
-            <h3 className="text-center font-bold mb-2">
-                Kumulativne ocene do {currentPeriod}
-            </h3>
+        <Box width="100%" display="flex" flexDirection="column">
+            <Typography variant="h6" align="center" fontWeight="bold" mb={1}>
+                Kumulativne ocene do {currentMonth}
+            </Typography>
 
-            <div className="flex-grow min-h-[400px]">
-                <ResponsiveContainer width="100%" height={400}>
+            <Box>
+                <ResponsiveContainer width="100%" height={350}>
                     <BarChart
                         data={chartData}
-                        margin={{ top: 20, right: 30, left: 40, bottom: 60 }}
+                        margin={{ top: 10, right: 20, left: 20, bottom: 30 }}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis
@@ -168,19 +193,19 @@ export default function GradesOverTimeChart({ routeId }) {
                             height={60}
                             interval={0}
                         >
-                            <Label
-                                value="Težavnost (Grade)"
-                                position="insideBottom"
-                                offset={-50}
-                                style={{ textAnchor: 'middle' }}
-                            />
                         </XAxis>
-
-                        <YAxis domain={[0, yMax]}>
+                        <YAxis
+                            domain={[0, yMax]}
+                            tickFormatter={formatYAxis}
+                            ticks={generateYAxisScale(yMax)}
+                            allowDecimals={false}
+                        >
                             <Label
-                                value="Kumulativno število ocen"
+                                value="Število ocen"
                                 angle={-90}
                                 position="insideLeft"
+                                offset={-10}
+                                fill="#3b82f6"
                                 style={{ textAnchor: 'middle' }}
                             />
                         </YAxis>
@@ -189,19 +214,27 @@ export default function GradesOverTimeChart({ routeId }) {
                             formatter={(value) => [`${value}`, 'Število ocen']}
                             labelFormatter={(label) => `Težavnost: ${label}`}
                         />
-
                         <Legend />
-
                         <Bar
                             dataKey="count"
-                            name="Število ocen"
+                            name="Ocene"
                             fill="#3b82f6"
                             animationDuration={500}
                             isAnimationActive={true}
                         />
                     </BarChart>
                 </ResponsiveContainer>
-            </div>
-        </div>
+            </Box>
+            <Box mt={2} textAlign="center">
+                <Button
+                    onClick={startAnimation}
+                    variant="contained"
+                    color="primary"
+                    disabled={isPlaying}
+                >
+                    {isPlaying ? "Predvajanje..." : "Ponovno predvajanje"}
+                </Button>
+            </Box>
+        </Box>
     );
 }

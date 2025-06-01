@@ -97,12 +97,6 @@ module.exports = {
 
     },
 
-    // getAverageAttempts: async function(req, res) {
-    //     const routeId = req.params.routeId
-    //     try{
-    //
-    //     }
-    // }
 
     getRoutesComments: async function(req, res) {
         const routeId = req.params.routeId
@@ -255,40 +249,61 @@ module.exports = {
     getGradesOverTime: async function(req, res) {
         const routeId = req.params.routeId;
         try {
-            const rates = await RouteClimbedModel.find({ climbingRoute: routeId }).populate("climbingRoute");
-            if (!rates.length) return res.json({ data: [], routeType: null });
+            const climbedData = await RouteClimbedModel.find({ climbingRoute: routeId })
+                .populate("climbingRoute");
 
-            const routeType = rates[0].climbingRoute.type;
+            if (!climbedData.length) {
+                return res.json({ data: [], routeType: null });
+            }
+            const routeType = climbedData[0].climbingRoute.type;
             let gradeList = [];
-            if (routeType === "boulder") gradeList = boulderGrades;
-            else if (routeType === "lead") gradeList = ropeGrades;
-            else if (routeType === "urban") gradeList = urbanGrades;
 
-            // Group by period and count grades
-            const grouped = {};
-            rates.forEach(r => {
-                let date = r.dateTime || (r.createdAt ? r.createdAt : (r._id.getTimestamp ? r._id.getTimestamp() : null));
-                let period = date ? new Date(date).toISOString().slice(0, 7) : "unknown";
-                if (!grouped[period]) {
-                    grouped[period] = {};
-                    gradeList.forEach(g => grouped[period][g] = 0);
+            if (routeType === "boulder") {
+                gradeList = boulderGrades;
+            } else if (routeType === "lead") {
+                gradeList = ropeGrades;
+            } else if (routeType === "urban") {
+                gradeList = urbanGrades;
+            }
+
+            const monthlyGrades = {};
+
+            climbedData.forEach(data => {
+                const recordDate = data.dateTime ||
+                    (data.createdAt ? data.createdAt :
+                        (data._id.getTimestamp ? data._id.getTimestamp() : null));
+
+                const yearMonth = recordDate ?
+                    new Date(recordDate).toISOString().slice(0, 7) : "unknown";
+
+                if (!monthlyGrades[yearMonth]) {
+                    monthlyGrades[yearMonth] = {};
+                    gradeList.forEach(grade => monthlyGrades[yearMonth][grade] = 0);
                 }
-                if (gradeList.includes(r.gradeOpinion)) {
-                    grouped[period][r.gradeOpinion]++;
+
+                if (gradeList.includes(data.gradeOpinion)) {
+                    monthlyGrades[yearMonth][data.gradeOpinion]++;
                 }
             });
 
-            const result = Object.entries(grouped)
-                .sort(([a], [b]) => a.localeCompare(b))
+            // sort
+            const result = Object.entries(monthlyGrades)
+                .sort(([monthA], [monthB]) => monthA.localeCompare(monthB))
                 .map(([period, grades]) => ({
                     period,
                     grades
                 }));
 
-            // Return object with data array and routeType
-            res.json({ data: result, routeType });
+            res.json({
+                data: result,
+                routeType
+            });
+
         } catch (err) {
-            res.status(500).json({ message: "Error getting grades over time.", error: err });
+            res.status(500).json({
+                message: "Error getting grades over time.",
+                error: err
+            });
         }
     }
 }
