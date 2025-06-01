@@ -22,6 +22,11 @@ router.get('/comment/:routeId', routeConnectionController.getRoutesComments)
 /*
  * GET
  */
+router.get('/gradesOverTime/:routeId', routeConnectionController.getGradesOverTime);
+
+/*
+ * GET
+ */
 router.get('/rating/:routeId', routeConnectionController.getRoutesRatings)
 
 /*

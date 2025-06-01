@@ -44,7 +44,7 @@ const AddClimbingCenterPage = () => {
                     name,
                     latitude,
                     longitude,
-                    owner: user.id, // Include the owner field
+                    owner: user.id,
                     hasBoulders,
                     hasRoutes,
                     hasMoonboard,

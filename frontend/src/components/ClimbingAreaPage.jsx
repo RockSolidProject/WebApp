@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
-import ShowLocationOnMap from "./ShowLocationOnMap.jsx";
-
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { Card, CardContent, Typography, Button, List, ListItem, ListItemText, Box } from '@mui/material';
+import ShowLocationOnMap from './ShowLocationOnMap.jsx';
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const ClimbingAreaPage = () => {
@@ -43,41 +42,53 @@ const ClimbingAreaPage = () => {
         getRoutes();
     }, [id]);
 
-
-
-    if (error) return <div className="climbing-area-error">{error}</div>;
-    if (!area) return <div className="climbing-area-loading">Loading...</div>;
+    if (error) return <Typography color="error">{error}</Typography>;
+    if (!area) return <Typography>Loading...</Typography>;
 
     return (
-        <div className="climbing-area-card">
-            <h2 className="climbing-area-title">{area.name}</h2>
-            <div className="climbing-area-info"><strong>Latitude:</strong> {area.latitude}</div>
-            <div className="climbing-area-info"><strong>Longitude:</strong> {area.longitude}</div>
-            <div className="climbing-area-info"><strong>Posted by:</strong> {area.postedBy?.username || 'Unknown'}</div>
-            <ShowLocationOnMap latitude={area.latitude} longitude={area.longitude} />
-            <h3 style={{marginTop: '24px', color: '#2d3a4a'}}>Routes</h3>
-            {routes && routes.length > 0 ? (
-                <ul className="climbing-area-routes-list">
-                    {routes.map(route => (
-                        <li key={route._id} className="climbing-area-route-item">
-                            <strong
-                                style={{ cursor: "pointer", color: "blue" }}
-                                onClick={() => navigate(`/climbingRoutes/${route._id}`)}
-                            >
-                                {route.name}
-                            </strong>
-                            <span className="climbing-area-route-type"> ({route.type})</span>
-                            {route.postedBy ? (
-                                <span className="climbing-area-route-author">by {route.postedBy.username}</span>
-                            ) : ''}
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p className="climbing-area-info" style={{color: '#888'}}>No routes available.</p>
-            )}
-
-        </div>
+        <Box display="flex" justifyContent="center" mt={4}>
+            <Card sx={{ minWidth: 350, maxWidth: 800, width: '100%' }}>
+                <CardContent>
+                    <Typography variant="h4" gutterBottom>{area.name}</Typography>
+                    <Typography variant="body1"><strong>Latitude:</strong> {area.latitude}</Typography>
+                    <Typography variant="body1"><strong>Longitude:</strong> {area.longitude}</Typography>
+                    <Typography variant="body1"><strong>Posted by:</strong> {area.postedBy?.username || 'Unknown'}</Typography>
+                    <Box my={2}>
+                        <ShowLocationOnMap latitude={area.latitude} longitude={area.longitude} />
+                    </Box>
+                    <Box mb={2}>
+                        <Button
+                            component={Link}
+                            to={`/climbingAreas/${id}/addRoute`}
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                        >
+                            Add New Route
+                        </Button>
+                    </Box>
+                    <Typography variant="h6" color="primary" gutterBottom>Routes</Typography>
+                    {routes && routes.length > 0 ? (
+                        <List>
+                            {routes.map(route => (
+                                <ListItem
+                                    key={route._id}
+                                    button
+                                    onClick={() => navigate(`/climbingRoutes/${route._id}`)}
+                                >
+                                    <ListItemText
+                                        primary={`${route.name} (${route.type})`}
+                                        secondary={route.postedBy ? `by ${route.postedBy.username}` : ''}
+                                    />
+                                </ListItem>
+                            ))}
+                        </List>
+                    ) : (
+                        <Typography color="text.secondary">No routes available.</Typography>
+                    )}
+                </CardContent>
+            </Card>
+        </Box>
     );
 };
 
