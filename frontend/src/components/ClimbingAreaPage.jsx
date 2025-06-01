@@ -47,7 +47,7 @@ const ClimbingAreaPage = () => {
 
     return (
         <Box display="flex" justifyContent="center" mt={4}>
-            <Card sx={{ minWidth: 350, maxWidth: 600, width: '100%' }}>
+            <Card sx={{ minWidth: 350, maxWidth: 800, width: '100%' }}>
                 <CardContent>
                     <Typography variant="h4" gutterBottom>{area.name}</Typography>
                     <Typography variant="body1"><strong>Latitude:</strong> {area.latitude}</Typography>

@@ -20,6 +20,26 @@ module.exports = {
         }
     },
 
+    listSearch: async function (req, res) {
+        try {
+            const limit = parseInt(req.query.limit) || 10;
+            const pattern = req.query.pattern || "";
+            const nameFilter = { name: { $regex: `^${pattern}`, $options: "i" } };
+
+            const climbingCenters = await climbingCenterModel
+                .find(nameFilter)       // Apply regex filter here
+                .limit(limit)           // Limit number of results
+                .populate("owner");
+
+            return res.json(climbingCenters);
+        } catch (err) {
+            return res.status(500).json({
+                message: 'Error when getting climbing centers.',
+                error: err.message || err
+            });
+        }
+    },
+
     /**
      * climbingCenterController.show()
      */

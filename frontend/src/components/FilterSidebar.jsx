@@ -1,148 +1,150 @@
 import React, {useState} from 'react';
+import {Collapse,Box,Typography,FormControlLabel,Checkbox,Slider,Divider,Button,Stack, useMediaQuery, useTheme} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 const FilterSidebar = ({requireBoulder, setRequireBoulder, requireLead, setRequireLead, requireUrban, setRequireUrban, requiredNumberOfRoutes, setRequiredNumberOfRoutes,
       distanceTmp, setDistanceTmp, setDistance, latitude, setLatitude, longitude, setLongitude, choosingLocation, setChoosingLocation, isLoggedIn, navigate, climbingAreas, setRequireMoonboard, requireMoonboard,
-      setRequireSpraywall, requireSpraywall, setRequireLeadCenter, requireLeadCenter, setRequireBoulders, requireBoulders, setRequireKilter, requireKilter
+      setRequireSpraywall, requireSpraywall, setRequireLeadCenter, requireLeadCenter, setRequireBoulders, requireBoulders, setRequireKilter, requireKilter, setShowClimbingAreas,
+      showClimbingAreas, showClimbingCenters, setShowClimbingCenters
 }) => {
-    const [showOutdoorFilters, setShowOutdoorFilters] = useState(false);
-    const [showCenterFilters, setShowCenterFilters] = useState(false);
-    return (
-        <div style={{
-            width: "200px",
-            maxWidth: "20%",
-            padding: "20px",
-            height: "100%",
-            marginRight: "15px",
-            backgroundColor: "grey"}}>
-            <h2>Filters:</h2>
-            <label style={{ display: "block", marginBottom: "10px" }}>
-                <input
-                    type="checkbox"
-                    checked={showOutdoorFilters}
-                    onChange={() => setShowOutdoorFilters(!showOutdoorFilters)}
-                />
-                Outdoor Climbing Areas
-            </label>
-            {showOutdoorFilters && (
-                <div style={{ padding: "10px", marginBottom: "15px" }}>
-                    <h3>By Route Type:</h3>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={requireBoulder}
-                            onChange={() => setRequireBoulder(!requireBoulder)}
-                        />
-                        Boulder Route
-                        <br />
-                    </label>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={requireLead}
-                            onChange={() => setRequireLead(!requireLead)}
-                        />
-                        Lead Route
-                        <br />
-                    </label>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={requireUrban}
-                            onChange={() => setRequireUrban(!requireUrban)}
-                        />
-                        Urban Route
-                        <br />
-                    </label>
-                    <h3>Number of Routes:</h3>
-                    <div>At least: {requiredNumberOfRoutes}</div>
-                    <input
+    const [isActiveMobile, setIsActiveMobile] = useState(false)
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm')); 
+
+    const contentFilters = (<>
+        <FormControlLabel
+            control={
+                <Checkbox checked={showClimbingAreas} onChange={() => setShowClimbingAreas(!showClimbingAreas)} />
+            }
+            label={
+                <Typography variant='h6' fontWeight={550}>Zunanja plezališča</Typography>
+            }
+        />
+
+        {showClimbingAreas && (
+            <Box pl={2}>
+                <Typography fontWeight={550} variant="h6" gutterBottom>Vsebujejo:</Typography>
+                <Stack direction="column" spacing={0}>
+                    <FormControlLabel sx={{ mt: -1 }}
+                        control={
+                            <Checkbox size="small" checked={requireBoulder} onChange={() => setRequireBoulder(!requireBoulder)} />
+                        }
+                        label="Balvane"
+                    />
+                    <FormControlLabel sx={{ mt: -1 }}
+                        control={
+                            <Checkbox size="small" checked={requireLead} onChange={() => setRequireLead(!requireLead)} />
+                        }
+                        label="Športne poti"
+                    />
+                    <FormControlLabel sx={{ mt: -1 }}
+                        control={
+                            <Checkbox size="small" checked={requireUrban} onChange={() => setRequireUrban(!requireUrban)} />
+                        }
+                        label="Urbane poti"
+                    />
+                </Stack>
+                <Box style={{display: 'flex', alignItems: 'center', gap: 2}}>
+                    <Typography fontWeight={550} variant="h6" gutterBottom>Število poti: </Typography>
+                    <Typography fontWeight={550} variant="h6" gutterBottom> {requiredNumberOfRoutes}</Typography>
+                </Box>
+                <Box sx={{pl: 1}}>
+                    <Box sx={{ width: "50%" }}>
+                    <Slider
                         type="range"
                         min={0}
                         max={Math.max(1, ...climbingAreas.map(a => a.routes?.length || 0))}
                         value={requiredNumberOfRoutes}
                         onChange={(e) => setRequiredNumberOfRoutes(Number(e.target.value))}
+                        size='small'
                     />
-                </div>
-            )}
+                    </Box>
+                </Box>
+            </Box>
+        )}
 
-            <label style={{ display: "block", marginBottom: "10px" }}>
-                <input
-                    type="checkbox"
-                    checked={showCenterFilters}
-                    onChange={() => setShowCenterFilters(!showCenterFilters)}
-                />
-                Climbing Centers
-            </label>
-            {showCenterFilters && (
-                <div style={{ padding: "10px", marginBottom: "15px" }}>
-                    <h3>By Features:</h3>
-                    <label>
-                        <input type="checkbox"
-                               checked={requireMoonboard}
-                               onChange={() => setRequireMoonboard(!requireMoonboard)}
-                        />
-                        Moonboard
-                        <br />
-                    </label>
-                    <label>
-                        <input type="checkbox"
-                               checked={requireSpraywall}
-                               onChange={() => setRequireSpraywall(!requireSpraywall)}/>
-                        Spraywall
-                        <br />
-                    </label>
-                    <label>
-                        <input type="checkbox"
-                               checked={requireLeadCenter}
-                               onChange={() => setRequireLeadCenter(!requireLeadCenter)}/>
-                        Lead
-                        <br />
-                    </label>
-                    <label>
-                        <input type="checkbox"
-                               checked={requireBoulders}
-                               onChange={() => setRequireBoulders(!requireBoulders)}/>
-                        Boulders
-                        <br />
-                    </label>
-                    <label>
-                        <input type="checkbox"
-                               checked={requireKilter}
-                               onChange={() => setRequireKilter(!requireKilter)}/>
-                        Kilter
-                        <br />
-                    </label>
-                </div>
-            )}
+        <Divider sx={{ my: 2 }} />
 
-            <h3>Razdalja: </h3>
-            <div>Vsaj: {distanceTmp}km</div>
-            <input type="range" min={5} max={135} step={1}
-                   value={distanceTmp}
-                   onTouchEnd={() => setDistance(distanceTmp)}
-                   onMouseUp={() => setDistance(distanceTmp)}
-                   onChange={(e) => setDistanceTmp(Number(e.target.value))}
-            /><br/>
-            <h4 style={{marginBottom: 0}}>Lokacija:</h4>
-            <button onClick={() => setChoosingLocation(!choosingLocation)}>📌</button><br/>
-            <label>
-                Latitude: <br />
-                <input
-                    type="number" value={latitude} onChange={(e) => setLatitude(parseFloat(e.target.value))}
-                    step="any" required
+        <FormControlLabel
+            control={
+                <Checkbox checked={showClimbingCenters} onChange={() => setShowClimbingCenters(!showClimbingCenters)} />
+            }
+            label={
+                <Typography variant='h6' fontWeight={550}>Plezalni centri</Typography>
+            }
+        />
+        {showClimbingCenters && (
+            <Stack pl={2} direction="column" spacing={0}>
+                <FormControlLabel sx={{ mt: -1 }}
+                    control={
+                        <Checkbox size="small" checked={requireLeadCenter} onChange={() => setRequireLeadCenter(!requireLeadCenter)} />
+                    }
+                    label="Športne stene"
+                /> 
+                <FormControlLabel sx={{ mt: -1 }}
+                    control={
+                        <Checkbox size="small" checked={requireBoulders} onChange={() => setRequireBoulders(!requireBoulders)} />
+                    }
+                    label="Balvanske stene"
                 />
-            </label>
-            <label>
-                Longitude: <br />
-                <input
-                    type="number" value={longitude} onChange={(e) => setLongitude(parseFloat(e.target.value))}
-                    step="any" required
+                <FormControlLabel sx={{ mt: -1 }}
+                    control={
+                        <Checkbox size="small" checked={requireSpraywall} onChange={() => setRequireSpraywall(!requireSpraywall)} />
+                    }
+                    label="Šutalnica"
                 />
-            </label>
-            <br/><br/><br/>
-            {isLoggedIn? <button onClick={()=>{navigate("/addClimbingArea")}}>Add climbing area</button> : ""}
-            {isLoggedIn? <button onClick={()=>{navigate("/addClimbingCenter")}}>Add climbing center</button> : ""}
-        </div>
+                <FormControlLabel sx={{ mt: -1 }}
+                    control={
+                        <Checkbox size="small" checked={requireMoonboard} onChange={() => setRequireMoonboard(!requireMoonboard)} />
+                    }
+                    label="Moonboard"
+                />
+                <FormControlLabel sx={{ mt: -1 }}
+                    control={
+                        <Checkbox size="small" checked={requireKilter} onChange={() => setRequireKilter(!requireKilter)} />
+                    }
+                    label="Kilterboard"
+                />
+            </Stack>
+        )}
+        <Divider sx={{ mt: 4, mb: 3 }} />
+
+        {isLoggedIn && 
+            <Stack direction="column" spacing={2} px={2}>
+                <Button variant="contained" onClick={() => navigate('/addClimbingArea')}>Dodaj plezališče</Button>
+                <Button variant="contained" onClick={() => navigate('/addClimbingCenter')}>Dodaj center</Button>
+            </Stack>
+        }
+    </>)
+
+    return (
+        <Box sx={{ width: '100%', p: 2, paddingRight: 1, bgcolor: 'grey.100', borderRadius: 2,boxSizing: "border-box" }}>
+            {!isMobile ? 
+                <Typography variant="h5" fontWeight={550} gutterBottom>Filtri</Typography>
+                : 
+                <Box 
+                    onClick={() => setIsActiveMobile(!isActiveMobile)}
+                    sx={{
+                        display: "flex",
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                        '&:hover': { color: "#1565c0" }
+                    }}
+                >
+                    {isActiveMobile ? <ExpandMoreIcon/>: <ChevronRightIcon/>}
+                    <Typography variant="h5" fontWeight={550}>Filtri</Typography>
+                </Box>
+            }
+
+            {isMobile ? (
+                <Collapse in={isActiveMobile}>{contentFilters}</Collapse>
+            )
+            : (
+                contentFilters
+            )}
+        </Box>
     );
 };
 
