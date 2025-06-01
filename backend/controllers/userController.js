@@ -51,16 +51,26 @@ module.exports = {
 
     setAvatar: async function (req, res) {
         const id = req.params.id;
-        const avatar = req.body.avatar;
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).json({
+                message: 'No file uploaded.'
+            });
+        }
+
         try {
             const user = await UserModel.findById(id);
             if (!user) {
-                return res.status(404).json({message: 'User not found'});
+                return res.status(404).json({ message: 'User not found' });
             }
+
             if (user._id.toString() !== req.user.id) {
-                return res.status(403).json({message: "Access denied: Wrong user."})
+                return res.status(403).json({ message: "Access denied: Wrong user." });
             }
-            user.avatar = avatar;
+
+            // Save only the filename (or relative path) to DB
+            user.avatar = `/avatars/${file.filename}`;
             const updatedUser = await user.save();
             return res.json(updatedUser);
         } catch (err) {

@@ -46,11 +46,33 @@ const ProfilePage = () => {
         }
     };
 
-    const getProfilePicture = async () => {
-        if (!user) {
+    const handleAvatarChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
+        const formData = new FormData();
+        formData.append("avatar", file);
+
+        try {
+            const res = await fetch(`${backendUrl}/users/avatar/${originalUser.id}`, {
+                method: "PUT",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to upload avatar.");
+            }
+
+            const updatedUser = await res.json();
+            setUser(updatedUser);
+        } catch (err) {
+            setError(`Error uploading avatar: ${err.message}`);
         }
-    }
+    };
+
 
 
 
@@ -70,10 +92,32 @@ const ProfilePage = () => {
 
                     <CardContent>
                         <Avatar
-                            src={defaultProfilePic}
+                            src={user.avatar ? `${backendUrl}${user.avatar}` : defaultProfilePic}
                             alt={user.username}
                             sx={{ width: 64, height: 64 }}
                         />
+
+                        <Box mt={2}>
+                            <label htmlFor="avatar-upload">
+                                <input
+                                    accept="image/*"
+                                    id="avatar-upload"
+                                    type="file"
+                                    style={{ display: 'none' }}
+                                    onChange={handleAvatarChange}
+                                />
+                                <Box
+                                    component="span"
+                                    sx={{
+                                        color: 'primary.main',
+                                        textDecoration: 'underline',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    Change Profile Picture
+                                </Box>
+                            </label>
+                        </Box>
                         <Typography variant="h6">Username:</Typography>
                         <Typography>{user.username}</Typography>
 
