@@ -20,6 +20,16 @@ const ProfilePage = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [error, setError] = useState(null);
+    const [averageGrade, setAverageGrade] = useState(0);
+    const [averageAtempts, setAverageAtempts] = useState(0);
+
+    const getClimbed = async () => {
+        try {
+            const res = await fetch(`${backendUrl}/users`, {});
+        }catch(e) {
+            setError(`could not find climbed routes ${e}`);
+        }
+    }
 
     const getUser = async () => {
         try {
@@ -32,7 +42,8 @@ const ProfilePage = () => {
             });
 
             if (res.status === 401 || res.status === 403) {
-                return navigate("/login");
+                localStorage.removeItem("token");
+                navigate("/login");
             }
 
             if (!res.ok) {
@@ -41,6 +52,11 @@ const ProfilePage = () => {
 
             const data = await res.json();
             setUser(data);
+            const averageAttempts = data.routesClimbed.length
+                ? (data.routesClimbed.reduce((sum, r) => sum + r.attempts, 0)) / data.routesClimbed.length
+                :0
+            setAverageAtempts(averageAttempts)
+
         } catch (err) {
             setError(`Error fetching user: ${err.message}`);
         }
@@ -72,6 +88,7 @@ const ProfilePage = () => {
             setError(`Error uploading avatar: ${err.message}`);
         }
     };
+
 
 
 
@@ -124,12 +141,9 @@ const ProfilePage = () => {
                         <Typography variant="h6" mt={2}>Email:</Typography>
                         <Typography>{user.email || "Not provided"}</Typography>
 
-                        {user.role && (
-                            <>
-                                <Typography variant="h6" mt={2}>Role:</Typography>
-                                <Typography>{user.role}</Typography>
-                            </>
-                        )}
+                        <Typography variant="h6" mt={2}>User Statistics:</Typography>
+                        <Typography>Routes climbed: {user.routesClimbed.length}</Typography>
+                        <Typography>Average attempts: {averageAtempts}</Typography>
                     </CardContent>
                 </Card>
             </Box>

@@ -16,7 +16,7 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function EventsPage() {
     const [events, setEvents] = useState([]);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
     const token = localStorage.getItem("token");
     const navigate = useNavigate();

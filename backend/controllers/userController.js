@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const {hash} = require("bcryptjs");
 const jwt = require('jsonwebtoken');
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
+var RouteClimbedModel = require('../models/routeClimbedModel.js');
 
 /**
  * userController.js
@@ -40,7 +41,15 @@ module.exports = {
                 return res.status(403).json({message: "Access denied: Wrong user."})
             }
 
-            return res.json(user);
+            const routesClimbed = await RouteClimbedModel
+                .find({postedBy: req.user.id})
+                .populate('climbingRoute')
+            const userObj = user.toObject();
+
+            userObj.routesClimbed = routesClimbed;
+            console.log("here")
+
+            return res.json(userObj);
         } catch (err) {
             return res.status(500).json({
                 message: 'Error when getting the user.',
@@ -69,7 +78,6 @@ module.exports = {
                 return res.status(403).json({ message: "Access denied: Wrong user." });
             }
 
-            // Save only the filename (or relative path) to DB
             user.avatar = `/avatars/${file.filename}`;
             const updatedUser = await user.save();
             return res.json(updatedUser);
