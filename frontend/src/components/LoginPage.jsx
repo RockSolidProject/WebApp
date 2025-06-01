@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
+import {Container,TextField,Button,Typography,Box} from '@mui/material';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -44,33 +45,43 @@ const LoginPage = () => {
     }
 
     return (
-        <>
-        <form onSubmit={handleLogin}>
-            <h2>Login</h2>
-            <div>
-                <label>
-                    Username: <br />
-                    <input type="text" value={username}
-                    onChange={e => setUsername(e.target.value)} required
+        <Container maxWidth="sm">
+            <form onSubmit={handleLogin}>
+                <Typography variant="h4" mt={2} gutterBottom>
+                    Login
+                </Typography>
+                <TextField
+                    label="Username"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={username}
+                    onChange={e => setUsername(e.target.value)}
+                    required
                 />
-                </label>
-            </div>
-            <div>
-                <label>
-                Password: <br />
-                <input
+                <TextField
+                    label="Password"
                     type="password"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     required
                 />
-                </label>
-            </div>
-
-            <button type="submit">Login</button>
-        </form>
-        {error ? <p style={{color: "red"}}>{error}</p> : ""}
-        </>
+                <Box mt={2}>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                    >
+                        Login
+                    </Button>
+                </Box>
+            </form>
+            {error ? <p style={{color: "red"}}>{error}</p> : ""}
+        </Container>
     );
 };
 
