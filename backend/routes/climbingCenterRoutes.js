@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var climbingCenterController = require('../controllers/climbingCenterController.js');
 const auth = require("../middleware/auth");
+const routeConnectionController = require("../controllers/routeConnectionController");
 
 /*
  * GET

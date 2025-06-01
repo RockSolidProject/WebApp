@@ -8,7 +8,7 @@ const auth = require("../middleware/auth");
  */
 router.get('/comment/:centerId', climbingCenterRateCommentController.getClimbingCenterComments);
 router.get('/rating/:centerId', climbingCenterRateCommentController.getClimbingCenterRatings);
-router.get('/average/:centerId', climbingCenterRateCommentController.getClimbingCenterAverageRating);
+router.get('/average/:centerId', climbingCenterRateCommentController.getClimbingCenterRatings);
 /*
  * POST
  */

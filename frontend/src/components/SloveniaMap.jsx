@@ -111,8 +111,14 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                             shadowSize: [40, 30]
                         })}
                     >
+
                         <Popup>
-                            <strong>{center.name}</strong><br/>
+                            <div
+                                style={{ cursor: "pointer", fontWeight: "bold", color: "blue"}}
+                                onClick={() => navigate(`/climbingCenters/${center._id}`)}
+                            >
+                                {center.name}
+                            </div>
                         </Popup>
                     </Marker>
                 )

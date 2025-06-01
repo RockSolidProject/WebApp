@@ -5,6 +5,10 @@ import CustomRating from './Rating';
 import Comments from "./Comments.jsx";
 import AnimatedGradesChart from './AnimatedGradesChart.jsx';
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
 
 export default function ClimbingRoutePage() {
     const { id } = useParams();
@@ -22,6 +26,7 @@ export default function ClimbingRoutePage() {
     const [attempts, setAttempts] = useState("");
     const [userClimbed, setUserClimbed] = useState(null);
     const [averageGrade, setAverageGrade] = useState("No ratings yet.");
+    const [isBookmarked, setIsBookmarked] = useState(false);
     const fileInputRef = useRef();
 
     const ropeGrades = [
@@ -121,12 +126,33 @@ export default function ClimbingRoutePage() {
                 setError('Error fetching climbed.');
             }
         }
+        async function checkWishlist() {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+            try {
+                const res = await fetch(`${backendUrl}/routeConnections/wishlist`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (!res.ok) return;
+                const data = await res.json();
 
+                const isInWishlist = data.some(wishlistItem =>
+                    (wishlistItem._id === id) ||
+                    (wishlistItem.climbingRoute && wishlistItem.climbingRoute._id === id) ||
+                    (wishlistItem.climbingRoute === id)
+                );
+
+                setIsBookmarked(isInWishlist);
+            } catch (err) {
+                console.error('Error checking wishlist:', err);
+            }
+        }
         fetchRoute();
         fetchRatings();
         fetchComments();
         fetchUserClimbed();
         fetchAverageGrade();
+        checkWishlist();
     }, [id]);
 
     async function handleRatingChange(value) {
@@ -283,7 +309,39 @@ export default function ClimbingRoutePage() {
             setError("Error marking as climbed.");
         }
     }
+    async function toggleBookmark() {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate("/login");
+            return;
+        }
 
+        try {
+            const res = await fetch(`${backendUrl}/routeConnections/wishlist/${id}`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (res.status === 401 || res.status === 403) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                navigate("/login");
+                return;
+            }
+
+            if (!res.ok) {
+                setError("Failed to update wishlist.");
+                return;
+            }
+
+            setIsBookmarked(!isBookmarked);
+        } catch (err) {
+            setError("Error updating wishlist.");
+        }
+    }
 
 
     if (error) return <div style={{ color: "red" }}>{error}</div>;
@@ -293,13 +351,20 @@ export default function ClimbingRoutePage() {
         <Box display="flex" justifyContent="center" mt={4}>
             <Card sx={{ minWidth: 350, maxWidth: 800, width: '100%' }}>
                 <CardContent>
-                    <Typography variant="h4" gutterBottom>{route.name}</Typography>
-                    <Typography variant="body1"><strong>Length:</strong> {route.length} m</Typography>
-                    <Typography variant="body1"><strong>Type:</strong> {route.type}</Typography>
-                    <Typography variant="body1"><strong>Posted by:</strong> {route.postedBy?.username || "Unknown"}</Typography>
-                    <Typography variant="body1"><strong>Climbing Area:</strong> {route.climbingArea?.name || "Unknown"}</Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                        <Typography variant="h4" fontWeight="500" color="primary">{route.name}</Typography>
+                        <Tooltip title={isBookmarked ? "Remove from wishlist" : "Add to wishlist"}>
+                            <IconButton onClick={toggleBookmark} color={isBookmarked ? "primary" : "default"}>
+                                {isBookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                    <Typography variant="body1"><strong>Dolžina:</strong> {route.length} m</Typography>
+                    <Typography variant="body1"><strong>Tip:</strong> {route.type}</Typography>
+                    <Typography variant="body1"><strong>Objavil:</strong> {route.postedBy?.username || "Unknown"}</Typography>
+                    <Typography variant="body1"><strong>Zunanje Plezališče:</strong> {route.climbingArea?.name || "Unknown"}</Typography>
                     <Box mt={2} mb={2}>
-                        <Typography variant="body1"><strong>Average Rating:</strong> {averageRating ? averageRating.toFixed(2) : "No ratings yet"}</Typography>
+                        <Typography variant="body1"><strong>Povprečna ocena:</strong> {averageRating ? averageRating.toFixed(2) : "No ratings yet"}</Typography>
                         <Box display="flex" alignItems="center" mt={1}>
                             <CustomRating
                                 value={userRating}
@@ -315,9 +380,9 @@ export default function ClimbingRoutePage() {
                     </Box>
                     {userClimbed ? (
                         <Box my={2} color="success.main">
-                            <Typography variant="body1"><strong>You have already climbed this route.</strong></Typography>
-                            <Typography variant="body2">Attempts: {userClimbed.attempts}</Typography>
-                            <Typography variant="body2">Your grade: {userClimbed.gradeOpinion}</Typography>
+                            <Typography variant="body1"><strong>To pot ste že splezali.</strong></Typography>
+                            <Typography variant="body2">Število poskusov:{userClimbed.attempts}</Typography>
+                            <Typography variant="body2">Vaša ocena: {userClimbed.gradeOpinion}</Typography>
                         </Box>
                     ) : isClimbed ? (
                         <Box display="flex" alignItems="center" gap={2} my={2}>
@@ -359,27 +424,36 @@ export default function ClimbingRoutePage() {
                             Mark as Climbed
                         </Button>
                     )}
-                    <Typography variant="body2" sx={{ mt: 2 }}>Average grade: {averageGrade}</Typography>
+                    <Typography variant="body2" sx={{ mt: 2 }}>Povprečna težavnost: {averageGrade}</Typography>
                     <AnimatedGradesChart routeId={id} />
-                    <Typography variant="h6" sx={{ mt: 4 }}>Add a Comment</Typography>
+                    <Typography variant="h6" sx={{ mt: 4 }}>Dodaj komentar</Typography>
                     <Box component="form" onSubmit={handleAddComment} sx={{ mb: 3 }}>
                         <TextField
                             multiline
                             minRows={3}
                             fullWidth
-                            label="Write your comment..."
+                            label="Napišite vaš komentar..."
                             value={newComment}
                             onChange={e => setNewComment(e.target.value)}
                             sx={{ mb: 2 }}
                             required
                         />
+                        {imagePreview && (
+                            <Box>
+                                <img
+                                    src={imagePreview}
+                                    alt="Preview"
+                                    style={{ maxWidth: 200, borderRadius: 8 }}
+                                />
+                            </Box>
+                        )}
                         <Box display="flex" alignItems="center" gap={2}>
                             <Button
                                 variant="outlined"
                                 component="span"
                                 onClick={() => fileInputRef.current.click()}
                             >
-                                Add Image
+                                Priloži sliko
                             </Button>
                             <input
                                 type="file"
@@ -388,19 +462,10 @@ export default function ClimbingRoutePage() {
                                 ref={fileInputRef}
                                 onChange={handleImageChange}
                             />
-                            {imagePreview && (
-                                <Box>
-                                    <img
-                                        src={imagePreview}
-                                        alt="Preview"
-                                        style={{ maxWidth: 200, borderRadius: 8 }}
-                                    />
-                                </Box>
-                            )}
                         </Box>
-                        <Button type="submit" variant="contained" sx={{ mt: 2 }}>Add Comment</Button>
+                        <Button type="submit" variant="contained" sx={{ mt: 2 }}>Dodaj komentar</Button>
                     </Box>
-                    <Typography variant="h6">Comments</Typography>
+                    <Typography variant="h6">Komentarji</Typography>
                     <Comments comments={comments} />
                 </CardContent>
             </Card>

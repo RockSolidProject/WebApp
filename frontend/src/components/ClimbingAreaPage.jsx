@@ -52,7 +52,7 @@ const ClimbingAreaPage = () => {
                     <Typography variant="h4" gutterBottom>{area.name}</Typography>
                     <Typography variant="body1"><strong>Latitude:</strong> {area.latitude}</Typography>
                     <Typography variant="body1"><strong>Longitude:</strong> {area.longitude}</Typography>
-                    <Typography variant="body1"><strong>Posted by:</strong> {area.postedBy?.username || 'Unknown'}</Typography>
+                    <Typography variant="body1"><strong>Objavil:</strong> {area.postedBy?.username || 'Unknown'}</Typography>
                     <Box my={2}>
                         <ShowLocationOnMap latitude={area.latitude} longitude={area.longitude} />
                     </Box>
@@ -64,10 +64,10 @@ const ClimbingAreaPage = () => {
                             color="primary"
                             fullWidth
                         >
-                            Add New Route
+                            Dodaj novo pot
                         </Button>
                     </Box>
-                    <Typography variant="h6" color="primary" gutterBottom>Routes</Typography>
+                    <Typography variant="h6" color="primary" gutterBottom>Poti</Typography>
                     {routes && routes.length > 0 ? (
                         <List>
                             {routes.map(route => (

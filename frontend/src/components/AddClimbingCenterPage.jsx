@@ -21,7 +21,7 @@ const AddClimbingCenterPage = () => {
         e.preventDefault();
 
         const token = localStorage.getItem("token");
-        const user = JSON.parse(localStorage.getItem("user")); // Assuming user data is stored in localStorage
+        const user = JSON.parse(localStorage.getItem("user"));
 
         if (!token || !user || !user.id) {
             navigate("/login");

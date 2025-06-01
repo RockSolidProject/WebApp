@@ -120,7 +120,14 @@ export default function GradesOverTimeChart({ routeId }) {
 
         setIsPlaying(true);
 
-        const animationTime = 3000 / dataOverTime.length;
+        let stepDuration;
+        if (dataOverTime.length <= 3) {
+            stepDuration = 400;
+        } else if (dataOverTime.length <= 8) {
+            stepDuration = 300;
+        } else {
+            stepDuration = 200;
+        }
 
         intervalRef.current = setInterval(() => {
             const index = indexRef.current;
@@ -142,7 +149,7 @@ export default function GradesOverTimeChart({ routeId }) {
             });
 
             indexRef.current += 1;
-        }, animationTime);
+        }, stepDuration);
     }
 
     useEffect(() => {
@@ -219,7 +226,9 @@ export default function GradesOverTimeChart({ routeId }) {
                             dataKey="count"
                             name="Ocene"
                             fill="#3b82f6"
-                            animationDuration={500}
+                            animationDuration={
+                                dataOverTime.length <= 3 ? 400 : dataOverTime.length <= 8 ? 300 : 200
+                            }
                             isAnimationActive={true}
                         />
                     </BarChart>

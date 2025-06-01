@@ -134,7 +134,7 @@ export default function AddRoutePage() {
         <Card sx={{ maxWidth: 500, mx: 'auto', mt: 5, p: 2 }}>
             <CardContent>
                 <Typography variant="h5" gutterBottom>
-                    Add New Route
+                    Dodaj novo pot
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate>
                     <TextField
