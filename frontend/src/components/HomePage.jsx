@@ -80,7 +80,7 @@ const HomePage = () => {
                 return
             }
             const data = await res.json()
-            console.log(data)
+            //console.log(data)
             setError("")
 
             setClimbingCenters(data)
