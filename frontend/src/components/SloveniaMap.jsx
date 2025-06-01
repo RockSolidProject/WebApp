@@ -1,10 +1,10 @@
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle } from 'react-leaflet';
 import MapResetButton from './MapResetButton';
 import leaflet from 'leaflet';
+import {Slider} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, setLongitude, distance, setDistanceTmp,  setDistance, choosingLocation, setChoosingLocation }) => {
-    const center = [46.14, 15.0153333]
+const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, setLongitude, distanceTmp,  setDistanceTmp,  setDistance, choosingLocation, setChoosingLocation }) => {
     const navigate = useNavigate();
     const bounds = [[45.37, 13.3],[46.89, 16.6]]
 
@@ -25,11 +25,11 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
     }
 
     return (
-
+    <div style={{ width: "100%", height: "100%" }}>
         <MapContainer 
                 bounds={bounds}
                 maxBounds={[[45.37, 13.3],[46.89, 16.6]]}
-                style={{ height: '400px', width: '600px' }}
+                style={{ width: '100%', aspectRatio: "3 / 2" }}
                 doubleClickZoom={false}
                 maxBoundsViscosity={1}
             >
@@ -57,7 +57,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
 
               <Circle
                 center={[latitude, longitude]}
-                radius={distance * 1000}
+                radius={distanceTmp * 1000}
                 pathOptions={{
                     color: 'blue',
                     fillColor: 'blue',
@@ -66,12 +66,6 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
             />
 
             {climbingAreas.map((area) => {
-                {/*iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",*/}
-                /*const iconUrl = (area.routes?.length || 0) > 10
-                ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png'
-                : ((area.routes?.length || 0) > 5
-                ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png'
-                : 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png')*/
                 const iconUrl = (area.routes?.length || 0) > 10
                 ? '/markers/marker_area_orange.png'
                 : ((area.routes?.length || 0) > 5
@@ -103,12 +97,6 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                 )
             })}
             {climbingCenters.map((center) => {
-                {/*iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",*/}
-                /*const iconUrl = (center.routes?.length || 0) > 10
-                ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png'
-                : ((center.routes?.length || 0) > 5
-                ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png'
-                : 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png')*/
                 const iconUrl = '/markers/marker_center.png'
                 return (
                     <Marker
@@ -130,7 +118,50 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                 )
             })}
         </MapContainer>
-    );
+        <div 
+            style={{
+                boxSizing: 'border-box',
+                display: 'flex',
+                alignItems: "center",
+                justifyContent: "flex-start",
+                gap: '20px',
+                padding: '10px',
+                background: '#f2f2f2',
+                border: '1px solid black',
+                width: "100%",
+                fontSize: 16
+            }}  
+        >   
+            <div style={{alignItems: "center", display: "flex"}}>
+                <button onClick={() => setChoosingLocation(!choosingLocation)}
+                    style={{ 
+                    fontSize: 20, padding: 2, background: choosingLocation ? "#009879" : "#f2f2f2", color: "black",
+                    borderRadius: 0, border: "2px solid black", marginLeft: 10
+                    }}>
+                    📌
+                </button>
+            </div>
+            
+            <div 
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px"
+                }}
+            >
+                <div>{distanceTmp}km</div>
+                <Slider 
+                    min={5} max={135} step={1}
+                    value={distanceTmp}
+                    onTouchEnd={() => setDistance(distanceTmp)}
+                    onMouseUp={() => setDistance(distanceTmp)}
+                    onChange={(e) => setDistanceTmp(Number(e.target.value))}
+                    size='small'
+                    sx={{ width: 150 }}
+                /> 
+            </div>
+        </div>
+    </div>);
 };
 
 export default SloveniaMap;
