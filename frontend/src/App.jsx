@@ -15,6 +15,9 @@ import GroupsPage from "./components/GroupsPage.jsx";
 import GroupDetailPage from "./components/GroupDetailPage.jsx";
 import GroupCreatePage from "./components/GroupCreatePage.jsx";
 import GroupsFromUser from "./components/GroupsFromUser.jsx";
+import EventsPage from "./components/EventsPage.jsx";
+import EventDetailPage from "./components/EventDetailPage.jsx";
+import EventAddPage from "./components/EventAddPage.jsx";
 
 const App = () => {
     return (
@@ -35,6 +38,9 @@ const App = () => {
                     <Route path="/climbingAreas/:id" element={<ClimbingAreaPage/>}/>
                     <Route path="/climbingRoutes/:id" element={<ClimbingRoutePage/>}/>
                     <Route path="/userGroups" element={<GroupsFromUser/>}/>
+                    <Route path="/events" element={<EventsPage/>}/>
+                    <Route path="/event/:id" element={<EventDetailPage/>}/>
+                    <Route path={"/eventAdd"} element={<EventAddPage/>}/>
                 </Routes>
             </main>
         </div>

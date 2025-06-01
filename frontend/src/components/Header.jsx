@@ -20,32 +20,38 @@ const Header = () => {
     return (
         <nav style={{ padding: '10px', backgroundColor: '#f0f0f0', display: 'flex', justifyContent: 'space-around' }}>
             <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>Home</Link>
-            <Link to="/groups" style={{ textDecoration: 'none', color: 'black' }}>Groups</Link>
+
+
 
             {isLoggedIn ? (
-                <div style={{ position: 'relative' }}>
+                <>
+                    <Link to="/groups" style={{ textDecoration: 'none', color: 'black' }}>Groups</Link>
+                    <Link to="/events" style={{textDecoration: 'none', color: 'black'}}>Events</Link>
+                    <div style={{ position: 'relative' }}>
                     <span onClick={() => setShowMenu(!showMenu)} style={{ cursor: 'pointer' }}>
                         {user.username}
                         <img src={image} alt="Profile" width="30" height="30" style={{ marginLeft: '8px' }} />
                     </span>
 
-                    {showMenu && (
-                        <div style={{
-                            position: 'absolute',
-                            top: '100%',
-                            right: 0,
-                            backgroundColor: '#fff',
-                            border: '1px solid #aaa',
-                            padding: '10px',
-                            borderRadius: '4px',
-                            zIndex: 1,
-                        }}>
-                            <button onClick={() => navigate("/profile")} style={{ display: 'block', width: '100%', marginBottom: '5px' }}>Profile</button>
-                            <button onClick={() => navigate("/userGroups")} style={{ display: 'block', width: '100%', marginBottom: '5px' }}>My Groups</button>
-                            <button onClick={handleLogout} style={{ display: 'block', width: '100%', background: "#faa" }}>Logout</button>
-                        </div>
-                    )}
-                </div>
+                        {showMenu && (
+                            <div style={{
+                                position: 'absolute',
+                                top: '100%',
+                                right: 0,
+                                backgroundColor: '#fff',
+                                border: '1px solid #aaa',
+                                padding: '10px',
+                                borderRadius: '4px',
+                                zIndex: 1,
+                            }}>
+                                <button onClick={() => navigate("/profile")} style={{ display: 'block', width: '100%', marginBottom: '5px' }}>Profile</button>
+                                <button onClick={() => navigate("/userGroups")} style={{ display: 'block', width: '100%', marginBottom: '5px' }}>My Groups</button>
+                                <button onClick={handleLogout} style={{ display: 'block', width: '100%', background: "#faa" }}>Logout</button>
+                            </div>
+                        )}
+                    </div>
+                </>
+
             ) : (
                 <>
                     <Link to="/login" style={{ textDecoration: 'none', color: 'black' }}>Login</Link>

@@ -15,6 +15,7 @@ router.get('/listMoonboards', climbingCenterController.listMoonboard);
 router.get('/listBoulders', climbingCenterController.listBoulders);
 router.get('/listRoutes', climbingCenterController.listRoutes);
 router.get('/listSprayWalls', climbingCenterController.listSprayWall);
+router.get('/find', climbingCenterController.listSearch);
 router.get('/:id', climbingCenterController.show); // must be last
 
 /*
