@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom"
 import {
   Table, TableHead, TableBody, TableRow, TableCell,
   Typography,Collapse, Box, 
@@ -7,6 +8,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 const ClimbingAreaTable = ({ filteredAreas }) => {
+    const navigate = useNavigate()
     const [isTableVisible, setIsTableVisible] = useState(true);
 
     const hasData = filteredAreas.length > 0
@@ -43,7 +45,12 @@ const ClimbingAreaTable = ({ filteredAreas }) => {
                             <TableBody>
                             {filteredAreas.map((climbingArea, index) => (
                                 <TableRow key={index}>
-                                    <TableCell>{climbingArea.name}</TableCell>
+                                    <TableCell 
+                                        style={{ cursor: "pointer", color: "blue" }}
+                                        onClick={() => navigate(`/climbingAreas/${climbingArea._id}`)}
+                                    >
+                                        {climbingArea.name}
+                                    </TableCell>
                                     <TableCell align='center'>{climbingArea.routes ? climbingArea.routes.length : 0}</TableCell>
                                     <TableCell align='center'>{(climbingArea.routes && climbingArea.routes.length > 0) ? (
                                         [...new Set(climbingArea.routes.map(route => route.type))].join(",")
