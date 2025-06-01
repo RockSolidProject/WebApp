@@ -7,6 +7,7 @@ var auth = require('../middleware/auth.js');
  * GET
  */
 router.get('/', auth, eventController.list);
+router.get('/:id', auth, eventController.show);
 
 /*
  * GET

@@ -51,6 +51,20 @@ const Header = () => {
                         }}>
                             Skupine
                         </Button>
+                        <Button component={Link} to="/events" color="black"   
+                            sx={{
+                                fontWeight: 550,
+                                textTransform: 'none',
+                                fontSize: '1.1rem',
+                                px: 2,
+                                borderRadius: 2,
+                                backgroundColor: 'grey.200',
+                                '&:hover': {
+                                backgroundColor: 'grey.50', 
+                                }
+                        }}>
+                            Dogodki
+                        </Button>
                     </Box>
                     <Box display="flex" alignItems="center" gap={1}>
                         {isLoggedIn ? (

@@ -97,12 +97,6 @@ module.exports = {
 
     },
 
-    // getAverageAttempts: async function(req, res) {
-    //     const routeId = req.params.routeId
-    //     try{
-    //
-    //     }
-    // }
 
     getRoutesComments: async function(req, res) {
         const routeId = req.params.routeId
@@ -178,7 +172,7 @@ module.exports = {
             return res.status(400).json({message: "Invalid urban grade."})
         }
         if(req.body.gradeOpinion === "rope" && req.body.attempts < 1) {}
-        try{            
+        try{
             const current = await RouteClimbedModel.findOne({postedBy: userId, climbingRoute: routeId})
             if (current) {
                 return res.status(400).json({message: "Already marked this route as climbed."})
@@ -250,6 +244,66 @@ module.exports = {
                 message: "Rating route failed.",
                 error: err
             })
+        }
+    },
+    getGradesOverTime: async function(req, res) {
+        const routeId = req.params.routeId;
+        try {
+            const climbedData = await RouteClimbedModel.find({ climbingRoute: routeId })
+                .populate("climbingRoute");
+
+            if (!climbedData.length) {
+                return res.json({ data: [], routeType: null });
+            }
+            const routeType = climbedData[0].climbingRoute.type;
+            let gradeList = [];
+
+            if (routeType === "boulder") {
+                gradeList = boulderGrades;
+            } else if (routeType === "lead") {
+                gradeList = ropeGrades;
+            } else if (routeType === "urban") {
+                gradeList = urbanGrades;
+            }
+
+            const monthlyGrades = {};
+
+            climbedData.forEach(data => {
+                const recordDate = data.dateTime ||
+                    (data.createdAt ? data.createdAt :
+                        (data._id.getTimestamp ? data._id.getTimestamp() : null));
+
+                const yearMonth = recordDate ?
+                    new Date(recordDate).toISOString().slice(0, 7) : "unknown";
+
+                if (!monthlyGrades[yearMonth]) {
+                    monthlyGrades[yearMonth] = {};
+                    gradeList.forEach(grade => monthlyGrades[yearMonth][grade] = 0);
+                }
+
+                if (gradeList.includes(data.gradeOpinion)) {
+                    monthlyGrades[yearMonth][data.gradeOpinion]++;
+                }
+            });
+
+            // sort
+            const result = Object.entries(monthlyGrades)
+                .sort(([monthA], [monthB]) => monthA.localeCompare(monthB))
+                .map(([period, grades]) => ({
+                    period,
+                    grades
+                }));
+
+            res.json({
+                data: result,
+                routeType
+            });
+
+        } catch (err) {
+            res.status(500).json({
+                message: "Error getting grades over time.",
+                error: err
+            });
         }
     }
 }
