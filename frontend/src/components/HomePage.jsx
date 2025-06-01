@@ -1,5 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Grid, Box, Typography, TextField, Container } from '@mui/material';
+
 import SloveniaMap from './SloveniaMap';
 import FilterSidebar from "./FilterSidebar.jsx";
 import ClimbingAreaTable from "./ClimbingAreaTable.jsx";
@@ -10,6 +12,8 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const HomePage = () => {
     const [error, setError] = useState(null)
+    const [showClimbingAreas, setShowClimbingAreas] = useState(true)
+    const [showClimbingCenters, setShowClimbingCenters] = useState(true)
     const [climbingAreas, setClimbingAreas] = useState([])
     const [climbingCenters, setClimbingCenters] = useState([])
     const [requireBoulder, setRequireBoulder] = useState(false)
@@ -115,7 +119,7 @@ const HomePage = () => {
             urbanGood = typesInArea.includes("urban")
         }
         
-        return searchGood && boulderGood && leadGood && urbanGood && numberOfRoutesGood
+        return showClimbingAreas && searchGood && boulderGood && leadGood && urbanGood && numberOfRoutesGood
     });
     const filteredCenters = climbingCenters.filter(center => {
         let searchGood = center.name.toLowerCase().includes(searchString.toLowerCase());
@@ -125,74 +129,90 @@ const HomePage = () => {
         let bouldersGood = !requireBoulders || center.hasBoulders;
         let kilterGood = !requireKilter || center.hasKilter;
 
-        return searchGood && moonboardGood && spraywallGood && leadGood && bouldersGood && kilterGood;
+        return showClimbingCenters && searchGood && moonboardGood && spraywallGood && leadGood && bouldersGood && kilterGood;
     });
 
     return (
-        <div>
-            <h1>Plezališča v Sloveniji</h1>
-            <div style={{ display: 'flex', height: '70vh' }}>
-
-                <FilterSidebar
-                    requireBoulder = {requireBoulder}
-                    setRequireBoulder = {setRequireBoulder}
-                    requireLead = {requireLead}
-                    setRequireLead = {setRequireLead}
-                    requireUrban = {requireUrban}
-                    setRequireUrban = {setRequireUrban}
-                    requiredNumberOfRoutes = {requiredNumberOfRoutes}
-                    setRequiredNumberOfRoutes = {setRequiredNumberOfRoutes}
-                    distanceTmp = {distanceTmp}
-                    setDistanceTmp = {setDistanceTmp}
-                    setDistance={setDistance}
-                    latitude={latitude}
-                    setLatitude={setLatitude}
-                    longitude={longitude}
-                    setLongitude={setLongitude}
-                    choosingLocation={choosingLocation}
-                    setChoosingLocation={setChoosingLocation}
-                    isLoggedIn={isLoggedIn}
-                    navigate={navigate}
-                    climbingAreas={climbingAreas}
-                    setRequireMoonboard={setRequireMoonboard}
-                    requireMoonboard={requireMoonboard}
-                    setRequireSpraywall={setRequireSpraywall}
-                    requireSpraywall={requireSpraywall}
-                    setRequireLeadCenter={setRequireLeadCenter}
-                    requireLeadCenter={requireLeadCenter}
-                    setRequireBoulders={setRequireBoulders}
-                    requireBoulders={requireBoulders}
-                    setRequireKilter={setRequireKilter}
-                    requireKilter={requireKilter}
-                />
-
-                <div style={{flex: 1}}>
-                    <SloveniaMap 
-                        climbingAreas={filteredAreas}
-                        climbingCenters={filteredCenters}
+        <Container maxWidth="lg">
+            <Typography variant="h4" mt={2} gutterBottom>
+                Plezališča v Sloveniji
+            </Typography>
+            <Grid container spacing={2} sx={{ height: '100%' }}>
+                <Grid size={{ xs: 12, sm: 5, md: 4 }} sx={{ height: '100%' }}>
+                    <FilterSidebar
+                        requireBoulder = {requireBoulder}
+                        setRequireBoulder = {setRequireBoulder}
+                        requireLead = {requireLead}
+                        setRequireLead = {setRequireLead}
+                        requireUrban = {requireUrban}
+                        setRequireUrban = {setRequireUrban}
+                        requiredNumberOfRoutes = {requiredNumberOfRoutes}
+                        setRequiredNumberOfRoutes = {setRequiredNumberOfRoutes}
+                        distanceTmp = {distanceTmp}
+                        setDistanceTmp = {setDistanceTmp}
+                        setDistance={setDistance}
                         latitude={latitude}
                         setLatitude={setLatitude}
                         longitude={longitude}
                         setLongitude={setLongitude}
-                        distance={distanceTmp}
-                        setDistanceTmp = {setDistanceTmp}
-                        setDistance={setDistance}
                         choosingLocation={choosingLocation}
                         setChoosingLocation={setChoosingLocation}
+                        isLoggedIn={isLoggedIn}
+                        navigate={navigate}
+                        climbingAreas={climbingAreas}
+                        setRequireMoonboard={setRequireMoonboard}
+                        requireMoonboard={requireMoonboard}
+                        setRequireSpraywall={setRequireSpraywall}
+                        requireSpraywall={requireSpraywall}
+                        setRequireLeadCenter={setRequireLeadCenter}
+                        requireLeadCenter={requireLeadCenter}
+                        setRequireBoulders={setRequireBoulders}
+                        requireBoulders={requireBoulders}
+                        setRequireKilter={setRequireKilter}
+                        requireKilter={requireKilter}
+                        showClimbingAreas={showClimbingAreas}
+                        setShowClimbingAreas={setShowClimbingAreas}
+                        showClimbingCenters={showClimbingCenters}
+                        setShowClimbingCenters={setShowClimbingCenters}
                     />
-                    <input type="text" placeholder="Išči plezališče" value={searchString} onChange={(e) => setSearchString(e.target.value)}/>            
-                    {error ? <p style={{color: "red"}}>{error}</p> :""}
+                </Grid>
+                <Grid size={{ xs: 12, sm: 7, md: 8 }}>
+                    <Box>
+                        <SloveniaMap 
+                            climbingAreas={filteredAreas}
+                            climbingCenters={filteredCenters}
+                            latitude={latitude}
+                            setLatitude={setLatitude}
+                            longitude={longitude}
+                            setLongitude={setLongitude}
+                            distanceTmp={distanceTmp}
+                            setDistanceTmp = {setDistanceTmp}
+                            setDistance={setDistance}
+                            choosingLocation={choosingLocation}
+                            setChoosingLocation={setChoosingLocation}
+                        />
+                    </Box>
+                    <TextField
+                        fullWidth
+                        label="🔍 Išči plezališča"
+                        variant="filled"
+                        value={searchString}
+                        onChange={(e) => setSearchString(e.target.value)}
+                        sx={{ mb: 2, mt: 2 }}
+                    />    
+                    {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
 
-                    <ClimbingAreaTable
-                        filteredAreas={filteredAreas}
-                    />
-                    <ClimbingCenterTable
-                        filteredCenters={filteredCenters}
-                    />
+                    <Box sx={{ overflowX: 'auto', mb: 2 }}>
+                        <ClimbingAreaTable filteredAreas={filteredAreas} />
+                    </Box>
 
-                </div>
-            </div>
-        </div>
+                    <Box sx={{ overflowX: 'auto' }}>
+                        <ClimbingCenterTable filteredCenters={filteredCenters} />
+                    </Box>
+
+                </Grid>
+            </Grid>
+        </Container>
     );
 };
 
