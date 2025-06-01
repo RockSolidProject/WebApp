@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import SloveniaEmptyMap from './SloveniaEmptyMap';
+import {Container,TextField,Typography,Button, Box} from '@mui/material';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -54,49 +55,42 @@ const AddClimbingAreaPage = () => {
             return
         }
         catch (err) {
-            console.log("lol1" + err.message)
+            //console.log("lol1" + err.message)
             setError("Error while adding climbing area: " + err.message)
         }
     }
 
     return (
-        <>
-            <h1>Add climbing area</h1>  
-            <form onSubmit={handleAddingClimbingCentre}>
-                <div>
-                    <label>
-                        Name: <br />
-                        <input type="text" value={name}
-                        onChange={e => setName(e.target.value)} required
-                    />
-                    </label>
-                </div>
+        <Container maxWidth="sm">
+            <Typography variant="h4" mt={2} gutterBottom>
+                Dodajanje plezališča
+            </Typography>
+
+            <Box
+                component="form"
+                onSubmit={handleAddingClimbingCentre}
+                sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: "100%" }}
+            >
                 <SloveniaEmptyMap 
                     latitude={latitude} 
                     setLatitude={setLatitude}
                     longitude={longitude}
                     setLongitude={setLongitude}
                 />
-                <div>
-                    <label>
-                        Latidue: <br />
-                        <input type="text" value={latitude}
-                        onChange={e => setLatitude(e.target.value)} required
-                    />
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Longitude: <br />
-                        <input type="text" value={longitude}
-                        onChange={e => setLongitude(e.target.value)} required
-                    />
-                    </label>
-                </div>
-                <button type="submit">Add climbing area</button>
-            </form>
+                <TextField
+                    label="Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    fullWidth
+                />
+                <Button type="submit" variant="contained" color="primary">
+                    Dodaj plezališče
+                </Button>
+            </Box>
+
             {error ? <p style={{color: "red"}}>{error}</p> : ""}
-        </>
+        </Container>
     );
 };
 
