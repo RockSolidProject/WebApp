@@ -31,11 +31,12 @@ module.exports = {
     show: async function (req, res) {
         const id = req.params.id;
         try {
+
             const user = await UserModel.findById(id);
             if (!user) {
                 return res.status(404).json({message: 'No such user'});
             }
-            if (user._id.toString() !== req.user.id) {
+            if (user._id.toString() !== req.user.id.toString()) {
                 return res.status(403).json({message: "Access denied: Wrong user."})
             }
 
