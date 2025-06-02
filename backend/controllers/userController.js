@@ -30,7 +30,7 @@ module.exports = {
      * userController.show()
      */
     show: async function (req, res) {
-        const id = req.params.id;
+        const id = req.user.id;
         try {
 
             const user = await UserModel.findById(id);
@@ -59,7 +59,7 @@ module.exports = {
     },
 
     setAvatar: async function (req, res) {
-        const id = req.params.id;
+        const id = req.user.id;
         const file = req.file;
 
         if (!file) {

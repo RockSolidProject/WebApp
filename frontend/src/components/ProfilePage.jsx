@@ -22,18 +22,10 @@ const ProfilePage = () => {
     const [error, setError] = useState(null);
     const [averageAttempts, setAverageAttempts] = useState(0);
 
-    const getClimbed = async () => {
-        try {
-            const res = await fetch(`${backendUrl}/users`, {});
-        }catch(e) {
-            setError(`could not find climbed routes ${e}`);
-        }
-    }
 
     const getUser = async () => {
         try {
-            const originalUser = await JSON.parse(localStorage.getItem("user"));
-            const res = await fetch(`${backendUrl}/users/${originalUser.id}`, {
+            const res = await fetch(`${backendUrl}/users/profile`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -70,8 +62,7 @@ const ProfilePage = () => {
         formData.append("avatar", file);
 
         try {
-            const originalUser = await JSON.parse(localStorage.getItem("user"));
-            const res = await fetch(`${backendUrl}/users/avatar/${originalUser.id}`, {
+            const res = await fetch(`${backendUrl}/users/avatar/`, {
                 method: "PUT",
                 headers: {
                     Authorization: `Bearer ${token}`,
