@@ -34,13 +34,13 @@ function GroupAddMember({ onUserSelect }) {
     return (
         <Box mt={2}>
             <Typography variant="subtitle1" gutterBottom>
-                Add a Member:
+                Dodaj člana:
             </Typography>
             <AsyncSelect
                 cacheOptions
                 loadOptions={loadOptions}
                 onChange={onUserSelect}
-                placeholder="Search for a user..."
+                placeholder="Poišči uporabnika..."
                 formatOptionLabel={formatOptionLabel}
                 styles={{
                     menu: base => ({ ...base, zIndex: 9999 }),

@@ -30,7 +30,7 @@ const GroupsPage = () => {
                     component={Link}
                     to="/createGroup"
                 >
-                    Create a Group
+                    Ustvari skupino
                 </Button>
             </Box>
 

@@ -1,5 +1,6 @@
 var EventModel = require('../models/eventModel.js');
 var GroupModel = require('../models/groupModel.js');
+var GroupMemberModel = require('../models/groupMemberModel.js');
 
 /**
  * eventController.js
@@ -33,7 +34,15 @@ module.exports = {
     list: async function (req, res) {
         try {
             const now = new Date(); // current date and time
-            const events = await EventModel.find({ date: { $gte: now } }); // events on or after now
+            const publicGroups = await GroupModel.find({isPrivate: false})
+            const publicGroupsIds = publicGroups.map(group=>group._id)
+            const myGroups = await GroupMemberModel.find({member: req.user.id})
+            const myGroupIds = myGroups.map(groupMember=>groupMember.group)
+            const publicEvents = await EventModel.find({ date: { $gte: now }, groups: {$in : publicGroupsIds} }); // events on or after now
+            const myEvents = await EventModel.find({groups:{$in:myGroupIds}})
+            events = {}
+            events.publicEvents = publicEvents;
+            events.myEvents = myEvents;
             return res.json(events);
         } catch (err) {
             return res.status(500).json({

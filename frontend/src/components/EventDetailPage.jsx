@@ -56,11 +56,11 @@ function EventDetailPage() {
                     {event.name}
                 </Typography>
                 <Typography color="text.secondary" gutterBottom>
-                    {new Date(event.date).toLocaleDateString(undefined, {
-                        weekday: "short",
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
+                    {new Date(event.date).toLocaleDateString('sl-SI', {
+                        weekday: "short", // e.g., "pon." for "ponedeljek"
+                        year: "numeric",  // e.g., "2025"
+                        month: "short",   // e.g., "jun."
+                        day: "numeric"    // e.g., "2"
                     })}
                 </Typography>
 
@@ -70,21 +70,21 @@ function EventDetailPage() {
 
                 <Divider sx={{ my: 2 }} />
 
-                <Typography variant="h6">Climbing Areas</Typography>
+                <Typography variant="h6">Plezališča</Typography>
                 <Box mb={2}>
                     {event.climbingAreas?.map((area) => (
                         <Chip key={area._id} label={area.name} sx={{ m: 0.5 }} />
                     ))}
                 </Box>
 
-                <Typography variant="h6">Climbing Centers</Typography>
+                <Typography variant="h6">Plezalni centri</Typography>
                 <Box mb={2}>
                     {event.climbingCenters?.map((center) => (
                         <Chip key={center._id} label={center.name} sx={{ m: 0.5 }} />
                     ))}
                 </Box>
 
-                <Typography variant="h6">Groups</Typography>
+                <Typography variant="h6">Skupine</Typography>
                 <Box mb={2}>
                     {event.groups?.map((group) => (
                         <Chip key={group._id} label={group.name} sx={{ m: 0.5 }} />

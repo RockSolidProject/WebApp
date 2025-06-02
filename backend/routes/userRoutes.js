@@ -15,7 +15,7 @@ router.get('/test', function(req, res, next) {
 /*
  * GET
  */
-router.get('/:id', auth, userController.show);
+router.get('/profile', auth, userController.show);
 router.get('/', userController.list);
 /*
  * POST
@@ -26,7 +26,7 @@ router.post('/login', userController.login);
 /*
  * PUT
  */
-router.put('/avatar/:id', auth, upload.single('avatar'), userController.setAvatar);
+router.put('/avatar/', auth, upload.single('avatar'), userController.setAvatar);
 /*
  * DELETE
  */
