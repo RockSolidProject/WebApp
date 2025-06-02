@@ -24,5 +24,6 @@ router.get('/:id', climbingCenterController.show); // must be last
  */
 router.post('/', auth, climbingCenterController.create);
 router.post('/byProximity', climbingCenterController.getByProximity);
+router.post("/inPolygon", climbingCenterController.getInPolygon);
 
 module.exports = router;

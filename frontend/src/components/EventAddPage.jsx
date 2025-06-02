@@ -180,7 +180,7 @@ function EventAddPage() {
                     options={spotOptions}
                     onInputChange={handleSpotInputChange}
                     onChange={(e, value) =>
-                        setEventData({...eventData, climbingSpots: value.map(v=>v._id)})
+                        setEventData({...eventData, climbingSpots: value})
                     }
                     value={eventData.climbingSpots}
                     renderInput={(params) => (
@@ -195,7 +195,7 @@ function EventAddPage() {
                     options={centerOptions}
                     onInputChange={handleCenterInputChange}
                     onChange={(e, value) =>
-                        setEventData({...eventData, climbingCenters: value.map(v=>v._id)})
+                        setEventData({...eventData, climbingCenters: value})
                     }
                     value={eventData.climbingCenters}
                     renderInput={(params) => (
@@ -210,7 +210,7 @@ function EventAddPage() {
                     options={groupOptions}
                     onInputChange={handleGroupInputChange}
                     onChange={(e, value) =>
-                        setEventData({...eventData, groups: value.map(v=>v._id)})
+                        setEventData({...eventData, groups: value})
                     }
                     value={eventData.groups}
                     renderInput={(params) => (

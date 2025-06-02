@@ -30,7 +30,9 @@ const HomePage = () => {
     const [distance, setDistance] = useState(135)
     const [distanceTmp, setDistanceTmp] = useState(distance)
     const [choosingLocation, setChoosingLocation] = useState(false);
-
+    const [isCircleMode, setIsCircleMode] = useState(true) 
+    const [polygon, setPolygon] = useState([[45.35, 13.3],[45.35,16.6],[46.9,16.6],[46.9,13.3]])
+    
     const [searchString, setSearchString] = useState("")
 
     const navigate = useNavigate()
@@ -40,50 +42,88 @@ const HomePage = () => {
     useEffect(() => {
         getClimbingAreas()
         getClimbingCenters()
-    }, [distance, latitude, longitude])
+    }, [distance, latitude, longitude, polygon, isCircleMode])
 
     async function getClimbingAreas(){
         try {
-            const res = await fetch(`${backendUrl}/climbingAreas/byProximity`, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({latitude, longitude, distance})
-            })
-            if (!res.ok) {
-                setError("Getting climbing spots failed.")
-                return
-            }
-            const data = await res.json()
-            //console.log(data) 
-            setError("")
+            if (isCircleMode) {
+                const res = await fetch(`${backendUrl}/climbingAreas/byProximity`, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({latitude, longitude, distance})
+                })
+                if (!res.ok) {
+                    setError("Getting climbing spots failed.")
+                    return
+                }
+                const data = await res.json()
+                setError("")
 
-            setClimbingAreas(data)
+                setClimbingAreas(data)
+            }
+            else {
+                const res = await fetch(`${backendUrl}/climbingAreas/inPolygon`, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(polygon)
+                })
+                if (!res.ok) {
+                    setError("Getting climbing spots failed.")
+                    return
+                }
+                const data = await res.json()
+                setError("")
+
+                setClimbingAreas(data)
+            }
+            
         }
         catch (err) {
-            //console.log("LLLLLLLLl")
             setError("Error getting climbing spots." + err.message)
         }
     }
     async function getClimbingCenters(){
         try {
-            const res = await fetch(`${backendUrl}/climbingCenter/byProximity`, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({latitude, longitude, distance})
-            })
-            if (!res.ok) {
-                setError("Getting climbing spots failed.")
-                return
-            }
-            const data = await res.json()
-            console.log(data)
-            setError("")
+            if (isCircleMode) {
+                const res = await fetch(`${backendUrl}/climbingCenter/byProximity`, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({latitude, longitude, distance})
+                })
+                if (!res.ok) {
+                    setError("Getting climbing spots failed.")
+                    return
+                }
+                const data = await res.json()
+                //console.log(data)
+                setError("")
 
-            setClimbingCenters(data)
+                setClimbingCenters(data)
+            }
+            else {
+                const res = await fetch(`${backendUrl}/climbingCenter/inPolygon`, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(polygon)
+                })
+                if (!res.ok) {
+                    setError("Getting climbing spots failed.")
+                    return
+                }
+                const data = await res.json()
+                //console.log(data)
+                setError("")
+
+                setClimbingCenters(data)
+            }
         }
         catch (err) {
             //console.log("LLLLLLLLl")
@@ -190,6 +230,10 @@ const HomePage = () => {
                             setDistance={setDistance}
                             choosingLocation={choosingLocation}
                             setChoosingLocation={setChoosingLocation}
+                            isCircleMode={isCircleMode}
+                            setIsCircleMode={setIsCircleMode}
+                            polygon={polygon}
+                            setPolygon={setPolygon}
                         />
                     </Box>
                     <TextField

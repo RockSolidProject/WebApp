@@ -1,5 +1,6 @@
 var ClimbingareaModel = require('../models/climbingAreaModel.js');
 const haversine = require('haversine-distance');
+const insidePolygon = require('point-in-polygon');
 
 module.exports = {
 
@@ -79,6 +80,31 @@ module.exports = {
                 message: 'Error when getting climbing areas.',
                 error: err
             })
+        }
+    },
+    getInPolygon: async function(req,res) {
+        const polygon = req.body;
+        if (!polygon || polygon.length < 3) {
+            return res.status(400).json({message: "Requires polygon with at least 3 points."})
+        }
+        const polygonPoints = polygon.map(([lat, lng]) => [lng, lat]);
+        try {
+            const climbingAreas = await ClimbingareaModel.find()
+                .populate("postedBy")
+                .populate({
+                    path: "routes",
+                    populate: { path: "postedBy" }
+                })
+            const areasInsidePolygon = climbingAreas.filter(area => {
+                const point = [area.longitude, area.latitude];
+                return insidePolygon(point, polygonPoints);
+            });
+            return res.json(areasInsidePolygon);
+        } catch (err) {
+            return res.status(500).json({
+                message: 'Error when getting climbing areas.',
+                error: err.message || err
+            });
         }
     },
 

@@ -1,5 +1,6 @@
 const climbingCenterModel = require("../models/climbingCenterModel");
 const haversine = require('haversine-distance');
+const insidePolygon = require('point-in-polygon');
 
 module.exports = {
 
@@ -65,6 +66,29 @@ module.exports = {
             });
 
             return res.json(nearbyCenters);
+        } catch (err) {
+            return res.status(500).json({
+                message: 'Error when getting climbing centers.',
+                error: err.message || err
+            });
+        }
+    },
+    getInPolygon: async function (req, res) {
+        const polygon = req.body;
+        if (!polygon || polygon.length < 3) {
+            return res.status(400).json({message: "Requires polygon with at least 3 points."})
+        }
+
+        const polygonPoints = polygon.map(([lat, lng]) => [lng, lat]);
+
+        try {
+            const climbingCenters = await climbingCenterModel.find().populate("owner");
+
+            const centersInsidePolygon = climbingCenters.filter(center => {
+                const point = [center.longitude, center.latitude];
+                return insidePolygon(point, polygonPoints);
+            });
+            return res.json(centersInsidePolygon);
         } catch (err) {
             return res.status(500).json({
                 message: 'Error when getting climbing centers.',

@@ -1,20 +1,20 @@
-import {useState, useEffect} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import GroupAddMember from "./GroupAddMember.jsx";
+import {
+    Container, Typography, Button, List, ListItem, Alert, Box, Avatar, Card, CardContent
+} from "@mui/material";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
 
 function GroupDetailPage() {
     const [group, setGroup] = useState(null);
     const [error, setError] = useState(null);
     const [selected, setSelected] = useState(null);
-    const {id} = useParams();
+    const { id } = useParams();
     const navigate = useNavigate();
 
     useEffect(() => {
-
-
         getGroup();
     }, [id]);
 
@@ -50,14 +50,13 @@ function GroupDetailPage() {
     async function handleAddMember() {
         try {
             const token = localStorage.getItem("token");
-            if (!token) {
-                navigate("/login");
-                return
-            }
+            if (!token) return navigate("/login");
+
             if (!selected) {
-                setError("Missing member to add")
+                setError("Missing member to add");
                 return;
             }
+
             const res = await fetch(`${backendUrl}/groups/add`, {
                 method: "POST",
                 headers: {
@@ -68,17 +67,19 @@ function GroupDetailPage() {
                     group: group._id,
                     member: selected
                 }),
-            })
+            });
+
             if (res.status === 401 || res.status === 403) {
                 navigate("/login");
                 return;
             } else if (!res.ok) {
-                setError(`Issue adding a member ${res.error || res.message}`)
+                setError(`Issue adding a member`);
             }
-            await getGroup()
+
+            await getGroup();
             setSelected(null);
         } catch (e) {
-            setError(`Error adding member: ${e || e.message}`);
+            setError(`Error adding member: ${e.message}`);
             setSelected(null);
         }
     }
@@ -86,10 +87,7 @@ function GroupDetailPage() {
     async function joinGroup() {
         try {
             const token = localStorage.getItem("token");
-            if (!token) {
-                navigate("/login");
-                return;
-            }
+            if (!token) return navigate("/login");
 
             const res = await fetch(`${backendUrl}/groups/join`, {
                 method: "POST",
@@ -97,9 +95,7 @@ function GroupDetailPage() {
                     Authorization: "Bearer " + token,
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    groupId: group._id,
-                }),
+                body: JSON.stringify({ groupId: group._id }),
             });
 
             if (res.status === 401 || res.status === 403) {
@@ -109,60 +105,102 @@ function GroupDetailPage() {
             }
 
             if (!res.ok) {
-                setError(`Error joining group: ${res.error || res.message || "undefined"}`);
+                setError(`Error joining group`);
                 return;
             }
 
             setError("");
             await res.json();
-            await getGroup()
+            await getGroup();
         } catch (e) {
             setError(e.message || "An error occurred");
         }
     }
 
-    if (!group) return <p>Loading group...</p>;
-
-    //const isOwner = true;
+    if (!group) return <Typography>Loading group...</Typography>;
 
     return (
-        <div>
-            <h1>Name: {group.name}</h1>
-            {group.description && <h3>Description: {group.description}</h3>}
-            {group.owner && <h3>Owner: {group.owner.username}</h3>}
+        <Container maxWidth="md" sx={{ mt: 4 }}>
+            <Card>
+                <CardContent>
+                    <Typography variant="h4" gutterBottom>
+                        {group.name}
+                    </Typography>
 
-            {group.isPrivate && !group.isMember && !group.isOwner ? (
-                <h3>Private 🔒</h3>
-            ) : (
-                <>
-                    {!group.isMember && !group.isPrivate && (
-                        <button onClick={joinGroup}>Join Group</button>
+                    {group.description && (
+                        <Typography variant="body1" gutterBottom>
+                            {group.description}
+                        </Typography>
                     )}
 
-                    {group.isMember || group.isOwner && (
+                    {group.owner && (
+                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                            Owner: {group.owner.username}
+                        </Typography>
+                    )}
+
+                    <Typography variant="subtitle2" gutterBottom>
+                        {group.isPrivate ? "Private Group 🔒" : "Public Group 🔓"}
+                    </Typography>
+
+                    {!group.isPrivate && !group.isMember && (
+                        <Button variant="contained" color="primary" onClick={joinGroup} sx={{ mt: 2 }}>
+                            Join Group
+                        </Button>
+                    )}
+
+                    {(group.isMember || group.isOwner) && (
                         <>
                             {group.isOwner && (
                                 <>
-                                    <GroupAddMember onUserSelect={(user) => setSelected(user?.value)}/>
-                                    <button onClick={handleAddMember}>Add Member</button>
+                                    <Box mt={3}>
+                                        <GroupAddMember onUserSelect={(user) => setSelected(user?.value)} />
+                                        <Button
+                                            onClick={handleAddMember}
+                                            variant="contained"
+                                            sx={{ mt: 1 }}
+                                        >
+                                            Add Member
+                                        </Button>
+                                    </Box>
                                 </>
                             )}
+
+                            <Box mt={4}>
+                                <Typography variant="h6">Members</Typography>
+                                <Box
+                                    display="flex"
+                                    flexWrap="wrap"
+                                    gap={2}
+                                    mt={2}
+                                >
+                                    {group.members?.map(({ member }) => (
+                                        <Card key={member._id} sx={{ width: 160, p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                            <Avatar
+                                                src={member.avatar ? `${backendUrl}${member.avatar}` : undefined}
+                                                alt={member.username}
+                                                sx={{ width: 48, height: 48, mb: 1 }}
+                                            />
+                                            <Typography variant="body2" align="center">
+                                                {member.username}
+                                            </Typography>
+                                        </Card>
+                                    ))}
+                                </Box>
+                            </Box>
                         </>
                     )}
-                    <h4>Members:</h4>
-                    <ul>
-                        {group.members?.map((member) => (
-                            <li key={member._id}>{member.member.username}</li>
-                        ))}
-                    </ul>
 
-
-                </>
-            )}
-
-            {error && <p style={{color: "red"}}>{error}</p>}
-        </div>
+                    {error && (
+                        <Typography color="error" sx={{ mt: 2 }}>
+                            {error}
+                        </Typography>
+                    )}
+                </CardContent>
+            </Card>
+        </Container>
     );
+
 }
 
 export default GroupDetailPage;

@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const {hash} = require("bcryptjs");
 const jwt = require('jsonwebtoken');
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
+var RouteClimbedModel = require('../models/routeClimbedModel.js');
 
 /**
  * userController.js
@@ -31,15 +32,24 @@ module.exports = {
     show: async function (req, res) {
         const id = req.params.id;
         try {
+
             const user = await UserModel.findById(id);
             if (!user) {
                 return res.status(404).json({message: 'No such user'});
             }
-            if (user._id.toString() !== req.user.id) {
-                return res.status(403).json({message: "Access denied: Wrong user."})
+            if (user._id.toString() !== req.user.id.toString()) {
+                return res.status(404).json({message: "Access denied: Wrong user."})
             }
 
-            return res.json(user);
+            const routesClimbed = await RouteClimbedModel
+                .find({postedBy: req.user.id})
+                .populate('climbingRoute')
+            const userObj = user.toObject();
+
+            userObj.routesClimbed = routesClimbed;
+            console.log("here")
+
+            return res.json(userObj);
         } catch (err) {
             return res.status(500).json({
                 message: 'Error when getting the user.',
@@ -50,16 +60,25 @@ module.exports = {
 
     setAvatar: async function (req, res) {
         const id = req.params.id;
-        const avatar = req.body.avatar;
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).json({
+                message: 'No file uploaded.'
+            });
+        }
+
         try {
             const user = await UserModel.findById(id);
             if (!user) {
-                return res.status(404).json({message: 'User not found'});
+                return res.status(404).json({ message: 'User not found' });
             }
+
             if (user._id.toString() !== req.user.id) {
-                return res.status(403).json({message: "Access denied: Wrong user."})
+                return res.status(403).json({ message: "Access denied: Wrong user." });
             }
-            user.avatar = avatar;
+
+            user.avatar = `/avatars/${file.filename}`;
             const updatedUser = await user.save();
             return res.json(updatedUser);
         } catch (err) {

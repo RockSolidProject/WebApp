@@ -1,64 +1,109 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import {
+  AppBar, Toolbar, Typography, Button, Avatar, Menu, MenuItem, Box, IconButton, Container
+} from '@mui/material';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Header = () => {
-    const [showMenu, setShowMenu] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
     const navigate = useNavigate();
 
     const isLoggedIn = localStorage.getItem("token") && localStorage.getItem("user");
     const user = isLoggedIn ? JSON.parse(localStorage.getItem("user")) : null;
     const image = user ? backendUrl + user.avatar : "";
 
+    const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+    const handleMenuClose = () => setAnchorEl(null);
+
     function handleLogout() {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+        setAnchorEl(null);
         navigate("/");
     }
 
     return (
-        <nav style={{ padding: '10px', backgroundColor: '#f0f0f0', display: 'flex', justifyContent: 'space-around' }}>
-            <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>Home</Link>
-
-
-
-            {isLoggedIn ? (
-                <>
-                    <Link to="/groups" style={{ textDecoration: 'none', color: 'black' }}>Groups</Link>
-                    <Link to="/events" style={{textDecoration: 'none', color: 'black'}}>Events</Link>
-                    <div style={{ position: 'relative' }}>
-                    <span onClick={() => setShowMenu(!showMenu)} style={{ cursor: 'pointer' }}>
-                        {user.username}
-                        <img src={image} alt="Profile" width="30" height="30" style={{ marginLeft: '8px' }} />
-                    </span>
-
-                        {showMenu && (
-                            <div style={{
-                                position: 'absolute',
-                                top: '100%',
-                                right: 0,
-                                backgroundColor: '#fff',
-                                border: '1px solid #aaa',
-                                padding: '10px',
-                                borderRadius: '4px',
-                                zIndex: 1,
-                            }}>
-                                <button onClick={() => navigate("/profile")} style={{ display: 'block', width: '100%', marginBottom: '5px' }}>Profile</button>
-                                <button onClick={() => navigate("/userGroups")} style={{ display: 'block', width: '100%', marginBottom: '5px' }}>My Groups</button>
-                                <button onClick={handleLogout} style={{ display: 'block', width: '100%', background: "#faa" }}>Logout</button>
-                            </div>
+        <AppBar position="static" color="default" elevation={1}>
+            <Container>
+                <Toolbar sx={{ justifyContent: 'space-between' }}>
+                    <Box display="flex" alignItems="center" gap={2}>
+                        <Typography
+                            variant="h5"
+                            component={Link}
+                            to="/"
+                            sx={{ textDecoration: 'none', color: 'inherit' }}
+                        >
+                            PlezanjeSlovenija
+                        </Typography>
+                        <Button component={Link} to="/groups" color="black"   
+                            sx={{
+                                fontWeight: 550,
+                                textTransform: 'none',
+                                fontSize: '1.1rem',
+                                px: 2,
+                                borderRadius: 2,
+                                backgroundColor: 'grey.200',
+                                '&:hover': {
+                                backgroundColor: 'grey.50', 
+                                }
+                        }}>
+                            Skupine
+                        </Button>
+                        <Button component={Link} to="/events" color="black"   
+                            sx={{
+                                fontWeight: 550,
+                                textTransform: 'none',
+                                fontSize: '1.1rem',
+                                px: 2,
+                                borderRadius: 2,
+                                backgroundColor: 'grey.200',
+                                '&:hover': {
+                                backgroundColor: 'grey.50', 
+                                }
+                        }}>
+                            Dogodki
+                        </Button>
+                    </Box>
+                    <Box display="flex" alignItems="center" gap={1}>
+                        {isLoggedIn ? (
+                            <>
+                                <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
+                                    <Avatar src={image} alt={user.username} />
+                                </IconButton>
+                                <Menu
+                                    anchorEl={anchorEl}
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleMenuClose}
+                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                >
+                                    <MenuItem onClick={() => { navigate("/profile"); handleMenuClose(); }}>
+                                        Profil
+                                    </MenuItem>
+                                    <MenuItem onClick={() => { navigate("/userGroups"); handleMenuClose(); }}>
+                                        Moje skupine
+                                    </MenuItem>
+                                    <MenuItem onClick={handleLogout}>
+                                        <Typography color="error">Odjava</Typography>
+                                    </MenuItem>
+                                </Menu>
+                        </>
+                        ) : (
+                            <>
+                                <Button component={Link} to="/login" variant="outlined" color="primary">
+                                    Prijava
+                                </Button>
+                                <Button component={Link} to="/register" variant="contained" color="primary">
+                                    Registracija
+                                </Button>
+                            </>
                         )}
-                    </div>
-                </>
-
-            ) : (
-                <>
-                    <Link to="/login" style={{ textDecoration: 'none', color: 'black' }}>Login</Link>
-                    <Link to="/register" style={{ textDecoration: 'none', color: 'black' }}>Register</Link>
-                </>
-            )}
-        </nav>
+                    </Box>
+                </Toolbar>
+            </Container>
+        </AppBar>
     );
 };
 

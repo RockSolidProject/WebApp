@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
+import {Container,TextField,Button,Typography,Box} from '@mui/material';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -42,41 +43,52 @@ const RegisterPage = () => {
     }
 
     return (
-        <>
+        <Container maxWidth="sm">
             <form onSubmit={handleRegister}>
-                <h2>Login</h2>
-                <div>
-                    <label>
-                        Email: <br />
-                        <input type="email" value={email}
-                        onChange={e => setEmail(e.target.value)} required
-                    />
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Username: <br />
-                        <input type="text" value={username}
-                        onChange={e => setUsername(e.target.value)} required
-                    />
-                    </label>
-                </div>
-                <div>
-                    <label>
-                    Password: <br />
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                        required
-                    />
-                    </label>
-                </div>
-
-                <button type="submit">Register</button>
+                <Typography variant="h4" mt={2} gutterBottom>
+                    Register
+                </Typography>
+                <TextField
+                    label="Username"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={username}
+                    onChange={e => setUsername(e.target.value)}
+                    required
+                />
+                <TextField
+                    label="Email"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                />
+                <TextField
+                    label="Password"
+                    type="password"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    required
+                />
+                <Box mt={2}>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                    >
+                        Registriraj se
+                    </Button>
+                </Box>
             </form>
             {error ? <p style={{color: "red"}}>{error}</p> : ""}
-        </>
+        </Container>
     );
 };
 
