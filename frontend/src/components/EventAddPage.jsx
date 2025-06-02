@@ -3,7 +3,6 @@ import {Autocomplete, Box, Button, Container, TextField, Typography,} from "@mui
 import {useNavigate} from "react-router-dom";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-const token = localStorage.getItem("token");
 
 function EventAddPage() {
     const navigate = useNavigate();
@@ -29,7 +28,7 @@ function EventAddPage() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 },
                 body: JSON.stringify({
                     name: eventData.name,

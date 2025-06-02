@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import defaultProfilePic from '../assets/default-avatar.png';
 
-const token = localStorage.getItem("token");
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 
@@ -25,6 +24,8 @@ const ProfilePage = () => {
 
     const getUser = async () => {
         try {
+            const token = localStorage.getItem("token");
+
             const res = await fetch(`${backendUrl}/users/profile`, {
                 method: "GET",
                 headers: {
@@ -35,7 +36,8 @@ const ProfilePage = () => {
 
             if (res.status === 401 || res.status === 403) {
                 localStorage.removeItem("token");
-                navigate("/login");
+                localStorage.removeItem("user")
+                return navigate("/login");
             }
 
             if (!res.ok) {
