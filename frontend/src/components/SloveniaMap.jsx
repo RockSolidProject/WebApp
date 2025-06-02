@@ -5,12 +5,13 @@ import {Slider, Button} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import React, {useState, useEffect} from 'react';
 
-const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, setLongitude, distanceTmp,  setDistanceTmp,  setDistance, choosingLocation, setChoosingLocation }) => {
+const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, 
+    setLongitude, distanceTmp,  setDistanceTmp,  setDistance, choosingLocation, setChoosingLocation, 
+    isCircleMode, setIsCircleMode, polygon, setPolygon
+}) => {
     const navigate = useNavigate();
     const bounds = [[45.37, 13.3],[46.89, 16.6]]
 
-    const [isCircleMode, setIsCircleMode] = useState(true) 
-    const [polygon, setPolygon] = useState([[45.35, 13.3],[45.35,16.6],[46.9,16.6],[46.9,13.3]])
     const [draftPolygon, setDraftPolygon] = useState([]);
 
     function ClickHandler({ setLatitude, setLongitude, setChoosingLocation }) {
