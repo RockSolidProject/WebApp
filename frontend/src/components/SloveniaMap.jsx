@@ -1,13 +1,17 @@
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle, Polygon } from 'react-leaflet';
 import MapResetButton from './MapResetButton';
 import leaflet from 'leaflet';
-import {Slider} from '@mui/material';
+import {Slider, Button} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
 
 const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, setLongitude, distanceTmp,  setDistanceTmp,  setDistance, choosingLocation, setChoosingLocation }) => {
     const navigate = useNavigate();
     const bounds = [[45.37, 13.3],[46.89, 16.6]]
 
+    const [isCircleMode, setIsCircleMode] = useState(true) 
+    const [polygon, setPolygon] = useState([[45.35, 13.3],[45.35,16.6],[46.9,16.6],[46.9,13.3]])
+    const [draftPolygon, setDraftPolygon] = useState([]);
 
     function ClickHandler({ setLatitude, setLongitude, setChoosingLocation }) {
         useMapEvents({
@@ -15,10 +19,15 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                 if (e.originalEvent?.target?.id == "map-reset-button"){
                     return
                 }
-
-                setLatitude(e.latlng.lat);
-                setLongitude(e.latlng.lng);
-                setChoosingLocation(false)
+                
+                if (isCircleMode) {
+                    setLatitude(e.latlng.lat);
+                    setLongitude(e.latlng.lng);
+                    setChoosingLocation(false)
+                }
+                else {
+                    setDraftPolygon((prev) => [...prev, [e.latlng.lat, e.latlng.lng]]);
+                }
             }
         });
         return null;
@@ -41,29 +50,74 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                 url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                 attribution='&copy; OpenStreetMap contributors & Carto'
             />*/}
-            <MapResetButton bounds={bounds} defaultLatitude={46.1199444} defaultLongitude={15} defaultDistance={135} setLatitude={setLatitude} setLongitude={setLongitude} setDistance={setDistance} setDistanceTmp={setDistanceTmp}/>
+            <MapResetButton bounds={bounds} defaultLatitude={46.1199444} defaultLongitude={15} defaultDistance={135} 
+                setLatitude={setLatitude} setLongitude={setLongitude} setDistance={setDistance} setDistanceTmp={setDistanceTmp}
+                setChoosingLocation={setChoosingLocation} setPolygon={setPolygon} setDraftPolygon={setDraftPolygon}
+            />
 
             {!choosingLocation ? "" : <ClickHandler setLatitude={setLatitude} setLongitude={setLongitude}setChoosingLocation={setChoosingLocation} /> }
 
-            <Marker
-                position={[latitude, longitude]}
-                icon={leaflet.icon({
-                    iconUrl: "/markers/marker_blue.png",
-                    iconSize: [8, 8],
-                    })}
-                >
-                <Popup>Center of search</Popup>
-            </Marker>
+            {isCircleMode ?
+                <>
+                    {/*Circle query*/}
+                    <Marker
+                        position={[latitude, longitude]}
+                        icon={leaflet.icon({
+                            iconUrl: "/markers/marker_blue.png",
+                            iconSize: [8, 8],
+                            })}
+                        >
+                        <Popup>Center of search</Popup>
+                    </Marker>
 
-              <Circle
-                center={[latitude, longitude]}
-                radius={distanceTmp * 1000}
-                pathOptions={{
-                    color: 'blue',
-                    fillColor: 'blue',
-                    fillOpacity: 0.07
-                }}
-            />
+                    <Circle
+                        center={[latitude, longitude]}
+                        radius={distanceTmp * 1000}
+                        pathOptions={{
+                            color: 'blue',
+                            fillColor: 'blue',
+                            fillOpacity: 0.07
+                        }}
+                    />
+                    {/*Circle query*/}
+                </>
+            : 
+                <>
+                    <Polygon
+                        positions={polygon}
+                        pathOptions={{
+                        color: 'blue',
+                        fillColor: 'blue',
+                        fillOpacity: 0.15,
+                        dashArray: "4 4"
+                        }}
+                    />
+
+                    {draftPolygon.length > 0 && draftPolygon.map((pos, idx) => (
+                    <Marker
+                        key={`draft-${idx}`}
+                        position={pos}
+                        icon={leaflet.icon({
+                        iconUrl: "/markers/marker_blue.png", // or a small dot
+                        iconSize: [8, 8],
+                        })}
+                    />
+                    ))}
+                    
+                    {draftPolygon.length >= 2 && (
+                        <Polygon
+                            positions={draftPolygon}
+                            pathOptions={{
+                            color: 'purple',
+                            fillColor: 'purple',
+                            fillOpacity: 0.2,
+                            dashArray: "4 4"
+                            }}
+                        />
+                    )}
+                </>
+            }
+            
 
             {climbingAreas.map((area) => {
                 const iconUrl = (area.routes?.length || 0) > 10
@@ -132,34 +186,154 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                 fontSize: 16
             }}  
         >   
-            <div style={{alignItems: "center", display: "flex"}}>
-                <button onClick={() => setChoosingLocation(!choosingLocation)}
-                    style={{ 
-                    fontSize: 20, padding: 2, background: choosingLocation ? "#009879" : "#f2f2f2", color: "black",
-                    borderRadius: 0, border: "2px solid black", marginLeft: 10
-                    }}>
-                    📌
-                </button>
-            </div>
-            
-            <div 
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px"
+            <Button
+                variant="outlined"
+                size="small"
+                onClick={() => setIsCircleMode(!isCircleMode)}
+                sx={{
+                    border: "2px solid black",
+                    color: "black",
+                    fontSize: 20,
+                    marginLeft: 1,
+                    paddingRight: 1,
+                    paddingBottom: 0,
+                    paddingTop: 0,
+                    paddingLeft: 1,
+                    minWidth: "2em",
+                    '&:hover': {
+                        backgroundColor: 'grey.400',
+                    },
                 }}
             >
-                <div>{distanceTmp}km</div>
-                <Slider 
-                    min={5} max={135} step={1}
-                    value={distanceTmp}
-                    onTouchEnd={() => setDistance(distanceTmp)}
-                    onMouseUp={() => setDistance(distanceTmp)}
-                    onChange={(e) => setDistanceTmp(Number(e.target.value))}
-                    size='small'
-                    sx={{ width: 150 }}
-                /> 
-            </div>
+                {!isCircleMode ? "⭘" : "⬠"}
+            </Button>
+            {isCircleMode ? 
+                <>
+                {/*Circle menu*/}
+                    <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => setChoosingLocation(!choosingLocation)}
+                        sx={{
+                            border: "2px solid black",
+                            color: "black",
+                            fontSize: 20,
+                            marginLeft: 0,
+                            paddingRight: 0.8,
+                            paddingBottom: 0,
+                            paddingTop: 0,
+                            paddingLeft: 1,
+                            minWidth: "auto",
+                            background: choosingLocation ? "#009879" : "#f2f2f2",
+                            '&:hover': {
+                                backgroundColor: 'grey.400',
+                            },
+                        }}
+                    >
+                        📌
+                    </Button>
+                    
+                    <div 
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px"
+                        }}
+                    >
+                        <div>{distanceTmp}km</div>
+                        <Slider 
+                            min={5} max={135} step={1}
+                            value={distanceTmp}
+                            onTouchEnd={() => setDistance(distanceTmp)}
+                            onMouseUp={() => setDistance(distanceTmp)}
+                            onChange={(e) => setDistanceTmp(Number(e.target.value))}
+                            size='small'
+                            sx={{ width: 150 }}
+                        /> 
+                    </div>
+                    {/*Circle menu*/}
+                </>    
+                :
+                <>
+                    <div style={{alignItems: "center", display: "flex", gap: 10}}>
+                        {!choosingLocation ? 
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={() => setChoosingLocation(!choosingLocation)}
+                                sx={{
+                                    border: "2px solid black",
+                                    color: "black",
+                                    fontSize: 20,
+                                    marginLeft: 0,
+                                    paddingRight: 0.8,
+                                    paddingBottom: 0,
+                                    paddingTop: 0,
+                                    paddingLeft: 1,
+                                    minWidth: "auto",
+                                    '&:hover': {
+                                        backgroundColor: 'grey.400',
+                                    },
+                                }}
+                            >
+                                📌
+                            </Button>
+                        :
+                        <> 
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={() => {setDraftPolygon([]); setChoosingLocation(false) }}
+                                sx={{
+                                    border: "2px solid black",
+                                    color: "black",
+                                    fontSize: 16,
+                                    marginLeft: 0,
+                                    padding: 0.3,
+                                    background: "#e86051",
+                                    '&:hover': {
+                                        backgroundColor: '#ba3b11',
+                                        color: "white"
+                                    },
+                                }}
+                            >
+                                Prekliči
+                            </Button>
+
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={() => {
+                                    if (draftPolygon.length >= 3) {
+                                        setPolygon(draftPolygon);
+                                        setDraftPolygon([]);
+                                        setChoosingLocation(false)
+                                    }
+                                }}
+                                disabled={draftPolygon.length < 3}
+                                sx={{
+                                    border: "2px solid black",
+                                    color: "black",
+                                    fontSize: 16,
+                                    marginLeft: 0,
+                                    padding: 0.3,
+                                    background: "#93fa91",
+                                    cursor: draftPolygon.length < 3 ? "not-allowed" : "pointer",
+                                    opacity: draftPolygon.length < 3 ? 0.6 : 1,
+                                    '&:hover': {
+                                        backgroundColor: '#3b8f0e',
+                                        color: "white"
+                                    },
+                                }}
+                            >
+                                Shrani
+                            </Button>
+                        </>
+                        }
+                        
+                    </div>
+                </>
+            }
         </div>
     </div>);
 };
