@@ -211,4 +211,48 @@ module.exports = {
             });
         }
     },
+    googleLogin: async (req, res) => {
+        const googleUser = req.googleUser;
+        const { email, sub: googleId, name: username, picture: avatar } = googleUser;
+
+        try {
+            let user = await UserModel.findOne({ googleId });
+
+            if (!user) {
+                // If user with googleId doesn't exist, check if user with email exists
+                user = await UserModel.findOne({ email });
+                if (user && !user.googleId) {
+                    // attach googleId if email match but no googleId yet
+                    user.googleId = googleId;
+                } else if (!user) {
+                    // create new user
+                    user = new UserModel({
+                        username,
+                        email,
+                        googleId,
+                        avatar,
+                    });
+                }
+
+                await user.save();
+            }
+
+            // Generate JWT
+            const token = jwt.sign({ id: user._id, username: user.username }, JWT_SECRET_KEY, { expiresIn: '1h' });
+
+            return res.json({
+                token,
+                userData: {
+                    id: user._id,
+                    username: user.username,
+                    email: user.email,
+                    avatar: user.avatar,
+                }
+            });
+
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Google login error", error: err.message });
+        }
+    }
 };
