@@ -78,6 +78,14 @@ const ProfilePage = () => {
 
             const updatedUser = await res.json();
             setUser(updatedUser);
+
+            const localUser = JSON.parse(localStorage.getItem("user"));
+            if (localUser) {
+                localUser.avatar = updatedUser.avatar;
+                localStorage.setItem("user", JSON.stringify(localUser));
+            }
+            navigate("/profile");
+
         } catch (err) {
             setError(`Error uploading avatar: ${err.message}`);
         }
