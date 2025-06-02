@@ -38,7 +38,7 @@ module.exports = {
                 return res.status(404).json({message: 'No such user'});
             }
             if (user._id.toString() !== req.user.id.toString()) {
-                return res.status(403).json({message: "Access denied: Wrong user."})
+                return res.status(404).json({message: "Access denied: Wrong user."})
             }
 
             const routesClimbed = await RouteClimbedModel

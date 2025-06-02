@@ -14,14 +14,14 @@ import defaultProfilePic from '../assets/default-avatar.png';
 
 const token = localStorage.getItem("token");
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-const originalUser = JSON.parse(localStorage.getItem("user"));
+
 
 const ProfilePage = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [error, setError] = useState(null);
     const [averageGrade, setAverageGrade] = useState(0);
-    const [averageAtempts, setAverageAtempts] = useState(0);
+    const [averageAttempts, setAverageAttempts] = useState(0);
 
     const getClimbed = async () => {
         try {
@@ -33,6 +33,7 @@ const ProfilePage = () => {
 
     const getUser = async () => {
         try {
+            const originalUser = await JSON.parse(localStorage.getItem("user"));
             const res = await fetch(`${backendUrl}/users/${originalUser.id}`, {
                 method: "GET",
                 headers: {
@@ -55,7 +56,7 @@ const ProfilePage = () => {
             const averageAttempts = data.routesClimbed.length
                 ? (data.routesClimbed.reduce((sum, r) => sum + r.attempts, 0)) / data.routesClimbed.length
                 :0
-            setAverageAtempts(averageAttempts)
+            setAverageAttempts(averageAttempts)
 
         } catch (err) {
             setError(`Error fetching user: ${err.message}`);
@@ -142,8 +143,8 @@ const ProfilePage = () => {
                         <Typography>{user.email || "Not provided"}</Typography>
 
                         <Typography variant="h6" mt={2}>User Statistics:</Typography>
-                        <Typography>Routes climbed: {user.routesClimbed.length}</Typography>
-                        <Typography>Average attempts: {averageAtempts}</Typography>
+                        <Typography>Routes climbed: {user.routesClimbed?user.routesClimbed.length:0}</Typography>
+                        <Typography>Average attempts: {averageAttempts}</Typography>
                     </CardContent>
                 </Card>
             </Box>
