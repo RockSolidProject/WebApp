@@ -20,16 +20,8 @@ const ProfilePage = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [error, setError] = useState(null);
-    const [averageGrade, setAverageGrade] = useState(0);
     const [averageAttempts, setAverageAttempts] = useState(0);
 
-    const getClimbed = async () => {
-        try {
-            const res = await fetch(`${backendUrl}/users`, {});
-        }catch(e) {
-            setError(`could not find climbed routes ${e}`);
-        }
-    }
 
     const getUser = async () => {
         try {
@@ -66,7 +58,7 @@ const ProfilePage = () => {
     const handleAvatarChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
+        const originalUser = await JSON.parse(localStorage.getItem("user"));
         const formData = new FormData();
         formData.append("avatar", file);
 
