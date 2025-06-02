@@ -46,10 +46,10 @@ const RegisterPage = () => {
         <Container maxWidth="sm">
             <form onSubmit={handleRegister}>
                 <Typography variant="h4" mt={2} gutterBottom>
-                    Register
+                    Registracija
                 </Typography>
                 <TextField
-                    label="Username"
+                    label="Uporabniško ime"
                     variant="outlined"
                     fullWidth
                     margin="normal"
@@ -67,7 +67,7 @@ const RegisterPage = () => {
                     required
                 />
                 <TextField
-                    label="Password"
+                    label="Geslo"
                     type="password"
                     variant="outlined"
                     fullWidth

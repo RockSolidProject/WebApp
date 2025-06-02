@@ -29,7 +29,7 @@ module.exports = {
 
             const climbingCenters = await climbingCenterModel
                 .find(nameFilter)       // Apply regex filter here
-                .limit(limit)           // Limit number of results
+                .limit(limit)
                 .populate("owner");
 
             return res.json(climbingCenters);

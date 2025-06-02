@@ -44,7 +44,7 @@ module.exports = {
                 .find({climbingCenter: centerId})
             if (ratings.length === 0) {
                 return res.status(200).json({
-                    message: "No ratings yet.",
+                    message: "Ni še ocen.",
                     averageRating: 0
                 })
             }

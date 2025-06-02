@@ -22,7 +22,7 @@ const AddClimbingCenterPage = () => {
         e.preventDefault();
 
         const token = localStorage.getItem("token");
-        const user = JSON.parse(localStorage.getItem("user")); // Assuming user data is stored in localStorage
+        const user = JSON.parse(localStorage.getItem("user"));
 
         if (!token || !user || !user.id) {
             navigate("/login");
@@ -91,7 +91,7 @@ const AddClimbingCenterPage = () => {
                     setLongitude={setLongitude}
                 />
                 <TextField
-                    label="Name"
+                    label="Ime"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
@@ -107,7 +107,7 @@ const AddClimbingCenterPage = () => {
                             />
                         }
                         sx={{ mt: -1 }}
-                        label="Has Boulders"
+                        label="Ima bolderje"
                     />
                     <FormControlLabel
                         control={
@@ -117,7 +117,7 @@ const AddClimbingCenterPage = () => {
                             />
                         }
                         sx={{ mt: -1 }}
-                        label="Has Routes"
+                        label="Ima plezanlne poti"
                     />
                     <FormControlLabel
                         control={
@@ -127,7 +127,7 @@ const AddClimbingCenterPage = () => {
                             />
                         }
                         sx={{ mt: -1 }}
-                        label="Has Moonboard"
+                        label="Ima moonboard"
                     />
                     <FormControlLabel
                         control={
@@ -137,7 +137,7 @@ const AddClimbingCenterPage = () => {
                             />
                         }
                         sx={{ mt: -1 }}
-                        label="Has Spray Wall"
+                        label="Ima šutalnico"
                     />
                     <FormControlLabel
                         control={
@@ -147,7 +147,7 @@ const AddClimbingCenterPage = () => {
                             />
                         }
                         sx={{ mt: -1 }}
-                        label="Has Kilter"
+                        label="Ima kilter"
                     />
                 </Stack>
 

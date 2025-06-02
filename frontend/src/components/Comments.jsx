@@ -4,7 +4,7 @@ export default function Comments({ comments }) {
     if (!comments || comments.length === 0) {
         return (
             <Typography color="text.secondary" sx={{ mt: 2 }}>
-                No comments yet.
+                Ni še komentarja.
             </Typography>
         );
     }
@@ -14,7 +14,7 @@ export default function Comments({ comments }) {
                 <Card key={comment._id} sx={{ mb: 2, boxShadow: 2 }}>
                     <CardContent>
                         <Typography variant="subtitle2" color="primary">
-                            {comment.postedBy?.username || "Unknown"}
+                            {comment.postedBy?.username || "Neznano"}
                         </Typography>
                         <Typography variant="body1" sx={{ mt: 1 }}>
                             {comment.content}
@@ -23,7 +23,7 @@ export default function Comments({ comments }) {
                             <Box
                                 component="img"
                                 src={comment.image}
-                                alt="Comment"
+                                alt="Komentar"
                                 sx={{
                                     maxWidth: '100%',
                                     maxHeight: 250,

@@ -48,10 +48,10 @@ const LoginPage = () => {
         <Container maxWidth="sm">
             <form onSubmit={handleLogin}>
                 <Typography variant="h4" mt={2} gutterBottom>
-                    Login
+                    Prijava
                 </Typography>
                 <TextField
-                    label="Username"
+                    label="Uporabniško ime"
                     variant="outlined"
                     fullWidth
                     margin="normal"
@@ -60,7 +60,7 @@ const LoginPage = () => {
                     required
                 />
                 <TextField
-                    label="Password"
+                    label="Geslo"
                     type="password"
                     variant="outlined"
                     fullWidth
@@ -76,7 +76,7 @@ const LoginPage = () => {
                         color="primary"
                         fullWidth
                     >
-                        Login
+                        Prijava
                     </Button>
                 </Box>
             </form>

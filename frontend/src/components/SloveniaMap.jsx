@@ -3,10 +3,11 @@ import MapResetButton from './MapResetButton';
 import leaflet from 'leaflet';
 import {Slider, Button} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import React, {useState, useEffect} from 'react';
+import MarkerClusterGroup from 'react-leaflet-cluster';
+import React, {useState} from 'react';
 
-const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, 
-    setLongitude, distanceTmp,  setDistanceTmp,  setDistance, choosingLocation, setChoosingLocation, 
+const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude,
+    setLongitude, distanceTmp,  setDistanceTmp,  setDistance, choosingLocation, setChoosingLocation,
     isCircleMode, setIsCircleMode, polygon, setPolygon
 }) => {
     const navigate = useNavigate();
@@ -20,7 +21,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                 if (e.originalEvent?.target?.id == "map-reset-button"){
                     return
                 }
-                
+
                 if (isCircleMode) {
                     setLatitude(e.latlng.lat);
                     setLongitude(e.latlng.lng);
@@ -51,7 +52,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                 url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                 attribution='&copy; OpenStreetMap contributors & Carto'
             />*/}
-            <MapResetButton bounds={bounds} defaultLatitude={46.1199444} defaultLongitude={15} defaultDistance={135} 
+            <MapResetButton bounds={bounds} defaultLatitude={46.1199444} defaultLongitude={15} defaultDistance={135}
                 setLatitude={setLatitude} setLongitude={setLongitude} setDistance={setDistance} setDistanceTmp={setDistanceTmp}
                 setChoosingLocation={setChoosingLocation} setPolygon={setPolygon} setDraftPolygon={setDraftPolygon}
             />
@@ -82,7 +83,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                     />
                     {/*Circle query*/}
                 </>
-            : 
+            :
                 <>
                     <Polygon
                         positions={polygon}
@@ -104,7 +105,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                         })}
                     />
                     ))}
-                    
+
                     {draftPolygon.length >= 2 && (
                         <Polygon
                             positions={draftPolygon}
@@ -118,8 +119,8 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                     )}
                 </>
             }
-            
 
+            <MarkerClusterGroup showCoverageOnHover={false}>
             {climbingAreas.map((area) => {
                 const iconUrl = (area.routes?.length || 0) > 10
                 ? '/markers/marker_area_orange.png'
@@ -139,26 +140,25 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                             shadowSize: [40, 30]
                         })}
                         >
-                        <Popup>
-                            <div
-                                style={{ cursor: "pointer", fontWeight: "bold", color: "blue"}}
-                                onClick={() => navigate(`/climbingAreas/${area._id}`)}
-                            >
-                                {area.name}
-                            </div>
-                            <div>{area.routes?.length || 0} routes</div>
-                        </Popup>
-                    </Marker>
-                )
-            })}
-            {climbingCenters.map((center) => {
-                const iconUrl = '/markers/marker_center.png'
-                return (
+                            <Popup>
+                                <div
+                                    style={{ cursor: "pointer", fontWeight: "bold", color: "blue" }}
+                                    onClick={() => navigate(`/climbingAreas/${area._id}`)}
+                                >
+                                    {area.name}
+                                </div>
+                                <div>{area.routes?.length || 0} routes</div>
+                            </Popup>
+                        </Marker>
+                    );
+                })}
+
+                {climbingCenters.map((center) => (
                     <Marker
                         key={center._id}
                         position={[center.latitude, center.longitude]}
                         icon={leaflet.icon({
-                            iconUrl: iconUrl,
+                            iconUrl: '/markers/marker_center.png',
                             iconSize: [24, 30],
                             iconAnchor: [12, 30],
                             shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
@@ -166,12 +166,18 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                             shadowSize: [40, 30]
                         })}
                     >
+
                         <Popup>
-                            <strong>{center.name}</strong><br/>
+                            <div
+                                style={{ cursor: "pointer", fontWeight: "bold", color: "blue"}}
+                                onClick={() => navigate(`/climbingCenters/${center._id}`)}
+                            >
+                                {center.name}
+                            </div>
                         </Popup>
                     </Marker>
-                )
-            })}
+                ))}
+            </MarkerClusterGroup>
         </MapContainer>
         <div 
             style={{
@@ -208,7 +214,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
             >
                 {!isCircleMode ? "⭘" : "⬠"}
             </Button>
-            {isCircleMode ? 
+            {isCircleMode ?
                 <>
                 {/*Circle menu*/}
                     <Button
@@ -233,8 +239,8 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                     >
                         📌
                     </Button>
-                    
-                    <div 
+
+                    <div
                         style={{
                             display: "flex",
                             alignItems: "center",
@@ -242,7 +248,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                         }}
                     >
                         <div>{distanceTmp}km</div>
-                        <Slider 
+                        <Slider
                             min={5} max={135} step={1}
                             value={distanceTmp}
                             onTouchEnd={() => setDistance(distanceTmp)}
@@ -250,14 +256,14 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                             onChange={(e) => setDistanceTmp(Number(e.target.value))}
                             size='small'
                             sx={{ width: 150 }}
-                        /> 
+                        />
                     </div>
                     {/*Circle menu*/}
-                </>    
+                </>
                 :
                 <>
                     <div style={{alignItems: "center", display: "flex", gap: 10}}>
-                        {!choosingLocation ? 
+                        {!choosingLocation ?
                             <Button
                                 variant="outlined"
                                 size="small"
@@ -280,7 +286,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                                 📌
                             </Button>
                         :
-                        <> 
+                        <>
                             <Button
                                 variant="outlined"
                                 size="small"
@@ -331,7 +337,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                             </Button>
                         </>
                         }
-                        
+
                     </div>
                 </>
             }

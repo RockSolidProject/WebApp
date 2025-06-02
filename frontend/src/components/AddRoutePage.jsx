@@ -134,11 +134,11 @@ export default function AddRoutePage() {
         <Card sx={{ maxWidth: 500, mx: 'auto', mt: 5, p: 2 }}>
             <CardContent>
                 <Typography variant="h5" gutterBottom>
-                    Add New Route
+                    Dodaj novo pot
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate>
                     <TextField
-                        label="Route Name"
+                        label="Ime poti"
                         fullWidth
                         margin="normal"
                         value={name}
@@ -147,18 +147,18 @@ export default function AddRoutePage() {
                     />
                     <TextField
                         select
-                        label="Type"
+                        label="Tip"
                         fullWidth
                         margin="normal"
                         value={type}
                         onChange={e => { setType(e.target.value); setGrade(''); }}
                     >
-                        <MenuItem value="lead">Lead</MenuItem>
-                        <MenuItem value="boulder">Boulder</MenuItem>
-                        <MenuItem value="urban">Urban</MenuItem>
+                        <MenuItem value="lead">Športna pot</MenuItem>
+                        <MenuItem value="boulder">Balvan</MenuItem>
+                        <MenuItem value="urban">Urbana pot</MenuItem>
                     </TextField>
                     <TextField
-                        label="Length (m)"
+                        label="Dolžina (m)"
                         type="number"
                         fullWidth
                         margin="normal"
@@ -168,20 +168,20 @@ export default function AddRoutePage() {
                     />
                     <TextField
                         select
-                        label="Grade"
+                        label="Ocena"
                         fullWidth
                         margin="normal"
                         value={grade}
                         onChange={e => setGrade(e.target.value)}
                         required
                     >
-                        <MenuItem value="">Select grade</MenuItem>
+                        <MenuItem value="">Izberi težavnost</MenuItem>
                         {getGradeOptions().map((g, i) => (
                             <MenuItem key={i} value={g}>{g}</MenuItem>
                         ))}
                     </TextField>
                     <TextField
-                        label="Number of Attempts"
+                        label="Število poizkusov"
                         type="number"
                         fullWidth
                         margin="normal"
@@ -196,7 +196,7 @@ export default function AddRoutePage() {
                         fullWidth
                         sx={{ mt: 2 }}
                     >
-                        Add Route
+                        Dodaj pot
                     </Button>
                 </Box>
 

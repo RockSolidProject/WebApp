@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {useNavigate} from "react-router-dom";
 import {
   Table, TableHead, TableBody, TableRow, TableCell,
   Typography,Collapse, Box, 
@@ -10,7 +11,7 @@ const ClimbingCenterTable = ({ filteredCenters }) => {
     const [isTableVisible, setIsTableVisible] = useState(true);
 
     const hasData = filteredCenters.length > 0
-
+    const navigate = useNavigate();
     return (
         <> {hasData && (
             <Box sx={{ width: '100%', mb: 2 }}>
@@ -45,7 +46,12 @@ const ClimbingCenterTable = ({ filteredCenters }) => {
                         <TableBody>
                         {filteredCenters.map((center, index) => (
                             <TableRow key={index}>
-                                <TableCell>{center.name}</TableCell>
+                                <TableCell
+                                    style={{ cursor: "pointer", color: "blue", fontWeight: "medium" }}
+                                    onClick={() => navigate(`/climbingCenters/${center._id}`)}
+                                >
+                                    {center.name}
+                                </TableCell>
                                 <TableCell align='center'>{center.hasBoulders ? "✔️" : ""}</TableCell>
                                 <TableCell align='center'>{center.hasRoutes ? "✔️" : ""}</TableCell>
                                 <TableCell align='center'>{center.hasMoonboard ? "✔️" : ""}</TableCell>
