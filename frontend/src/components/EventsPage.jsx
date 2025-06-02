@@ -66,11 +66,11 @@ function EventsPage() {
                     color="primary"
                     sx={{mt: 3}}
                 >
-                    Add New Event
+                    Dodaj Nov Dogodek
                 </Button>
             </Box>
             <Typography variant="h4" gutterBottom>
-                Upcoming Events
+                Prihajajoči dogodki
             </Typography>
 
             {loading && <CircularProgress sx={{mt: 4}}/>}
@@ -100,15 +100,15 @@ function EventsPage() {
                             <CardContent>
                                 <Typography variant="h6">{event.name}</Typography>
                                 <Typography color="text.secondary">
-                                    {new Date(event.date).toLocaleDateString(undefined, {
-                                        weekday: 'short',
-                                        year: 'numeric',
-                                        month: 'short',
-                                        day: 'numeric',
+                                    {new Date(event.date).toLocaleDateString('sl-SI', {
+                                        weekday: "short", // e.g., "pon." for "ponedeljek"
+                                        year: "numeric",  // e.g., "2025"
+                                        month: "short",   // e.g., "jun."
+                                        day: "numeric"    // e.g., "2"
                                     })}
                                 </Typography>
                                 <Typography variant="body2" mt={1}>
-                                    {event.description || "No description provided."}
+                                    {event.description || "Brez opisa."}
                                 </Typography>
                             </CardContent>
                         </Card>

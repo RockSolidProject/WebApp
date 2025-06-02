@@ -132,7 +132,7 @@ function EventAddPage() {
     return (
         <Container maxWidth="sm">
             <Typography variant="h5" gutterBottom>
-                Add New Event
+                Dodaj Nov Dogodek
             </Typography>
             <Box
                 component="form"
@@ -141,7 +141,7 @@ function EventAddPage() {
             >
                 <TextField
                     name="name"
-                    label="Event Name"
+                    label="Ime Dogodka"
                     fullWidth
                     value={eventData.name}
                     onChange={(e) =>
@@ -151,7 +151,7 @@ function EventAddPage() {
                 />
                 <TextField
                     name="date"
-                    label="Event Date"
+                    label="Datum Dogodka"
                     type="date"
                     fullWidth
                     value={eventData.date}
@@ -164,7 +164,7 @@ function EventAddPage() {
                 <TextField
 
                     name="description"
-                    label="Description"
+                    label="Opis Dogodka"
                     multiline
                     minRows={3}
                     fullWidth
@@ -184,7 +184,7 @@ function EventAddPage() {
                     }
                     value={eventData.climbingSpots}
                     renderInput={(params) => (
-                        <TextField {...params} label="Climbing Areas" fullWidth/>
+                        <TextField {...params} label="Plezališča" fullWidth/>
                     )}
                     isOptionEqualToValue={(option, value) => option._id === value._id}
                 />
@@ -199,7 +199,7 @@ function EventAddPage() {
                     }
                     value={eventData.climbingCenters}
                     renderInput={(params) => (
-                        <TextField {...params} label="Climbing Centers" fullWidth/>
+                        <TextField {...params} label="Plezalni Centri" fullWidth/>
                     )}
                     isOptionEqualToValue={(option, value) => option._id === value._id}
                 />
@@ -214,14 +214,14 @@ function EventAddPage() {
                     }
                     value={eventData.groups}
                     renderInput={(params) => (
-                        <TextField {...params} label="Groups" fullWidth/>
+                        <TextField {...params} label="Skupine" fullWidth/>
                     )}
                     isOptionEqualToValue={(option, value) => option._id === value._id}
                 />
 
                 <Typography>{error}</Typography>
                 <Button type="submit" variant="contained" color="primary" onSubmit={handleSubmit}>
-                    Create Event
+                    Ustvari Dogodek
                 </Button>
             </Box>
         </Container>

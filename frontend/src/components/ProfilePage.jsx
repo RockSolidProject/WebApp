@@ -20,7 +20,6 @@ const ProfilePage = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [error, setError] = useState(null);
-    const [averageGrade, setAverageGrade] = useState(0);
     const [averageAttempts, setAverageAttempts] = useState(0);
 
     const getClimbed = async () => {
@@ -71,6 +70,7 @@ const ProfilePage = () => {
         formData.append("avatar", file);
 
         try {
+            const originalUser = await JSON.parse(localStorage.getItem("user"));
             const res = await fetch(`${backendUrl}/users/avatar/${originalUser.id}`, {
                 method: "PUT",
                 headers: {
@@ -105,7 +105,7 @@ const ProfilePage = () => {
     return (
         <Container maxWidth="sm">
             <Box my={4}>
-                <Typography variant="h4" gutterBottom>User Profile</Typography>
+                <Typography variant="h4" gutterBottom>Uporabniški profil</Typography>
                 <Card>
 
                     <CardContent>
@@ -132,19 +132,19 @@ const ProfilePage = () => {
                                         cursor: 'pointer'
                                     }}
                                 >
-                                    Change Profile Picture
+                                    Spremeni Profilno Sliko
                                 </Box>
                             </label>
                         </Box>
-                        <Typography variant="h6">Username:</Typography>
+                        <Typography variant="h6">Uporabniško ime:</Typography>
                         <Typography>{user.username}</Typography>
 
                         <Typography variant="h6" mt={2}>Email:</Typography>
                         <Typography>{user.email || "Not provided"}</Typography>
 
-                        <Typography variant="h6" mt={2}>User Statistics:</Typography>
-                        <Typography>Routes climbed: {user.routesClimbed?user.routesClimbed.length:0}</Typography>
-                        <Typography>Average attempts: {averageAttempts}</Typography>
+                        <Typography variant="h6" mt={2}>Statistika:</Typography>
+                        <Typography>Preplezane poti: {user.routesClimbed?user.routesClimbed.length:0}</Typography>
+                        <Typography>Povprečni poskusi: {averageAttempts}</Typography>
                     </CardContent>
                 </Card>
             </Box>

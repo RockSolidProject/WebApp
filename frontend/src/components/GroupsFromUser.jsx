@@ -31,7 +31,7 @@ const GroupsFromUser = () => {
 
     return (
         <Container maxWidth="md" sx={{mt: 4}}>
-            <Typography variant={"h3"}>Your groups</Typography>
+            <Typography variant={"h3"}>Tvoje skupine</Typography>
             <Box mb={3} display="flex" justifyContent="flex-end">
                 <Button
                     variant="contained"
@@ -39,17 +39,17 @@ const GroupsFromUser = () => {
                     component={Link}
                     to="/createGroup"
                 >
-                    Create a Group
+                    Ustvari skupino
                 </Button>
             </Box>
-            <Typography variant={"h4"}>Groups you own: </Typography>
-            {groups.owned.length === 0 ? <p>No groups owned.</p> : (
+            <Typography variant={"h4"}>Skupine ki jih lastiš</Typography>
+            {groups.owned.length === 0 ? <p>Ne lastiš nobene skupine</p> : (
                 groups.owned.map((group) => (
                     <Group group={group} key={group._id}/>
                 ))
             )}
-            <Typography variant={"h4"}>Groups you are a member of: </Typography>
-            {groups.membered.length === 0 ? <p>Not a member of any groups.</p> : (
+            <Typography variant={"h4"}>Skupine katerih član si </Typography>
+            {groups.membered.length === 0 ? <p>Nisi član nobene skupine</p> : (
                 groups.membered.map((group) => (
                     <Group group={group} key={group._id}/>
                 ))

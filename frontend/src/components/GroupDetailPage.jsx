@@ -135,17 +135,17 @@ function GroupDetailPage() {
 
                     {group.owner && (
                         <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                            Owner: {group.owner.username}
+                            Lastnik: {group.owner.username}
                         </Typography>
                     )}
 
                     <Typography variant="subtitle2" gutterBottom>
-                        {group.isPrivate ? "Private Group 🔒" : "Public Group 🔓"}
+                        {group.isPrivate ? "Zasebna Skupina 🔒" : "Javna Skupina 🔓"}
                     </Typography>
 
                     {!group.isPrivate && !group.isMember && (
                         <Button variant="contained" color="primary" onClick={joinGroup} sx={{ mt: 2 }}>
-                            Join Group
+                            Včlani se v skupino
                         </Button>
                     )}
 
@@ -160,14 +160,14 @@ function GroupDetailPage() {
                                             variant="contained"
                                             sx={{ mt: 1 }}
                                         >
-                                            Add Member
+                                            Dodaj Člana
                                         </Button>
                                     </Box>
                                 </>
                             )}
 
                             <Box mt={4}>
-                                <Typography variant="h6">Members</Typography>
+                                <Typography variant="h6">Člani</Typography>
                                 <Box
                                     display="flex"
                                     flexWrap="wrap"

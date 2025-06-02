@@ -51,11 +51,11 @@ function GroupCreatePage() {
 
     return (
         <Container maxWidth="sm" sx={{ mt: 6 }}>
-            <Typography variant="h4" gutterBottom>Create a New Group</Typography>
+            <Typography variant="h4" gutterBottom>Ustvari Novo Skupino</Typography>
 
             <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <TextField
-                    label="Group Name"
+                    label="Ime skupine"
                     value={name}
                     required
                     onChange={(e) => setName(e.target.value)}
@@ -69,11 +69,11 @@ function GroupCreatePage() {
                             onChange={(e) => setIsPrivate(e.target.checked)}
                         />
                     }
-                    label="Private Group"
+                    label="Zasebna skupina"
                 />
 
                 <TextField
-                    label="Description"
+                    label="Opis"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     multiline
@@ -82,7 +82,7 @@ function GroupCreatePage() {
                 />
 
                 <Button type="submit" variant="contained">
-                    Create Group
+                    Ustvari Skupino
                 </Button>
 
                 {error && <Alert severity="error">{error}</Alert>}

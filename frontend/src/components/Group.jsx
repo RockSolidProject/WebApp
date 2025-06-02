@@ -31,7 +31,7 @@ function Group({ group }) {
                         {group.name}
                     </Typography>
                     <Typography variant="subtitle1" color="text.secondary">
-                        {group.isPrivate ? 'Private group 🔒' : 'Public group 🔓'}
+                        {group.isPrivate ? 'Zasebna Skupina 🔒' : 'Javna Skupina 🔓'}
                     </Typography>
                     {group.description && (
                         <Typography variant="body2" mt={1}>
