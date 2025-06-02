@@ -78,7 +78,7 @@ const AddClimbingAreaPage = () => {
                     setLongitude={setLongitude}
                 />
                 <TextField
-                    label="Name"
+                    label="Ime"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required

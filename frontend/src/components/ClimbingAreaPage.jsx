@@ -94,7 +94,7 @@ const ClimbingAreaPage = () => {
                             ))}
                         </List>
                     ) : (
-                        <Typography color="text.secondary">No routes available.</Typography>
+                        <Typography color="text.secondary">Ni poti.</Typography>
                     )}
                 </CardContent>
             </Card>

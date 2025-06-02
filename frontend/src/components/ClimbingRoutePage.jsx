@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Card, CardContent, Typography, Button, Box, TextField, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
-import CustomRating from './Rating';
+import Rating from '@mui/material/Rating';
 import Comments from "./Comments.jsx";
 import AnimatedGradesChart from './AnimatedGradesChart.jsx';
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -25,7 +25,7 @@ export default function ClimbingRoutePage() {
     const [selectedGrade, setSelectedGrade] = useState("");
     const [attempts, setAttempts] = useState("");
     const [userClimbed, setUserClimbed] = useState(null);
-    const [averageGrade, setAverageGrade] = useState("No ratings yet.");
+    const [averageGrade, setAverageGrade] = useState("Ni še ocen.");
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [chartKey, setChartKey] = useState(0); // Add this line
     const fileInputRef = useRef();
@@ -379,12 +379,22 @@ export default function ClimbingRoutePage() {
                     <Typography variant="body1"><strong>Objavil:</strong> {route.postedBy?.username || "Unknown"}</Typography>
                     <Typography variant="body1"><strong>Zunanje Plezališče:</strong> {route.climbingArea?.name || "Unknown"}</Typography>
                     <Box mt={2} mb={2}>
-                        <Typography variant="body1"><strong>Povprečna ocena:</strong> {averageRating ? averageRating.toFixed(2) : "No ratings yet"}</Typography>
+                        <Typography variant="body1"><strong>Povprečna ocena:</strong> {averageRating ? averageRating.toFixed(2) : "Ni še ocen"}</Typography>
                         <Box display="flex" alignItems="center" mt={1}>
-                            <CustomRating
+                            <Rating
                                 value={userRating}
-                                onChange={handleRatingChange}
-                                readonly={!localStorage.getItem("token")}
+                                onChange={(_, value) => {
+                                    if (value !== null) {
+                                        handleRatingChange(value);
+                                    }
+                                }}
+                                onClick={(e) => {
+                                    const newValue = parseInt(e.target.getAttribute('data-value') || 0, 10);
+                                    if (newValue === userRating) {
+                                        handleRatingChange(newValue);
+                                    }
+                                }}
+                                readOnly={!localStorage.getItem("token")}
                             />
                             {userRating ? (
                                 <Typography variant="body2" sx={{ ml: 2 }}>

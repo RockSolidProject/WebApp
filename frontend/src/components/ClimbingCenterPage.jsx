@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Card, CardContent, Typography, Box, TextField, Button } from '@mui/material';
-import CustomRating from './Rating';
+import Rating from '@mui/material/Rating';
 import Comments from "./Comments.jsx";
 import ShowLocationOnMap from './ShowLocationOnMap.jsx';
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -212,10 +212,10 @@ export default function ClimbingCenterPage() {
                                 boxShadow: 1,
                             }}
                         >
-                            {center.hasBoulders && <Box sx={{ bgcolor: 'rgba(25,118,210,0.9)', color: 'white', px: 2, py: 0.5, borderRadius: 2, fontWeight: 500 }}>Boulders</Box>}
-                            {center.hasRoutes && <Box sx={{ bgcolor: 'rgba(56,142,60,0.9)', color: 'white', px: 2, py: 0.5, borderRadius: 2, fontWeight: 500 }}>Routes</Box>}
+                            {center.hasBoulders && <Box sx={{ bgcolor: 'rgba(25,118,210,0.9)', color: 'white', px: 2, py: 0.5, borderRadius: 2, fontWeight: 500 }}>Bolderji</Box>}
+                            {center.hasRoutes && <Box sx={{ bgcolor: 'rgba(56,142,60,0.9)', color: 'white', px: 2, py: 0.5, borderRadius: 2, fontWeight: 500 }}>Športne poti</Box>}
                             {center.hasMoonboard && <Box sx={{ bgcolor: 'rgba(251,192,45,0.9)', color: 'white', px: 2, py: 0.5, borderRadius: 2, fontWeight: 500 }}>Moonboard</Box>}
-                            {center.hasSprayWall && <Box sx={{ bgcolor: 'rgba(142,36,170,0.9)', color: 'white', px: 2, py: 0.5, borderRadius: 2, fontWeight: 500 }}>Spray Wall</Box>}
+                            {center.hasSprayWall && <Box sx={{ bgcolor: 'rgba(142,36,170,0.9)', color: 'white', px: 2, py: 0.5, borderRadius: 2, fontWeight: 500 }}>Šutalnica</Box>}
                             {center.hasKilter && <Box sx={{ bgcolor: 'rgba(0,151,167,0.9)', color: 'white', px: 2, py: 0.5, borderRadius: 2, fontWeight: 500 }}>Kilter</Box>}
                         </Box>
                     </Box>
@@ -225,12 +225,22 @@ export default function ClimbingCenterPage() {
                     </Box>
 
                     <Box mt={2} mb={2}>
-                        <Typography variant="body1"><strong>Povprečna ocena:</strong> {averageRating ? averageRating.toFixed(2) : "No ratings yet"}</Typography>
+                        <Typography variant="body1"><strong>Povprečna ocena:</strong> {averageRating ? averageRating.toFixed(2) : "Ni še ocen"}</Typography>
                         <Box display="flex" alignItems="center" mt={1}>
-                            <CustomRating
+                            <Rating
                                 value={userRating}
-                                onChange={handleRatingChange}
-                                readonly={!localStorage.getItem("token")}
+                                onChange={(_, value) => {
+                                    if (value !== null) {
+                                        handleRatingChange(value);
+                                    }
+                                }}
+                                onClick={(e) => {
+                                    const newValue = parseInt(e.target.getAttribute('data-value') || 0, 10);
+                                    if (newValue === userRating) {
+                                        handleRatingChange(newValue);
+                                    }
+                                }}
+                                readOnly={!localStorage.getItem("token")}
                             />
                             {userRating ? (
                                 <Typography variant="body2" sx={{ ml: 2 }}>

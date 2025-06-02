@@ -1,30 +1,26 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup} from 'react-leaflet';
+import MapResetButton from './MapResetButton';
 import leaflet from 'leaflet';
 
-const ShowLocationOnMap = ({ latitude, longitude, name = "Location" }) => {
-    if (typeof latitude !== "number" || typeof longitude !== "number") {
-        return <div>Invalid coordinates</div>;
-    }
-
-    const position = [latitude, longitude];
-    const bounds = [[45.37, 13.3], [46.89, 16.6]];
+const SloveniaEmptyMap = ({ latitude, longitude, setLatitude, setLongitude }) => {
+    const bounds = [[45.37, 13.3],[46.89, 16.6]]
 
     return (
-        <div style={{ width: '100%', height: '300px' }}>
-            <MapContainer
-                center={position}
-                zoom={12}
-                bounds={bounds}
-                style={{ height: '100%', width: '100%' }}
-                maxBounds={bounds}
-                maxBoundsViscosity={1}
-            >
-                <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; OpenStreetMap contributors'
-                />
-                <Marker
-                    position={position}
+        <MapContainer
+            bounds={bounds}
+            maxBounds={[[45.37, 13.3],[46.89, 16.6]]}
+            style={{ width: '100%', aspectRatio: "3 / 2" }}
+            doubleClickZoom={false}
+            maxBoundsViscosity={1}
+        >
+
+            <MapResetButton bounds={bounds} setLatitude={setLatitude} setLongitude={setLongitude} defaultLatitude={46.1199444} defaultLongitude={15}/>
+
+            <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; OpenStreetMap contributors'
+            />
+            <Marker position={[latitude, longitude]}
                     icon={leaflet.icon({
                         iconUrl: "/markers/default-marker.png",
                         iconSize: [25, 42],
@@ -33,12 +29,12 @@ const ShowLocationOnMap = ({ latitude, longitude, name = "Location" }) => {
                         popupAnchor: [0, -34],
                         shadowSize: [40, 30]
                     })}
-                >
-                    <Popup>{name}</Popup>
-                </Marker>
-            </MapContainer>
-        </div>
-    );
+            >
+                <Popup>Center of search</Popup>
+            </Marker>
+        </MapContainer>
+    )
+
 };
 
-export default ShowLocationOnMap;
+export default SloveniaEmptyMap;
