@@ -67,7 +67,7 @@ const ProfilePage = () => {
             const res = await fetch(`${backendUrl}/users/avatar/`, {
                 method: "PUT",
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
                 body: formData,
             });
