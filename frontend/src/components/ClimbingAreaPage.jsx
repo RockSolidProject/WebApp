@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Card, CardContent, Typography, Button, List, ListItem, ListItemText, Box } from '@mui/material';
 import ShowLocationOnMap from './ShowLocationOnMap.jsx';
+import { ListItemButton } from '@mui/material';
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 
 const ClimbingAreaPage = () => {
     const navigate = useNavigate();
@@ -42,6 +44,18 @@ const ClimbingAreaPage = () => {
         getRoutes();
     }, [id]);
 
+    function translateRouteType(type) {
+        switch (type) {
+            case "lead":
+                return "Športna pot";
+            case "boulder":
+                return "Balvan";
+            case "urban":
+                return "Urbana pot";
+            default:
+                return type;
+        }
+    }
     if (error) return <Typography color="error">{error}</Typography>;
     if (!area) return <Typography>Loading...</Typography>;
 
@@ -50,8 +64,6 @@ const ClimbingAreaPage = () => {
             <Card sx={{ minWidth: 350, maxWidth: 800, width: '100%' }}>
                 <CardContent>
                     <Typography variant="h4" gutterBottom>{area.name}</Typography>
-                    <Typography variant="body1"><strong>Latitude:</strong> {area.latitude}</Typography>
-                    <Typography variant="body1"><strong>Longitude:</strong> {area.longitude}</Typography>
                     <Typography variant="body1"><strong>Objavil:</strong> {area.postedBy?.username || 'Unknown'}</Typography>
                     <Box my={2}>
                         <ShowLocationOnMap latitude={area.latitude} longitude={area.longitude} />
@@ -71,15 +83,13 @@ const ClimbingAreaPage = () => {
                     {routes && routes.length > 0 ? (
                         <List>
                             {routes.map(route => (
-                                <ListItem
-                                    key={route._id}
-                                    button
-                                    onClick={() => navigate(`/climbingRoutes/${route._id}`)}
-                                >
-                                    <ListItemText
-                                        primary={`${route.name} (${route.type})`}
-                                        secondary={route.postedBy ? `by ${route.postedBy.username}` : ''}
-                                    />
+                                <ListItem key={route._id} disablePadding>
+                                    <ListItemButton onClick={() => navigate(`/climbingRoutes/${route._id}`)}>
+                                        <ListItemText
+                                            primary={`${route.name} (${translateRouteType(route.type)})`}
+                                            secondary={route.postedBy ? `Objavil: ${route.postedBy.username}` : ''}
+                                        />
+                                    </ListItemButton>
                                 </ListItem>
                             ))}
                         </List>

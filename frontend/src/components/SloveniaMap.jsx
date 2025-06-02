@@ -3,11 +3,11 @@ import MapResetButton from './MapResetButton';
 import leaflet from 'leaflet';
 import {Slider} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 
 const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude, setLongitude, distanceTmp,  setDistanceTmp,  setDistance, choosingLocation, setChoosingLocation }) => {
     const navigate = useNavigate();
     const bounds = [[45.37, 13.3],[46.89, 16.6]]
-
 
     function ClickHandler({ setLatitude, setLongitude, setChoosingLocation }) {
         useMapEvents({
@@ -65,45 +65,45 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                 }}
             />
 
-            {climbingAreas.map((area) => {
-                const iconUrl = (area.routes?.length || 0) > 10
-                ? '/markers/marker_area_orange.png'
-                : ((area.routes?.length || 0) > 5
-                ? '/markers/marker_area_yellow.png'
-                : '/markers/marker_area_beige.png')
-                return (
-                    <Marker 
-                        key={area._id}
-                        position={[area.latitude, area.longitude]}
-                        icon={leaflet.icon({
-                            iconUrl: iconUrl,
-                            iconSize: [24, 30],
-                            iconAnchor: [12, 30],
-                            shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
-                            popupAnchor: [0, -34],
-                            shadowSize: [40, 30]
-                        })}
+            <MarkerClusterGroup showCoverageOnHover={false}>
+                {climbingAreas.map((area) => {
+                    const iconUrl = (area.routes?.length || 0) > 10
+                        ? '/markers/marker_area_orange.png'
+                        : ((area.routes?.length || 0) > 5
+                            ? '/markers/marker_area_yellow.png'
+                            : '/markers/marker_area_beige.png')
+                    return (
+                        <Marker
+                            key={area._id}
+                            position={[area.latitude, area.longitude]}
+                            icon={leaflet.icon({
+                                iconUrl: iconUrl,
+                                iconSize: [24, 30],
+                                iconAnchor: [12, 30],
+                                shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
+                                popupAnchor: [0, -34],
+                                shadowSize: [40, 30]
+                            })}
                         >
-                        <Popup>
-                            <div
-                                style={{ cursor: "pointer", fontWeight: "bold", color: "blue"}}
-                                onClick={() => navigate(`/climbingAreas/${area._id}`)}
-                            >
-                                {area.name}
-                            </div>
-                            <div>{area.routes?.length || 0} routes</div>
-                        </Popup>
-                    </Marker>
-                )
-            })}
-            {climbingCenters.map((center) => {
-                const iconUrl = '/markers/marker_center.png'
-                return (
+                            <Popup>
+                                <div
+                                    style={{ cursor: "pointer", fontWeight: "bold", color: "blue" }}
+                                    onClick={() => navigate(`/climbingAreas/${area._id}`)}
+                                >
+                                    {area.name}
+                                </div>
+                                <div>{area.routes?.length || 0} routes</div>
+                            </Popup>
+                        </Marker>
+                    );
+                })}
+
+                {climbingCenters.map((center) => (
                     <Marker
                         key={center._id}
                         position={[center.latitude, center.longitude]}
                         icon={leaflet.icon({
-                            iconUrl: iconUrl,
+                            iconUrl: '/markers/marker_center.png',
                             iconSize: [24, 30],
                             iconAnchor: [12, 30],
                             shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
@@ -121,8 +121,8 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                             </div>
                         </Popup>
                     </Marker>
-                )
-            })}
+                ))}
+            </MarkerClusterGroup>
         </MapContainer>
         <div 
             style={{

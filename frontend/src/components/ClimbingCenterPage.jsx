@@ -195,7 +195,6 @@ export default function ClimbingCenterPage() {
                     <Typography variant="h4" gutterBottom>{center.name}</Typography>
 
                     <Box mt={2}>
-                        <Typography variant="body1"><strong>Location:</strong> {center.latitude.toFixed(6)}, {center.longitude.toFixed(6)}</Typography>
                         <Typography variant="body1"><strong>Lastnik:</strong> {center.owner?.username || "Unknown"}</Typography>
                     </Box>
 
@@ -235,7 +234,7 @@ export default function ClimbingCenterPage() {
                             />
                             {userRating ? (
                                 <Typography variant="body2" sx={{ ml: 2 }}>
-                                    (Your rating: {userRating})
+                                    (Vaša ocena: {userRating})
                                 </Typography>
                             ) : null}
                         </Box>
@@ -247,7 +246,7 @@ export default function ClimbingCenterPage() {
                             multiline
                             minRows={3}
                             fullWidth
-                            label="Write your comment..."
+                            label="Napišite komentar..."
                             value={newComment}
                             onChange={e => setNewComment(e.target.value)}
                             sx={{ mb: 2 }}

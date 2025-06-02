@@ -27,6 +27,7 @@ export default function ClimbingRoutePage() {
     const [userClimbed, setUserClimbed] = useState(null);
     const [averageGrade, setAverageGrade] = useState("No ratings yet.");
     const [isBookmarked, setIsBookmarked] = useState(false);
+    const [chartKey, setChartKey] = useState(0); // Add this line
     const fileInputRef = useRef();
 
     const ropeGrades = [
@@ -47,6 +48,19 @@ export default function ClimbingRoutePage() {
         "I", "II", "III", "IV", "IV+", "V", "V+", "VI", "VI+",
         "VII", "VII+", "VIII", "VIII+", "IX", "IX+", "X", "X+", "XI", "XI+"
     ];
+
+    function translateRouteType(type) {
+        switch (type) {
+            case "lead":
+                return "Športna pot";
+            case "boulder":
+                return "Balvan";
+            case "urban":
+                return "Urbana pot";
+            default:
+                return type;
+        }
+    }
 
     async function fetchAverageGrade(){
         try {
@@ -305,10 +319,12 @@ export default function ClimbingRoutePage() {
             setIsClimbed(false);
             setError("");
             fetchAverageGrade();
+            setChartKey(prev => prev + 1);
         } catch (err) {
             setError("Error marking as climbed.");
         }
     }
+
     async function toggleBookmark() {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -343,7 +359,6 @@ export default function ClimbingRoutePage() {
         }
     }
 
-
     if (error) return <div style={{ color: "red" }}>{error}</div>;
     if (!route) return <div>Loading...</div>;
 
@@ -353,14 +368,14 @@ export default function ClimbingRoutePage() {
                 <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                         <Typography variant="h4" fontWeight="500" color="primary">{route.name}</Typography>
-                        <Tooltip title={isBookmarked ? "Remove from wishlist" : "Add to wishlist"}>
+                        <Tooltip title={isBookmarked ? "Odstrani iz seznama želja" : "Dodaj na seznam želja"}>
                             <IconButton onClick={toggleBookmark} color={isBookmarked ? "primary" : "default"}>
                                 {isBookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
                             </IconButton>
                         </Tooltip>
                     </Box>
                     <Typography variant="body1"><strong>Dolžina:</strong> {route.length} m</Typography>
-                    <Typography variant="body1"><strong>Tip:</strong> {route.type}</Typography>
+                    <Typography variant="body1"><strong>Tip:</strong> {translateRouteType(route.type)}</Typography>
                     <Typography variant="body1"><strong>Objavil:</strong> {route.postedBy?.username || "Unknown"}</Typography>
                     <Typography variant="body1"><strong>Zunanje Plezališče:</strong> {route.climbingArea?.name || "Unknown"}</Typography>
                     <Box mt={2} mb={2}>
@@ -373,7 +388,7 @@ export default function ClimbingRoutePage() {
                             />
                             {userRating ? (
                                 <Typography variant="body2" sx={{ ml: 2 }}>
-                                    (Your rating: {userRating})
+                                    (Vaša ocena: {userRating})
                                 </Typography>
                             ) : null}
                         </Box>
@@ -387,11 +402,12 @@ export default function ClimbingRoutePage() {
                     ) : isClimbed ? (
                         <Box display="flex" alignItems="center" gap={2} my={2}>
                             <FormControl sx={{ minWidth: 120 }}>
-                                <InputLabel>Grade</InputLabel>
+                                <InputLabel>Težavnost</InputLabel>
                                 <Select
                                     value={selectedGrade}
                                     label="Grade"
                                     onChange={e => setSelectedGrade(e.target.value)}
+                                    required={true}
                                 >
                                     {(route.type === "boulder" ? boulderGrades : route.type === "lead" ? ropeGrades
                                             : route.type === "urban" ? urbanGrades : []
@@ -407,6 +423,7 @@ export default function ClimbingRoutePage() {
                                 onChange={e => setAttempts(e.target.value)}
                                 inputProps={{ min: 1 }}
                                 sx={{ width: 120 }}
+                                required={ true }
                             />
                             <Button
                                 variant="contained"
@@ -425,14 +442,14 @@ export default function ClimbingRoutePage() {
                         </Button>
                     )}
                     <Typography variant="body2" sx={{ mt: 2 }}>Povprečna težavnost: {averageGrade}</Typography>
-                    <AnimatedGradesChart routeId={id} />
+                    <AnimatedGradesChart routeId={id} key={chartKey} />
                     <Typography variant="h6" sx={{ mt: 4 }}>Dodaj komentar</Typography>
                     <Box component="form" onSubmit={handleAddComment} sx={{ mb: 3 }}>
                         <TextField
                             multiline
                             minRows={3}
                             fullWidth
-                            label="Napišite vaš komentar..."
+                            label="Napišite komentar..."
                             value={newComment}
                             onChange={e => setNewComment(e.target.value)}
                             sx={{ mb: 2 }}
