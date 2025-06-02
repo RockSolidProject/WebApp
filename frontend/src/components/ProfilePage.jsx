@@ -59,11 +59,11 @@ const ProfilePage = () => {
     const handleAvatarChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
         const formData = new FormData();
         formData.append("avatar", file);
 
         try {
+            const token = localStorage.getItem("token");
             const res = await fetch(`${backendUrl}/users/avatar/`, {
                 method: "PUT",
                 headers: {
@@ -76,8 +76,11 @@ const ProfilePage = () => {
                 throw new Error("Failed to upload avatar.");
             }
 
+
             const updatedUser = await res.json();
-            setUser(updatedUser);
+            const stringed = JSON.stringify(updatedUser)
+            localStorage.setItem("user", stringed);
+
         } catch (err) {
             setError(`Error uploading avatar: ${err.message}`);
         }
