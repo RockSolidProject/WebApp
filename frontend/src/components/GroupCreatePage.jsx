@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {Alert, Box, Button, Checkbox, Container, FormControlLabel, TextField, Typography} from "@mui/material";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -49,47 +50,46 @@ function GroupCreatePage() {
     }
 
     return (
-        <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
-            <h2>Create a New Group</h2>
+        <Container maxWidth="sm" sx={{ mt: 6 }}>
+            <Typography variant="h4" gutterBottom>Create a New Group</Typography>
 
-            <label>
-                Name:
-                <input
-                    type="text"
+            <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <TextField
+                    label="Group Name"
                     value={name}
                     required
                     onChange={(e) => setName(e.target.value)}
+                    fullWidth
                 />
-            </label>
 
-            <br />
-
-            <label>
-                Private Group:
-                <input
-                    type="checkbox"
-                    checked={isPrivate}
-                    onChange={(e) => setIsPrivate(e.target.checked)}
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={isPrivate}
+                            onChange={(e) => setIsPrivate(e.target.checked)}
+                        />
+                    }
+                    label="Private Group"
                 />
-            </label>
 
-            <br />
-
-            <label>
-                Description:
-                <textarea
+                <TextField
+                    label="Description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
+                    multiline
+                    rows={3}
+                    fullWidth
                 />
-            </label>
 
-            <br />
+                <Button type="submit" variant="contained">
+                    Create Group
+                </Button>
 
-            <button type="submit">Create Group</button>
-
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-        </form>
+                {error && <Alert severity="error">{error}</Alert>}
+            </Box>
+        </Container>
     );
+
 }
 
 export default GroupCreatePage;

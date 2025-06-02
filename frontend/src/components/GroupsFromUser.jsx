@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import Group from "./Group.jsx";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
+import {Box, Button, Container, Typography} from "@mui/material";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const GroupsFromUser = () => {
-    const [groups, setGroups] = useState({ owned: [], membered: [] });
+    const [groups, setGroups] = useState({owned: [], membered: []});
 
     useEffect(() => {
         async function getGroups() {
@@ -29,36 +30,50 @@ const GroupsFromUser = () => {
     }, []);
 
     return (
-        <div style={{ padding: '1rem' }}>
-            <div style={{ marginBottom: '1rem' }}>
-                <Link
+        <Container maxWidth="md" sx={{mt: 4}}>
+            <Typography variant={"h3"}>Your groups</Typography>
+            <Box mb={3} display="flex" justifyContent="flex-end">
+                <Button
+                    variant="contained"
+                    color="primary"
+                    component={Link}
                     to="/createGroup"
-                    style={{
-                        textDecoration: 'none',
-                        color: 'white',
-                        backgroundColor: '#007bff',
-                        padding: '10px 15px',
-                        borderRadius: '5px',
-                        display: 'inline-block'
-                    }}
                 >
                     Create a Group
-                </Link>
-            </div>
-            <h2>Groups you own: </h2>
+                </Button>
+            </Box>
+            <Typography variant={"h4"}>Groups you own: </Typography>
             {groups.owned.length === 0 ? <p>No groups owned.</p> : (
                 groups.owned.map((group) => (
-                    <Group group={group} key={group._id} />
+                    <Group group={group} key={group._id}/>
                 ))
             )}
-            <h2>Groups you are a member of: </h2>
+            <Typography variant={"h4"}>Groups you are a member of: </Typography>
             {groups.membered.length === 0 ? <p>Not a member of any groups.</p> : (
                 groups.membered.map((group) => (
-                    <Group group={group} key={group._id} />
+                    <Group group={group} key={group._id}/>
                 ))
             )}
-        </div>
+        </Container>
     );
 };
+/*return (
+        <Container maxWidth="md" sx={{ mt: 4 }}>
+            <Box mb={3} display="flex" justifyContent="flex-end">
+                <Button
+                    variant="contained"
+                    color="primary"
+                    component={Link}
+                    to="/createGroup"
+                >
+                    Create a Group
+                </Button>
+            </Box>
+
+            {groups.map((group) => (
+                <Group group={group} key={group._id} />
+            ))}
+        </Container>
+    );*/
 
 export default GroupsFromUser;

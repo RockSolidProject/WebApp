@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Group from "./Group.jsx";
-import {Link} from "react-router-dom";
-
+import { Link } from "react-router-dom";
+import { Box, Button, Container, Typography } from "@mui/material";
 
 const GroupsPage = () => {
     const [groups, setGroups] = useState([]);
@@ -22,29 +22,23 @@ const GroupsPage = () => {
     }, []);
 
     return (
-        <div style={{ padding: '1rem' }}>
-            <div style={{ marginBottom: '1rem' }}>
-                <Link
+        <Container maxWidth="md" sx={{ mt: 4 }}>
+            <Box mb={3} display="flex" justifyContent="flex-end">
+                <Button
+                    variant="contained"
+                    color="primary"
+                    component={Link}
                     to="/createGroup"
-                    style={{
-                        textDecoration: 'none',
-                        color: 'white',
-                        backgroundColor: '#007bff',
-                        padding: '10px 15px',
-                        borderRadius: '5px',
-                        display: 'inline-block'
-                    }}
                 >
                     Create a Group
-                </Link>
-            </div>
+                </Button>
+            </Box>
 
             {groups.map((group) => (
                 <Group group={group} key={group._id} />
             ))}
-        </div>
+        </Container>
     );
-
 };
 
 export default GroupsPage;

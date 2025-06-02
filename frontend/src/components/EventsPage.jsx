@@ -8,7 +8,7 @@ import {
     Alert,
     Grid,
     Button,
-    Link
+    Link, Box
 } from "@mui/material";
 import {Link as RouterLink, useNavigate} from 'react-router-dom';
 
@@ -57,27 +57,47 @@ function EventsPage() {
 
     return (
         <Container maxWidth="md" sx={{mt: 4}}>
+
+            <Box mb={3} display="flex" justifyContent="flex-end">
+                <Button
+                    component={RouterLink}
+                    to={`/eventAdd`}
+                    variant="contained"
+                    color="primary"
+                    sx={{mt: 3}}
+                >
+                    Add New Event
+                </Button>
+            </Box>
             <Typography variant="h4" gutterBottom>
                 Upcoming Events
             </Typography>
 
-            {loading && <CircularProgress/>}
+            {loading && <CircularProgress sx={{mt: 4}}/>}
 
-            {error && <Alert severity="error">{error}</Alert>}
+            {error && <Alert severity="error" sx={{mt: 2}}>{error}</Alert>}
 
-            <Grid container spacing={2}>
+            <Box sx={{mt: 4}}>
                 {events.map((event) => (
                     <Link
                         component={RouterLink}
                         to={`/event/${event._id}`}
                         key={event._id}
-                        color="inherit"
-                        variant="outlined"
                         underline="none"
+                        sx={{textDecoration: 'none'}}
                     >
-
-                        <Card>
-                            <CardContent sx={{flexGrow: 1}}>
+                        <Card
+                            sx={{
+                                mb: 2,
+                                p: 2,
+                                transition: 'transform 0.2s, box-shadow 0.2s',
+                                '&:hover': {
+                                    transform: 'translateY(-4px)',
+                                    boxShadow: 4,
+                                },
+                            }}
+                        >
+                            <CardContent>
                                 <Typography variant="h6">{event.name}</Typography>
                                 <Typography color="text.secondary">
                                     {new Date(event.date).toLocaleDateString(undefined, {
@@ -87,28 +107,17 @@ function EventsPage() {
                                         day: 'numeric',
                                     })}
                                 </Typography>
-                                <Typography variant="body3">
+                                <Typography variant="body2" mt={1}>
                                     {event.description || "No description provided."}
                                 </Typography>
                             </CardContent>
                         </Card>
-
                     </Link>
                 ))}
-            </Grid>
-
-            <Button
-                component={RouterLink}
-                to={`/eventAdd`}
-                variant="contained"
-                color="primary"
-                sx={{mt: 3}}
-                onClick={() => console.log("Button clicked")}
-            >
-                Add New Event
-            </Button>
+            </Box>
         </Container>
     );
+
 }
 
 export default EventsPage;
