@@ -448,7 +448,7 @@ export default function ClimbingRoutePage() {
                             onClick={() => setIsClimbed(true)}
                             sx={{ my: 2 }}
                         >
-                            Mark as Climbed
+                            Označi kot splezano
                         </Button>
                     )}
                     <Typography variant="body2" sx={{ mt: 2 }}>Povprečna težavnost: {averageGrade}</Typography>
