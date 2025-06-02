@@ -7,13 +7,14 @@ import MarkerClusterGroup from 'react-leaflet-cluster';
 import React, {useState} from 'react';
 
 const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setLatitude,
-    setLongitude, distanceTmp,  setDistanceTmp,  setDistance, choosingLocation, setChoosingLocation,
+    setLongitude, setDistance, choosingLocation, setChoosingLocation,
     isCircleMode, setIsCircleMode, polygon, setPolygon
 }) => {
     const navigate = useNavigate();
     const bounds = [[45.37, 13.3],[46.89, 16.6]]
 
     const [draftPolygon, setDraftPolygon] = useState([]);
+    const [distanceTmp, setDistanceTmp] = useState(135)
 
     function ClickHandler({ setLatitude, setLongitude, setChoosingLocation }) {
         useMapEvents({
@@ -251,8 +252,7 @@ const SloveniaMap = ({ climbingAreas, climbingCenters, latitude, longitude, setL
                         <Slider
                             min={5} max={135} step={1}
                             value={distanceTmp}
-                            onTouchEnd={() => setDistance(distanceTmp)}
-                            onMouseUp={() => setDistance(distanceTmp)}
+                            onChangeCommitted={(e, value) => setDistance(value)}
                             onChange={(e) => setDistanceTmp(Number(e.target.value))}
                             size='small'
                             sx={{ width: 150 }}
