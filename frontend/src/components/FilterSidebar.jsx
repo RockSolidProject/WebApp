@@ -4,7 +4,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 const FilterSidebar = ({requireBoulder, setRequireBoulder, requireLead, setRequireLead, requireUrban, setRequireUrban, requiredNumberOfRoutes, setRequiredNumberOfRoutes,
-      distanceTmp, setDistanceTmp, setDistance, latitude, setLatitude, longitude, setLongitude, choosingLocation, setChoosingLocation, isLoggedIn, navigate, climbingAreas, setRequireMoonboard, requireMoonboard,
+      isLoggedIn, navigate, climbingAreas, setRequireMoonboard, requireMoonboard,
       setRequireSpraywall, requireSpraywall, setRequireLeadCenter, requireLeadCenter, setRequireBoulders, requireBoulders, setRequireKilter, requireKilter, setShowClimbingAreas,
       showClimbingAreas, showClimbingCenters, setShowClimbingCenters
 }) => {

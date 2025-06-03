@@ -28,7 +28,6 @@ const HomePage = () => {
     const [latitude, setLatitude] = useState(46.1199444)
     const [longitude, setLongitude] = useState(15)
     const [distance, setDistance] = useState(135)
-    const [distanceTmp, setDistanceTmp] = useState(distance)
     const [choosingLocation, setChoosingLocation] = useState(false);
     const [isCircleMode, setIsCircleMode] = useState(true) 
     const [polygon, setPolygon] = useState([[45.35, 13.3],[45.35,16.6],[46.9,16.6],[46.9,13.3]])
@@ -188,15 +187,6 @@ const HomePage = () => {
                         setRequireUrban = {setRequireUrban}
                         requiredNumberOfRoutes = {requiredNumberOfRoutes}
                         setRequiredNumberOfRoutes = {setRequiredNumberOfRoutes}
-                        distanceTmp = {distanceTmp}
-                        setDistanceTmp = {setDistanceTmp}
-                        setDistance={setDistance}
-                        latitude={latitude}
-                        setLatitude={setLatitude}
-                        longitude={longitude}
-                        setLongitude={setLongitude}
-                        choosingLocation={choosingLocation}
-                        setChoosingLocation={setChoosingLocation}
                         isLoggedIn={isLoggedIn}
                         navigate={navigate}
                         climbingAreas={climbingAreas}
@@ -225,8 +215,6 @@ const HomePage = () => {
                             setLatitude={setLatitude}
                             longitude={longitude}
                             setLongitude={setLongitude}
-                            distanceTmp={distanceTmp}
-                            setDistanceTmp = {setDistanceTmp}
                             setDistance={setDistance}
                             choosingLocation={choosingLocation}
                             setChoosingLocation={setChoosingLocation}
