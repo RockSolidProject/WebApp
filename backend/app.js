@@ -67,6 +67,7 @@ app.use('/events', eventRoutes)
 app.use('/climbingCenter', climbingCenterRoutes);
 app.use('/centerConnections', climbingCenterRateComment);
 app.use('/avatars', express.static('public/avatars'));
+app.use('/eventPhotos', express.static('public/events'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
