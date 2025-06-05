@@ -68,8 +68,6 @@ const ClimbingAreaPage = () => {
                     if (res.status === 401 || res.status === 403) {
                         localStorage.removeItem("token");
                         localStorage.removeItem("user");
-                        setError("");
-                        navigate("/login");
                         return;
                     }
                 }
@@ -93,8 +91,6 @@ const ClimbingAreaPage = () => {
                     if (res.status === 401 || res.status === 403) {
                         localStorage.removeItem("token");
                         localStorage.removeItem("user");
-                        setError("");
-                        navigate("/login");
                         return;
                     }
                 }
