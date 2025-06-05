@@ -7,7 +7,10 @@ import {
     Chip,
     CircularProgress,
     Divider,
+    Paper,
+    Stack,
 } from "@mui/material";
+import DOMPurify from "dompurify";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -25,18 +28,15 @@ function EventDetailPage() {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    }
+                    },
                 });
-                if(res.status === 401 || res.status === 403) {
+                if (res.status === 401 || res.status === 403) {
                     localStorage.removeItem("token");
                     navigate("/login");
                 }
                 if (!res.ok) throw new Error("Could not fetch event details.");
                 const data = await res.json();
-                if(!data){
-                    return setError("missing data");
-                }
-                console.log(data.groups)
+                if (!data) return setError("Manjkajoči podatki o dogodku.");
                 setEvent(data);
             } catch (err) {
                 setError(err.message);
@@ -47,51 +47,99 @@ function EventDetailPage() {
     }, [id]);
 
     if (error) return <Typography color="error">{error}</Typography>;
-    if (!event) return <CircularProgress />;
+    if (!event) return <CircularProgress sx={{ display: "block", mx: "auto", mt: 4 }} />;
 
     return (
-        <Container maxWidth="md">
-            <Box my={4}>
-                <Typography variant="h4" gutterBottom>
+        <Container maxWidth="md" sx={{ py: 5 }}>
+            <Box>
+                <Box
+                    component="img"
+                    src={
+                        event.photo
+                            ? `${backendUrl}/events/photos/${event.photo}`
+                            : `${backendUrl}/eventPhotos/default-event.jpg`
+                    }
+                    alt={event.name}
+                    sx={{
+                        width: "100%",
+                        maxHeight: 420,
+                        objectFit: "cover",
+                        borderRadius: 3,
+                        mb: 4,
+                        boxShadow: 2,
+                    }}
+                />
+
+                <Typography variant="h3" component="h1" gutterBottom>
                     {event.name}
                 </Typography>
-                <Typography color="text.secondary" gutterBottom>
-                    {new Date(event.date).toLocaleDateString('sl-SI', {
-                        weekday: "short", // e.g., "pon." for "ponedeljek"
-                        year: "numeric",  // e.g., "2025"
-                        month: "short",   // e.g., "jun."
-                        day: "numeric"    // e.g., "2"
+
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                    {new Date(event.date).toLocaleDateString("sl-SI", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
                     })}
                 </Typography>
 
-                <Typography variant="body1">
-                    {event.description}
-                </Typography>
+                <Paper
+                    elevation={1}
+                    sx={{
+                        backgroundColor: "#fff",
+                        padding: 4,
+                        borderRadius: 2,
+                        mb: 4,
+                        lineHeight: 1.8,
+                        "& p": { mb: 2 },
+                        "& ul": { pl: 3, mb: 2 },
+                        "& ol": { pl: 3, mb: 2 },
+                        "& h1, & h2, & h3": {
+                            fontWeight: "bold",
+                            mt: 3,
+                            mb: 1,
+                        },
+                    }}
+                >
+                    <div
+                        dangerouslySetInnerHTML={{
+                            __html: DOMPurify.sanitize(
+                                event.description || "<p>Ni opisa za ta dogodek.</p>"
+                            ),
+                        }}
+                    />
+                </Paper>
 
-                <Divider sx={{ my: 2 }} />
+                <Divider sx={{ mb: 4 }} />
 
-                <Typography variant="h6">Plezališča</Typography>
-                <Box mb={2}>
-                    {event.climbingAreas?.map((area) => (
-                        <Chip key={area._id} label={area.name} sx={{ m: 0.5 }} />
-                    ))}
-                </Box>
-
-                <Typography variant="h6">Plezalni centri</Typography>
-                <Box mb={2}>
-                    {event.climbingCenters?.map((center) => (
-                        <Chip key={center._id} label={center.name} sx={{ m: 0.5 }} />
-                    ))}
-                </Box>
-
-                <Typography variant="h6">Skupine</Typography>
-                <Box mb={2}>
-                    {event.groups?.map((group) => (
-                        <Chip key={group._id} label={group.name} sx={{ m: 0.5 }} />
-                    ))}
-                </Box>
+                <Stack spacing={3}>
+                    {event.climbingAreas?.length > 0 && (
+                        <Section title="Plezališča" items={event.climbingAreas} />
+                    )}
+                    {event.climbingCenters?.length > 0 && (
+                        <Section title="Plezalni Centri" items={event.climbingCenters} />
+                    )}
+                    {event.group && (
+                       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>{event.group.name}</Typography>
+                    )}
+                </Stack>
             </Box>
         </Container>
+    );
+}
+
+function Section({ title, items }) {
+    return (
+        <Box>
+            <Typography variant="h6" gutterBottom>
+                {title}
+            </Typography>
+            <Box display="flex" flexWrap="wrap" gap={1}>
+                {items.map((item) => (
+                    <Chip key={item._id} label={item.name} color="primary" />
+                ))}
+            </Box>
+        </Box>
     );
 }
 

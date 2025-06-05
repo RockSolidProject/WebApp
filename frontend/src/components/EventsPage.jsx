@@ -79,15 +79,16 @@ function EventsPage() {
             {error && <Alert severity="error" sx={{mt: 2}}>{error}</Alert>}
 
             <Box sx={{ mt: 4 }}>
-                <Typography variant="h5" gutterBottom>Moji dogodki</Typography>
+                {events.myEvents.length > 0 && <Typography variant="h5" gutterBottom>Moji dogodki</Typography>}
                 {events.myEvents.map(event => (
                     <Event key={event._id} event={event} />
                 ))}
 
-                <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>Javni dogodki</Typography>
+                {events.publicEvents.length > 0 && <Typography variant="h5" gutterBottom sx={{mt: 4}}>Javni dogodki</Typography>}
                 {events.publicEvents.map(event => (
                     <Event key={event._id} event={event} />
                 ))}
+                {events.publicEvents.length === 0 && events.myEvents.length === 0 && (<Typography variant={"h4"}>Trenutno ni pričakovanih dogodkov</Typography>)}
             </Box>
 
         </Container>

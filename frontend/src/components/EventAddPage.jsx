@@ -1,6 +1,9 @@
 import React, {useState} from "react";
 import {Autocomplete, Box, Button, Container, TextField, Typography,} from "@mui/material";
 import {useNavigate} from "react-router-dom";
+import 'react-quill/dist/quill.snow.css';
+import ReactQuill from "react-quill";
+
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -12,7 +15,7 @@ function EventAddPage() {
         description: "",
         climbingSpots: [],
         climbingCenters: [],
-        groups: [],
+        group: null,
     });
 
     const [spotOptions, setSpotOptions] = useState([]);
@@ -35,7 +38,7 @@ function EventAddPage() {
                     description: eventData.description,
                     climbingAreas: eventData.climbingSpots.map((spot) => spot._id),
                     climbingCenters: eventData.climbingCenters.map((center) => center._id),
-                    groups: eventData.groups.map((group) => group._id),
+                    group: eventData.group,
                     date: eventData.date,
                 })
             });
@@ -60,7 +63,7 @@ function EventAddPage() {
 
     // For spot search input change
     const handleSpotInputChange = async (event, value) => {
-        if (value.length < 2) {
+        if (value.length < 1) {
             setCenterOptions([]);
             return;
         }
@@ -80,7 +83,7 @@ function EventAddPage() {
     // For center search input change
     const handleCenterInputChange = async (event, value) => {
 
-        if (value.length < 2) {
+        if (value.length < 1) {
             setCenterOptions([]);
             return;
         }
@@ -99,7 +102,7 @@ function EventAddPage() {
     };
 
     const handleGroupInputChange = async (event, value) => {
-        if (value.length < 2) {
+        if (value.length < 1) {
             setGroupOptions([]);
             return;
         }
@@ -160,19 +163,14 @@ function EventAddPage() {
                     InputLabelProps={{shrink: true}}
                     required
                 />
-                <TextField
-
-                    name="description"
-                    label="Opis Dogodka"
-                    multiline
-                    minRows={3}
-                    fullWidth
-                    value={eventData.description}
-                    onChange={(e) =>
-                        setEventData({...eventData, description: e.target.value})
-                    }
-                />
-
+                <Box sx={{ zIndex: 100, mb: 3 }}>
+                    <Typography variant="subtitle1">Opis Dogodka</Typography>
+                    <ReactQuill
+                        theme="snow"
+                        value={eventData.description}
+                        onChange={(value) => setEventData({ ...eventData, description: value })}
+                    />
+                </Box>
                 <Autocomplete
                     multiple
                     getOptionLabel={(option) => option.name || ""}
@@ -204,16 +202,15 @@ function EventAddPage() {
                 />
 
                 <Autocomplete
-                    multiple
                     getOptionLabel={(option) => option.name || ""}
                     options={groupOptions}
                     onInputChange={handleGroupInputChange}
                     onChange={(e, value) =>
-                        setEventData({...eventData, groups: value})
+                        setEventData({...eventData, group: value})
                     }
-                    value={eventData.groups}
+                    value={eventData.group}
                     renderInput={(params) => (
-                        <TextField {...params} label="Skupine" fullWidth/>
+                        <TextField {...params} label="Skupina" fullWidth/>
                     )}
                     isOptionEqualToValue={(option, value) => option._id === value._id}
                 />
