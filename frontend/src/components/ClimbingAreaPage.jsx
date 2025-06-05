@@ -65,6 +65,13 @@ const ClimbingAreaPage = () => {
                         });
                         setBookmarks(bm);
                     }
+                    if (res.status === 401 || res.status === 403) {
+                        localStorage.removeItem("token");
+                        localStorage.removeItem("user");
+                        setError("");
+                        navigate("/login");
+                        return;
+                    }
                 }
                 if (token) {
                     const res = await fetch(`${backendUrl}/routeConnections/climbed`, {
@@ -83,6 +90,13 @@ const ClimbingAreaPage = () => {
                             return acc;
                         }, {}) : {}
                     );
+                    if (res.status === 401 || res.status === 403) {
+                        localStorage.removeItem("token");
+                        localStorage.removeItem("user");
+                        setError("");
+                        navigate("/login");
+                        return;
+                    }
                 }
             } catch (err) {
                 console.error(err);
@@ -153,22 +167,24 @@ const ClimbingAreaPage = () => {
                                 <ListItem
                                     secondaryAction={
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            {climbed[route._id] && (
+                                            {localStorage.getItem("token") && climbed[route._id] && (
                                                 <Tooltip title="Splezano">
                                                     <CheckCircleIcon sx={{ color: "#49b02d" }} />
                                                 </Tooltip>
                                             )}
-                                            <IconButton
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    toggleBookmark(route._id);
-                                                }}
-                                                sx={{
-                                                    color: bookmarks[route._id] ? "#FFD600" : "inherit"
-                                                }}
-                                            >
-                                                {bookmarks[route._id] ? <BookmarkIcon /> : <BookmarkBorderIcon />}
-                                            </IconButton>
+                                            {localStorage.getItem("token") && (
+                                                <IconButton
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        toggleBookmark(route._id);
+                                                    }}
+                                                    sx={{
+                                                        color: bookmarks[route._id] ? "#FFD600" : "inherit"
+                                                    }}
+                                                >
+                                                    {bookmarks[route._id] ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+                                                </IconButton>
+                                            )}
                                         </Box>
                                     }
                                     sx={{ cursor: "pointer" }}
