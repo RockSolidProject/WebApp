@@ -38,8 +38,12 @@ module.exports = {
             const publicGroupsIds = publicGroups.map(group=>group._id)
             const myGroups = await GroupMemberModel.find({member: req.user.id})
             const myGroupIds = myGroups.map(groupMember=>groupMember.group)
-            const publicEvents = await EventModel.find({ date: { $gte: now }, groups: {$in : publicGroupsIds} }); // events on or after now
-            const myEvents = await EventModel.find({groups:{$in:myGroupIds}})
+            const publicEvents = await EventModel
+                .find({ date: { $gte: now }, groups: {$in : publicGroupsIds} }) // events on or after now
+                .sort({date:1})
+            const myEvents = await EventModel
+                .find({date: { $gte: now }, groups:{$in:myGroupIds}})
+                .sort({date:1})
             events = {}
             events.publicEvents = publicEvents;
             events.myEvents = myEvents;

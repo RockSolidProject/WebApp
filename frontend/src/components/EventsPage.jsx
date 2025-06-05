@@ -11,6 +11,7 @@ import {
     Link, Box
 } from "@mui/material";
 import {Link as RouterLink, useNavigate} from 'react-router-dom';
+import Event from "./Event.jsx";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -79,79 +80,13 @@ function EventsPage() {
 
             <Box sx={{ mt: 4 }}>
                 <Typography variant="h5" gutterBottom>Moji dogodki</Typography>
-                {events.myEvents.map((event) => (
-                    <Link
-                        component={RouterLink}
-                        to={`/event/${event._id}`}
-                        key={event._id}
-                        underline="none"
-                        sx={{ textDecoration: 'none' }}
-                    >
-                        <Card
-                            sx={{
-                                mb: 2,
-                                p: 2,
-                                transition: 'transform 0.2s, box-shadow 0.2s',
-                                '&:hover': {
-                                    transform: 'translateY(-4px)',
-                                    boxShadow: 4,
-                                },
-                            }}
-                        >
-                            <CardContent>
-                                <Typography variant="h6">{event.name}</Typography>
-                                <Typography color="text.secondary">
-                                    {new Date(event.date).toLocaleDateString('sl-SI', {
-                                        weekday: "short",
-                                        year: "numeric",
-                                        month: "short",
-                                        day: "numeric"
-                                    })}
-                                </Typography>
-                                <Typography variant="body2" mt={1}>
-                                    {event.description || "Brez opisa."}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Link>
+                {events.myEvents.map(event => (
+                    <Event key={event._id} event={event} />
                 ))}
 
                 <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>Javni dogodki</Typography>
-                {events.publicEvents.map((event) => (
-                    <Link
-                        component={RouterLink}
-                        to={`/event/${event._id}`}
-                        key={event._id}
-                        underline="none"
-                        sx={{ textDecoration: 'none' }}
-                    >
-                        <Card
-                            sx={{
-                                mb: 2,
-                                p: 2,
-                                transition: 'transform 0.2s, box-shadow 0.2s',
-                                '&:hover': {
-                                    transform: 'translateY(-4px)',
-                                    boxShadow: 4,
-                                },
-                            }}
-                        >
-                            <CardContent>
-                                <Typography variant="h6">{event.name}</Typography>
-                                <Typography color="text.secondary">
-                                    {new Date(event.date).toLocaleDateString('sl-SI', {
-                                        weekday: "short",
-                                        year: "numeric",
-                                        month: "short",
-                                        day: "numeric"
-                                    })}
-                                </Typography>
-                                <Typography variant="body2" mt={1}>
-                                    {event.description || "Brez opisa."}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Link>
+                {events.publicEvents.map(event => (
+                    <Event key={event._id} event={event} />
                 ))}
             </Box>
 
