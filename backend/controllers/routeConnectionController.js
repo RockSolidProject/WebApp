@@ -63,8 +63,47 @@ module.exports = {
         }
     },
 
+    computeAverageGrade: async function (routeId) {
+        const rates = await RouteClimbedModel.find({ climbingRoute: routeId }).populate("climbingRoute");
+        if (!rates.length) return null;
+
+        const routeType = rates[0].climbingRoute.type;
+        let gradeList = [];
+        if (routeType === "boulder") gradeList = boulderGrades;
+        else if (routeType === "lead") gradeList = ropeGrades;
+        else if (routeType === "urban") gradeList = urbanGrades;
+
+        const gradeIndexes = rates
+            .map(grade => gradeList.indexOf(grade.gradeOpinion))
+            .filter(index => index !== -1);
+
+        if (!gradeIndexes.length) return null;
+
+        const avgIndex = gradeIndexes.reduce((a, b) => a + b, 0) / gradeIndexes.length;
+        return gradeList[Math.round(avgIndex)];
+    },
+
+    computeAverageRating: async function (routeId) {
+        try {
+            const ratings = await RouteRateModel.find({ climbingRoute: routeId })
+                .populate("postedBy")
+                .populate("climbingRoute");
+            if (!ratings.length) return null;
+            const avg =
+                ratings.reduce((sum, r) => sum + (r.rating || 0), 0) / ratings.length;
+            return avg;
+        } catch (err) {
+            throw err;
+        }
+    },
+
     getAverageGrade: async function(req, res) {
         const routeId = req.params.routeId
+
+        if (!routeId) {
+            return res.status(400).json({ message: "Missing routeId parameter." });
+        }
+
         try {
             const rates = await RouteClimbedModel.find({ climbingRoute: routeId }).populate("climbingRoute");
             if (!rates.length) {
