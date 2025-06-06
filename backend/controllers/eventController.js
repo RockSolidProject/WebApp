@@ -7,13 +7,13 @@ module.exports = {
     // GET /events/:id
     show: async function (req, res) {
         try {
-            const event = await EventModel.findOne({ _id: req.params.id })
+            const event = await EventModel.findOne({_id: req.params.id})
                 .populate("climbingAreas")
                 .populate("climbingCenters")
                 .populate("group");
 
             if (!event) {
-                return res.status(404).json({ message: "Event not found" });
+                return res.status(404).json({message: "Event not found"});
             }
 
             return res.json(event);
@@ -31,22 +31,24 @@ module.exports = {
             const now = new Date();
 
             // Get groups the user belongs to
-            const myGroups = await GroupMemberModel.find({ member: req.user.id });
+            const myGroups = await GroupMemberModel
+                .find({member: req.user.id});
             const myGroupIds = myGroups.map(gm => gm.group);
 
             // Public events are those with no group assigned (group: null)
             const publicEvents = await EventModel.find({
-                date: { $gte: now },
+                date: {$gte: now},
                 group: null
-            }).sort({ date: 1 });
+            }).sort({date: 1});
 
             // My events are events whose group is one of the user's groups
             const myEvents = await EventModel.find({
-                date: { $gte: now },
-                group: { $in: myGroupIds }
-            }).sort({ date: 1 });
+                date: {$gte: now},
+                group: {$in: myGroupIds}
+            }).populate('group')
+                .sort({date: 1});
 
-            return res.json({ publicEvents, myEvents });
+            return res.json({publicEvents, myEvents});
 
         } catch (err) {
             return res.status(500).json({
