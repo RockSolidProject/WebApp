@@ -1,6 +1,11 @@
 var ClimbingareaModel = require('../models/climbingAreaModel.js');
 const haversine = require('haversine-distance');
 const insidePolygon = require('point-in-polygon');
+const routeWishListModel = require('../models/routeWishListModel.js');
+const routeRateModel = require('../models/routeRateModel.js');
+const routeCommentModel = require('../models/routeCommentModel.js');
+const routeClimbedModel = require('../models/routeClimbedModel.js');
+const climbingRouteModel = require('../models/climbingRouteModel.js');
 
 module.exports = {
 
@@ -151,6 +156,67 @@ module.exports = {
             return res.status(500).json({
                 message: 'Error when creating climbingArea',
                 error: err
+            });
+        }
+    },
+
+    update: async function (req, res) {
+        const id = req.params.id;
+
+        try {
+            const climbingArea = await ClimbingareaModel.findById(id);
+            if (!climbingArea) {
+                return res.status(404).json({ message: 'Climbing area not found.' });
+            }
+
+            if (climbingArea.postedBy.toString() !== req.user.id && req.user.username !== "admin") {
+                return res.status(403).json({ message: "Unauthorized to update this climbing area." });
+            }
+            
+            if (req.body.name !== undefined) climbingArea.name = req.body.name;
+            if (req.body.latitude !== undefined) climbingArea.latitude = req.body.latitude;
+            if (req.body.longitude !== undefined) climbingArea.longitude = req.body.longitude;
+
+            const updated = await climbingArea.save();
+            return res.status(200).json(updated);
+        } catch (err) {
+            return res.status(500).json({
+                message: 'Error when updating climbing area.',
+                error: err.message || err
+            });
+        }
+    },
+    delete: async function (req, res) {
+        const id = req.params.id;
+        try {
+            const climbingArea = await ClimbingareaModel.findById(id).populate("routes");
+            if (!climbingArea) {
+                return res.status(404).json({ message: "Climbing area not found." });
+            }
+
+            if (climbingArea.postedBy.toString() !== req.user.id && req.user.username !== "admin") {
+                return res.status(403).json({ message: "Unauthorized to delete this climbing area." });
+            }
+
+            console.log(climbingArea)
+            console.log("LOL1")
+            await climbingRouteModel.deleteMany({ _id: { $in: climbingArea.routes } });
+            console.log("LOL2")
+            const deletedRoutes = climbingArea.routes;
+            await routeWishListModel.deleteMany({ climbingRoute: { $in: deletedRoutes } });
+            console.log("LOL3")
+            await routeRateModel.deleteMany({ climbingRoute: { $in: deletedRoutes } });
+            await routeCommentModel.deleteMany({ climbingRoute: { $in: deletedRoutes } });
+            await routeClimbedModel.deleteMany({ climbingRoute: { $in: deletedRoutes } });
+            console.log("LOL4")
+            
+            
+            await ClimbingareaModel.findByIdAndDelete(id);
+            return res.status(200).json({ message: "Climbing area deleted." });
+        } catch (err) {
+            return res.status(500).json({
+                message: "Error when deleting climbing area.",
+                error: err.message || err
             });
         }
     }

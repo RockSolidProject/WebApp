@@ -232,8 +232,8 @@ module.exports = {
             if (!climbingCenter) {
                 return res.status(404).json({ message: "Climbing center not found." });
             }
-            console.log(climbingCenter.owner.toString())
-            console.log("a + " + req.user.id)
+            //console.log(climbingCenter.owner.toString())
+            //console.log("a + " + req.user.id)
             if (climbingCenter.owner.toString() !== req.user.id && req.user.username != "admin") {
                 return res.status(403).json({ message: "Unauthorized to update this climbing center." });
             }
