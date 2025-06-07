@@ -10,7 +10,13 @@ import {
     Label,
     CartesianGrid
 } from "recharts";
-import { Box, Typography, Button, CircularProgress } from "@mui/material";
+import {
+    Box,
+    Typography,
+    Button,
+    CircularProgress,
+    Slider
+} from "@mui/material";
 
 const ropeGrades = [
     "3", "3+", "4a", "4b", "4c",
@@ -44,13 +50,15 @@ export default function GradesOverTimeChart({ routeId }) {
     const [dataOverTime, setDataOverTime] = useState([]);
     const [routeType, setRouteType] = useState(null);
     const [chartData, setChartData] = useState([]);
-    const [currentMonth, setCurrentMonth] = useState("");
+    const [sliderIndex, setSliderIndex] = useState(0);
     const [yMax, setYMax] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [showMonthlyDiff, setShowMonthlyDiff] = useState(false);
+    const hasPlayedRef = useRef(false);
 
-    const indexRef = useRef(0);
     const intervalRef = useRef(null);
+    const indexRef = useRef(0);
 
     useEffect(() => {
         if (!routeId) return;
@@ -60,7 +68,7 @@ export default function GradesOverTimeChart({ routeId }) {
             .then(async (res) => {
                 if (!res.ok) {
                     const text = await res.text();
-                    throw new Error(`Error when getting data for chart: ${res.status} – ${text}`);
+                    throw new Error(`Error: ${res.status} – ${text}`);
                 }
                 return res.json();
             })
@@ -77,92 +85,99 @@ export default function GradesOverTimeChart({ routeId }) {
                     return;
                 }
 
-                const gradesList = getGradesByType(rType);
+                const grades = getGradesByType(rType);
                 const cumulativeCounts = {};
-                gradesList.forEach(grade => cumulativeCounts[grade] = 0);
+                grades.forEach((g) => (cumulativeCounts[g] = 0));
+                let maxY = 1;
 
-                let maxCumulative = 1;
-                arr.forEach(entry => { // Get max value on chart
-                    gradesList.forEach(grade => {
+                arr.forEach((entry) => {
+                    grades.forEach((grade) => {
                         cumulativeCounts[grade] += entry.grades[grade] || 0;
-                        if (cumulativeCounts[grade] > maxCumulative) {
-                            maxCumulative = cumulativeCounts[grade];
+                        if (cumulativeCounts[grade] > maxY) {
+                            maxY = cumulativeCounts[grade];
                         }
                     });
                 });
 
-                setYMax(maxCumulative);
-
-                const startData = gradesList.map(grade => ({
-                    grade,
-                    count: 0
-                }));
-                setChartData(startData);
-                setCurrentMonth(arr[0]?.period || "");
+                setYMax(maxY);
+                updateChartData(0, arr, rType, showMonthlyDiff);
             })
             .catch((err) => {
-                console.error("Fetch napaka:", err.message);
+                console.error("Napaka:", err.message);
                 setChartData([]);
                 setYMax(1);
             })
             .finally(() => setIsLoading(false));
     }, [routeId]);
 
-    function startAnimation() {
-        if (!routeType || dataOverTime.length === 0) return;
+    useEffect(() => {
+        if (!isLoading && chartData.length && routeType && !isPlaying && !hasPlayedRef.current) {
+            startAnimation();
+            hasPlayedRef.current = true;
+        }
+    }, [chartData]);
+    const updateChartData = (index, data = dataOverTime, type = routeType, monthly = showMonthlyDiff) => {
+        if (!type || !data.length) return;
+
+        const grades = getGradesByType(type);
+
+        if (monthly) {
+            const monthlyData = grades.map((grade) => ({
+                grade,
+                count: data[index].grades[grade] || 0
+            }));
+            setChartData(monthlyData);
+        } else {
+            const cumulative = {};
+            grades.forEach((g) => (cumulative[g] = 0));
+            for (let i = 0; i <= index; i++) {
+                grades.forEach((g) => {
+                    cumulative[g] += data[i].grades[g] || 0;
+                });
+            }
+            const cumulativeData = grades.map((grade) => ({
+                grade,
+                count: cumulative[grade] || 0
+            }));
+            setChartData(cumulativeData);
+        }
+
+        setSliderIndex(index);
+    };
+
+    const startAnimation = () => {
+        if (!routeType || !dataOverTime.length) return;
 
         clearInterval(intervalRef.current);
         indexRef.current = 0;
-
-        const gradesList = getGradesByType(routeType);
-        setChartData(gradesList.map(grade => ({ grade, count: 0 })));
-        setCurrentMonth(dataOverTime[0].period);
-
         setIsPlaying(true);
 
-        let stepDuration;
-        if (dataOverTime.length <= 3) {
-            stepDuration = 400;
-        } else if (dataOverTime.length <= 8) {
-            stepDuration = 300;
-        } else {
-            stepDuration = 200;
-        }
+        let step = dataOverTime.length <= 3 ? 400 : dataOverTime.length <= 8 ? 300 : 200;
 
         intervalRef.current = setInterval(() => {
-            const index = indexRef.current;
-
-            if (index >= dataOverTime.length) {
+            const i = indexRef.current;
+            if (i >= dataOverTime.length) {
                 clearInterval(intervalRef.current);
                 setIsPlaying(false);
                 return;
             }
-
-            const entry = dataOverTime[index];
-            setCurrentMonth(entry.period);
-
-            setChartData(previous => {
-                return previous.map(item => ({
-                    ...item,
-                    count: item.count + (entry.grades[item.grade] || 0),
-                }));
-            });
-
-            indexRef.current += 1;
-        }, stepDuration);
-    }
+            updateChartData(i);
+            indexRef.current++;
+        }, step);
+    };
 
     useEffect(() => {
-        if (isLoading) return;
-        if (!routeType || dataOverTime.length === 0) return;
+        if (!isLoading) {
+            updateChartData(sliderIndex);
+        }
+    }, [showMonthlyDiff]);
 
-        startAnimation();
+    const formatYAxis = (value) => Number.isInteger(value) ? value : "";
 
-        return () => clearInterval(intervalRef.current);
-    }, [isLoading, routeType, dataOverTime]);
-
-    const formatYAxis = (value) => {
-        return Number.isInteger(value) ? value : '';
+    const generateTicks = (max) => {
+        const ticks = [];
+        for (let i = 0; i <= max; i++) ticks.push(i);
+        return ticks;
     };
 
     if (isLoading) {
@@ -172,76 +187,103 @@ export default function GradesOverTimeChart({ routeId }) {
     if (!chartData.length || !routeType) {
         return <Box p={4} textAlign="center">Ni podatkov za prikaz</Box>;
     }
-    const generateYAxisScale = (max) => {
-        const scale = [];
-        for (let i = 0; i <= max; i++) {
-            scale.push(i);
-        }
-        return scale;
-    };
 
     return (
-        <Box width="100%" display="flex" flexDirection="column">
+        <Box width="100%">
             <Typography variant="h6" align="center" fontWeight="bold" mb={1}>
-                Kumulativne ocene do {currentMonth}
+                {showMonthlyDiff ? "Ocene za mesec " : "Kumulativne ocene do "} {dataOverTime[sliderIndex]?.period}
             </Typography>
 
-            <Box>
-                <ResponsiveContainer width="100%" height={350}>
-                    <BarChart
-                        data={chartData}
-                        margin={{ top: 10, right: 20, left: 20, bottom: 30 }}
+            <ResponsiveContainer width="100%" height={350}>
+                <BarChart
+                    data={chartData}
+                    margin={{ top: 10, right: 20, left: 20, bottom: 30 }}
+                >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                        dataKey="grade"
+                        angle={-45}
+                        textAnchor="end"
+                        height={60}
+                        interval={0}
+                    />
+                    <YAxis
+                        domain={[0, yMax]}
+                        ticks={generateTicks(yMax)}
+                        tickFormatter={formatYAxis}
+                        allowDecimals={false}
                     >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis
-                            dataKey="grade"
-                            angle={-45}
-                            textAnchor="end"
-                            height={60}
-                            interval={0}
-                        >
-                        </XAxis>
-                        <YAxis
-                            domain={[0, yMax]}
-                            tickFormatter={formatYAxis}
-                            ticks={generateYAxisScale(yMax)}
-                            allowDecimals={false}
-                        >
-                            <Label
-                                value="Število ocen"
-                                angle={-90}
-                                position="insideLeft"
-                                offset={-10}
-                                fill="#3b82f6"
-                                style={{ textAnchor: 'middle' }}
-                            />
-                        </YAxis>
-
-                        <Tooltip
-                            formatter={(value) => [`${value}`, 'Število ocen']}
-                            labelFormatter={(label) => `Težavnost: ${label}`}
-                        />
-                        <Legend />
-                        <Bar
-                            dataKey="count"
-                            name="Ocene"
+                        <Label
+                            value="Število ocen"
+                            angle={-90}
+                            position="insideLeft"
+                            offset={-10}
                             fill="#3b82f6"
-                            animationDuration={
-                                dataOverTime.length <= 3 ? 400 : dataOverTime.length <= 8 ? 300 : 200
-                            }
-                            isAnimationActive={true}
+                            style={{ textAnchor: 'middle' }}
                         />
-                    </BarChart>
-                </ResponsiveContainer>
+                    </YAxis>
+                    <Tooltip />
+                    <Legend />
+                    <Bar
+                        dataKey="count"
+                        name="Ocene"
+                        fill="#3b82f6"
+                        animationDuration={200}
+                        isAnimationActive={true}
+                    />
+                </BarChart>
+            </ResponsiveContainer>
+
+            {/* Popravljen SLIDER z marks, valueLabelFormat in disabled med predvajanjem */}
+            <Box mt={4} px={4}>
+                <Slider
+                    value={sliderIndex}
+                    onChange={(e, val) => {
+                        setSliderIndex(val);
+                        updateChartData(val);
+                        clearInterval(intervalRef.current);
+                        setIsPlaying(false);
+                    }}
+                    min={0}
+                    max={dataOverTime.length - 1}
+                    step={1}
+                    disabled={isPlaying}
+                    marks={dataOverTime.map((d, i) => ({
+                        value: i,
+                        label: d.period
+                    }))}
+                    valueLabelDisplay="auto"
+                    valueLabelFormat={(i) => dataOverTime[i]?.period}
+                />
             </Box>
+
             <Box mt={2} textAlign="center">
                 <Button
                     onClick={startAnimation}
                     variant="contained"
                     color="primary"
                     disabled={isPlaying}
+                    sx={{
+                        minWidth: 205,
+                        display: 'inline-flex',
+                        justifyContent: 'center'
+                    }}
                 >
                     {isPlaying ? "Predvajanje..." : "Ponovno predvajanje"}
+                </Button>
+
+                <Button
+                    onClick={() => setShowMonthlyDiff(prev => !prev)}
+                    variant="outlined"
+                    color="secondary"
+                    sx={{
+                        ml: 2,
+                        minWidth: 225,
+                        display: 'inline-flex',
+                        justifyContent: 'center'
+                    }}
+                >
+                    {showMonthlyDiff ? "Prikaži kumulativno" : "Prikaži mesečno razliko"}
                 </Button>
             </Box>
         </Box>

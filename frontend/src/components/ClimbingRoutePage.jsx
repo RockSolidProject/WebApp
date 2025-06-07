@@ -369,7 +369,10 @@ export default function ClimbingRoutePage() {
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                         <Typography variant="h4" fontWeight="500" color="primary">{route.name}</Typography>
                         <Tooltip title={isBookmarked ? "Odstrani iz seznama želja" : "Dodaj na seznam želja"}>
-                            <IconButton onClick={toggleBookmark} color={isBookmarked ? "primary" : "default"}>
+                            <IconButton
+                                onClick={toggleBookmark}
+                                sx={{ color: isBookmarked ? '#FFD600' : 'inherit' }}
+                            >
                                 {isBookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
                             </IconButton>
                         </Tooltip>
@@ -428,7 +431,7 @@ export default function ClimbingRoutePage() {
                             </FormControl>
                             <TextField
                                 type="number"
-                                label="Attempts"
+                                label="Št. poskusov"
                                 value={attempts}
                                 onChange={e => setAttempts(e.target.value)}
                                 inputProps={{ min: 1 }}
@@ -439,7 +442,7 @@ export default function ClimbingRoutePage() {
                                 variant="contained"
                                 onClick={handleMarkClimbed}
                             >
-                                Submit
+                                Potrdi
                             </Button>
                         </Box>
                     ) : (
