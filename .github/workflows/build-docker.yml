@@ -29,3 +29,10 @@ jobs:
 
       - name: Push Frontend Docker image to Docker Hub
         run: docker push urban888/rocksolid-frontend:latest
+
+      - name: Trigger webhook with curl
+        run: |
+          curl -X POST ${{ secrets.DEPLOY_WEBHOOK_URL }} \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer ${{ secrets.WEBHOOK_SECRET }}" \
+          -d '{"event":"deploy","project":"mern-app"}'
