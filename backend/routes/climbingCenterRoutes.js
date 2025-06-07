@@ -26,4 +26,7 @@ router.post('/', auth, climbingCenterController.create);
 router.post('/byProximity', climbingCenterController.getByProximity);
 router.post("/inPolygon", climbingCenterController.getInPolygon);
 
+router.put('/:id', auth, climbingCenterController.update);
+router.delete('/:id', auth, climbingCenterController.remove);
+
 module.exports = router;

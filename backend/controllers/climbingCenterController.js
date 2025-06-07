@@ -126,7 +126,7 @@ module.exports = {
             name : req.body.name,
             latitude : req.body.latitude,
             longitude : req.body.longitude,
-            owner : req.body.owner,
+            owner : req.user.id,
             hasBoulders : req.body.hasBoulders,
             hasRoutes : req.body.hasRoutes,
             hasMoonboard : req.body.hasMoonboard,
@@ -224,4 +224,61 @@ module.exports = {
             });
         }
     },
+    update: async function (req, res) {
+        const id = req.params.id;
+
+        try {
+            const climbingCenter = await climbingCenterModel.findById(id);
+            if (!climbingCenter) {
+                return res.status(404).json({ message: "Climbing center not found." });
+            }
+            console.log(climbingCenter.owner.toString())
+            console.log("a + " + req.user.id)
+            if (climbingCenter.owner.toString() !== req.user.id && req.user.username != "admin") {
+                return res.status(403).json({ message: "Unauthorized to update this climbing center." });
+            }
+
+            const fields = [
+                'name', 'latitude', 'longitude',
+                'hasBoulders', 'hasRoutes', 'hasMoonboard',
+                'hasSprayWall', 'hasKilter'
+            ];
+
+            fields.forEach(field => {
+                if (req.body[field] !== undefined) {
+                    climbingCenter[field] = req.body[field];
+                }
+            });
+
+            const updated = await climbingCenter.save();
+            return res.json(updated);
+        } catch (err) {
+            return res.status(500).json({
+                message: "Error updating climbing center.",
+                error: err.message || err
+            });
+        }
+    },
+    remove: async function (req, res) {
+        const id = req.params.id;
+
+        try {
+            const climbingCenter = await climbingCenterModel.findById(id);
+            if (!climbingCenter) {
+                return res.status(404).json({ message: "Climbing center not found." });
+            }
+
+            if (climbingCenter.owner.toString() !== req.user.id && req.user.username != "admin") {
+                return res.status(403).json({ message: "Unauthorized to delete this climbing center." });
+            }
+
+            await climbingCenterModel.findByIdAndDelete(id);
+            return res.status(204).send();
+        } catch (err) {
+            return res.status(500).json({
+                message: "Error deleting climbing center.",
+                error: err.message || err
+            });
+        }
+    }
 };
