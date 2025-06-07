@@ -29,3 +29,20 @@ jobs:
 
       - name: Push Frontend Docker image to Docker Hub
         run: docker push urban888/rocksolid-frontend:latest
+
+      - name: Trigger redeploy webhook
+        env:
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+        run: |
+          # Pripravi telo (lahko je kar prazen json)
+          BODY='{}'
+
+          # Ustvari HMAC podpis, ki ga pričakuje tvoj webhook
+          SIGNATURE=$(echo -n $BODY | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" | sed 's/^.* //')
+
+          # Pošlji POST zahtevo s podpisom v headerju
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "X-Hub-Signature-256: sha256=$SIGNATURE" \
+            --data "$BODY" \
+            http://52.166.14.239:3000/webhook
