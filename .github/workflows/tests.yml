@@ -11,7 +11,7 @@ jobs:
     name: ${{ matrix.os }} / Node.js 18
     runs-on: ${{ matrix.image }}
     env:
-      MONGODB_LINK: mongodb://localhost:27017/
+      MONGODB_LINK: mongodb://localhost:27017/test
     strategy:
       matrix:
         os: [Ubuntu, macOS, Windows]
@@ -36,6 +36,10 @@ jobs:
         with:
           node-version: 18
 
+      - name: Start MongoDB container
+        run: |
+          docker run -d -p 27017:27017 --name mongodb mongo:5.0
+
       - name: Backend - Install dependencies
         working-directory: backend
         run: npm ci
@@ -43,3 +47,7 @@ jobs:
       - name: Backend - Run tests
         working-directory: backend
         run: npm test
+
+      - name: Stop MongoDB container
+        if: always()
+        run: docker stop mongodb && docker rm mongodb
