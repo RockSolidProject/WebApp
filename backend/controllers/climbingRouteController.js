@@ -120,4 +120,73 @@ module.exports = {
             });
         }
     },
+    updateConnected: async function (req, res) {
+        const climbingAreaId = req.body.climbingArea;
+        const newRoutes = req.body.routes;
+        
+        if (req.user.username !== "admin") {
+            return res.status(403).json({ message: "No premissions." });
+        }
+
+        try {
+            if (!climbingAreaId || !Array.isArray(newRoutes)) {
+                return res.status(400).json({ message: "Missing climbingArea or routes in request." });
+            }
+            console.log("newRoutes:", newRoutes);
+            const parsedNewRoutes = newRoutes.map(route => JSON.parse(route))
+
+            const newRouteIds = parsedNewRoutes
+                .filter(route => route._id)
+                .map(route => route._id.toString());
+            console.log(newRouteIds)
+            const query = {
+                climbingArea: climbingAreaId,
+            };
+            if (newRouteIds.length > 0) {
+                query._id = { $nin: newRouteIds };
+            }
+
+            await ClimbingrouteModel.deleteMany(query);
+           
+            for (const routeString of newRoutes) {
+                const route = JSON.parse(routeString)
+                if (!route._id) {
+                    const newRoute = new ClimbingrouteModel({
+                        name: route.name,
+                        length: route.length,
+                        type: route.type,
+                        climbingArea: climbingAreaId,
+                        postedBy: route.postedBy
+                    });
+                    try {
+                        await newRoute.save();
+                    }
+                    catch (err){
+                        console.log("Error saving route: ", err.message)
+                        continue
+                    }
+                    
+                } else {
+                    await ClimbingrouteModel.findByIdAndUpdate(route._id, {
+                        name: route.name,
+                        length: route.length,
+                        type: route.type,
+                        climbingArea: climbingAreaId,
+                        postedBy: route.postedBy
+                    }, { new: true });
+                    console.log("4")
+                    console.log("LlL")
+                }
+            }
+
+            return res.status(200).send();
+        }
+        catch (err) {
+            console.log("Failed updating routes: ",err)
+            return res.status(500).json({
+                message: "Failed to update connected routes.",
+                error: err
+            });
+        }
+    }
 };

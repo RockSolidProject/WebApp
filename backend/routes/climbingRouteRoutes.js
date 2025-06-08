@@ -18,4 +18,6 @@ router.get('/byArea/:areaId', climbingRouteController.getByClimbingArea);
  */
 router.post('/', auth, climbingRouteController.create);
 
+router.put("/", auth, climbingRouteController.updateConnected)
+
 module.exports = router;
