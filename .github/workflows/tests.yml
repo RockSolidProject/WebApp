@@ -2,7 +2,7 @@ name: JS Tests
 
 on:
   push:
-    branches: [ "develop", "**" ]
+    branches: [ "develop"]
   pull_request:
     branches: [ "develop" ]
 
@@ -14,7 +14,7 @@ jobs:
       MONGODB_LINK: mongodb://localhost:27017/test
     strategy:
       matrix:
-        image: [ubuntu-latest]
+        image: [ubuntu-latest, macos-latest, windows-latest]
       fail-fast: false
 
     defaults:

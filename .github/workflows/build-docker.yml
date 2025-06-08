@@ -40,4 +40,4 @@ jobs:
             -H "Content-Type: application/json" \
             -H "X-Hub-Signature-256: sha256=$SIGNATURE" \
             --data "$BODY" \
-            http://172.205.210.219:3000/webhook
+            ${{ secrets.WEBHOOK_URL_DEV }}
