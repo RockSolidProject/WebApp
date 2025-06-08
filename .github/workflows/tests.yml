@@ -14,14 +14,7 @@ jobs:
       MONGODB_LINK: mongodb://localhost:27017/test
     strategy:
       matrix:
-        os: [Ubuntu, macOS, Windows]
-        include:
-          - os: Ubuntu
-            image: ubuntu-22.04
-          - os: Windows
-            image: windows-2022
-          - os: macOS
-            image: macos-12
+        image: [ubuntu-22.04, windows-2022, macos-12]
       fail-fast: false
 
     defaults:
