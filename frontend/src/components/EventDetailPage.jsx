@@ -11,7 +11,7 @@ import {
     Stack,
 } from "@mui/material";
 import DOMPurify from "dompurify";
-
+import Section from "../components/Section.jsx"
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function EventDetailPage() {
@@ -119,8 +119,9 @@ function EventDetailPage() {
                     {event.climbingCenters?.length > 0 && (
                         <Section title="Plezalni Centri" items={event.climbingCenters} />
                     )}
+                    <Typography variant={"h4"}></Typography>
                     {event.group && (
-                       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>{event.group.name}</Typography>
+                        <Section title="Plezalni Centri" items={[event.group]} />
                     )}
                 </Stack>
             </Box>
@@ -128,19 +129,6 @@ function EventDetailPage() {
     );
 }
 
-function Section({ title, items }) {
-    return (
-        <Box>
-            <Typography variant="h6" gutterBottom>
-                {title}
-            </Typography>
-            <Box display="flex" flexWrap="wrap" gap={1}>
-                {items.map((item) => (
-                    <Chip key={item._id} label={item.name} color="primary" />
-                ))}
-            </Box>
-        </Box>
-    );
-}
+
 
 export default EventDetailPage;
