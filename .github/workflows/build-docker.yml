@@ -1,16 +1,18 @@
 name: Publish images to Docker Hub
 
 on:
-  push:
-    branches:
-      - "develop"
-      - '**'
-  pull_request:
-    branches: [ "develop" ]
+  workflow_run:
+    workflows: ["JS Tests"]
+    types:
+      - completed
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

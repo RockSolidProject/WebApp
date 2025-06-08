@@ -1,0 +1,44 @@
+name: JS Tests
+
+on:
+  push:
+    branches: [ "develop", "**" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  tests:
+    name: ${{ matrix.os }} / Node.js 18
+    runs-on: ${{ matrix.image }}
+    strategy:
+      matrix:
+        os: [Ubuntu, macOS, Windows]
+        include:
+          - os: Ubuntu
+            image: ubuntu-22.04
+          - os: Windows
+            image: windows-2022
+          - os: macOS
+            image: macos-12
+      fail-fast: false
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: |
+          if [ -f package.json ]; then
+            npm install --package-lock-only && npm ci
+          fi
+
+      - name: Run test
+        run: npm test
