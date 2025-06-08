@@ -10,6 +10,8 @@ jobs:
   tests:
     name: ${{ matrix.os }} / Node.js 18
     runs-on: ${{ matrix.image }}
+    env:
+      DATABASE_URL: mongodb://localhost:27017/
     strategy:
       matrix:
         os: [Ubuntu, macOS, Windows]
