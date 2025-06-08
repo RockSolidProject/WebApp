@@ -34,11 +34,10 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
-        run: |
-          if [ -f package.json ]; then
-            npm install --package-lock-only && npm ci
-          fi
+      - name: Backend - Install dependencies
+        working-directory: backend
+        run: npm ci
 
-      - name: Run test
+      - name: Backend - Run tests
+        working-directory: backend
         run: npm test
