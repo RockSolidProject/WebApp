@@ -2,19 +2,20 @@ name: JS Tests
 
 on:
   push:
-    branches: [ "develop"]
+    branches: ["develop"]
   pull_request:
-    branches: [ "develop" ]
+    branches: ["develop"]
 
 jobs:
   tests:
-    name: ${{ matrix.os }} / Node.js 18
+    name: ${{ matrix.os }} / ${{ matrix.image }}
     runs-on: ${{ matrix.image }}
     env:
       MONGODB_LINK: mongodb://localhost:27017/test
     strategy:
       matrix:
-        image: [ubuntu-latest, macos-latest, windows-latest]
+        image: [ubuntu-latest, windows-latest, macos-latest]
+        os: [Linux, Windows, macOS]
       fail-fast: false
 
     defaults:
@@ -29,9 +30,17 @@ jobs:
         with:
           node-version: 18
 
-      - name: Start MongoDB container
+      - name: Start MongoDB container (Linux/Windows)
+        if: runner.os != 'macOS'
         run: |
           docker run -d -p 27017:27017 --name mongodb mongo:5.0
+
+      - name: Install MongoDB on macOS
+        if: runner.os == 'macOS'
+        run: |
+          brew tap mongodb/brew
+          brew install mongodb-community@5.0
+          brew services start mongodb/brew/mongodb-community
 
       - name: Backend - Install dependencies
         working-directory: backend
@@ -41,6 +50,10 @@ jobs:
         working-directory: backend
         run: npm test
 
-      - name: Stop MongoDB container
-        if: always()
+      - name: Stop MongoDB container (Linux/Windows)
+        if: always() && runner.os != 'macOS'
         run: docker stop mongodb && docker rm mongodb
+
+      - name: Stop MongoDB on macOS
+        if: always() && runner.os == 'macOS'
+        run: brew services stop mongodb/brew/mongodb-community
