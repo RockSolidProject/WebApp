@@ -1,8 +1,6 @@
 services:
   mongo:
     image: mongo:7.0.12
-    ports:
-      - "27017:27017" #To ne sme biti v produkcijsku verziji in je namenjeno samo za povezavo z compassom
     volumes:
       - mongo_data:/data/db #Volumen, katerega upravlja docker (da se podatki o bazi vedno ohraniji)
     networks:

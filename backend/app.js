@@ -26,8 +26,10 @@ var app = express();
 
 var cors = require('cors');
 var allowedOrigins = [
-  'http://52.166.14.239/api',
-  'http://52.166.14.239',
+  'http://172.205.210.219/api',
+  'http://172.205.210.219',
+  'http://132.164.72.107/api',
+  'http://132.164.72.107',
   'http://localhost:5173',
   'http://localhost:3001'
 ];
