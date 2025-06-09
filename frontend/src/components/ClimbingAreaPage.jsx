@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link as RouterLink } from 'react-router-dom';
 import {
     Card,
     CardContent,
@@ -10,6 +10,8 @@ import {
     ListItem,
     Divider,
     Tooltip,
+    Link,
+    Button
 } from '@mui/material';
 import ShowLocationOnMap from './ShowLocationOnMap.jsx';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
@@ -156,6 +158,16 @@ const ClimbingAreaPage = () => {
                     <Typography variant="h4" fontWeight="500" color="primary">{area.name}</Typography>
                     <Typography variant="body1" mt={3} mb={2}><strong>Objavil:</strong> {area.postedBy?.username || 'Unknown'}</Typography>
                     <ShowLocationOnMap latitude={area.latitude} longitude={area.longitude} />
+                    <Button
+                        component={RouterLink}
+                        to={`/climbingAreas/${id}/addRoute`}
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        sx={{ mt: 2 }}
+                    >
+                        Dodaj novo pot
+                    </Button>
                     <Typography variant="h6" mt={3} mb={2}>Plezalne poti</Typography>
                     <List>
                         {routes.map((route, idx) => (
