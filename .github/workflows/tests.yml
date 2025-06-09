@@ -15,7 +15,6 @@ jobs:
     strategy:
       matrix:
         image: [ubuntu-latest, windows-latest, macos-latest]
-        os: [Linux, Windows, macOS]
       fail-fast: false
 
     defaults:
@@ -40,7 +39,7 @@ jobs:
         run: |
           brew tap mongodb/brew
           brew install mongodb-community@5.0
-          brew services start mongodb/brew/mongodb-community
+          brew services start mongodb/brew/mongodb-community@5.0
 
       - name: Backend - Install dependencies
         working-directory: backend
@@ -56,4 +55,4 @@ jobs:
 
       - name: Stop MongoDB on macOS
         if: always() && runner.os == 'macOS'
-        run: brew services stop mongodb/brew/mongodb-community
+        run: brew services stop mongodb/brew/mongodb-community@5.0

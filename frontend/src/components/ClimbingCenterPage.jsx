@@ -234,12 +234,6 @@ export default function ClimbingCenterPage() {
                                         handleRatingChange(value);
                                     }
                                 }}
-                                onClick={(e) => {
-                                    const newValue = parseInt(e.target.getAttribute('data-value') || 0, 10);
-                                    if (newValue === userRating) {
-                                        handleRatingChange(newValue);
-                                    }
-                                }}
                                 readOnly={!localStorage.getItem("token")}
                             />
                             {userRating ? (

@@ -387,14 +387,8 @@ export default function ClimbingRoutePage() {
                             <Rating
                                 value={userRating}
                                 onChange={(_, value) => {
-                                    if (value !== null) {
+                                    if (value !== null && value !== userRating) {
                                         handleRatingChange(value);
-                                    }
-                                }}
-                                onClick={(e) => {
-                                    const newValue = parseInt(e.target.getAttribute('data-value') || 0, 10);
-                                    if (newValue === userRating) {
-                                        handleRatingChange(newValue);
                                     }
                                 }}
                                 readOnly={!localStorage.getItem("token")}
