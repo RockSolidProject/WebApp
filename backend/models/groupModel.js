@@ -15,6 +15,7 @@ var groupSchema = new Schema({
         ref: 'user'
     },
     'description': String,
+    'image': String
 });
 
 module.exports = mongoose.model('group', groupSchema);

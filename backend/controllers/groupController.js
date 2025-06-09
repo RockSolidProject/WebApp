@@ -162,7 +162,9 @@ module.exports = {
         var group = new GroupModel({
             name: req.body.name,
             isPrivate: req.body.isPrivate,
-            owner: req.user.id
+            owner: req.user.id,
+            description: req.body.description,
+            image: req.file ? `/groups/${req.file.filename}` : null,
         });
         try {
             var savedGroup = await group.save();

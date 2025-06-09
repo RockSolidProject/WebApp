@@ -61,7 +61,7 @@ const GroupsPage = () => {
                 flexWrap="wrap"
                 gap={2}
             >
-                <Box display="flex" alignItems="center" gap={1}>
+                <Box display="flex" alignItems="center" gap={3}> {/* gap=2 je 16px */}
                     <TextField
                         label="Išči po imenu"
                         variant="outlined"
@@ -80,6 +80,7 @@ const GroupsPage = () => {
                         label="Moje"
                     />
                 </Box>
+
                 <Button
                     variant="contained"
                     color="primary"

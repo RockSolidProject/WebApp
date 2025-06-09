@@ -11,8 +11,8 @@ import {
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function Group({ group }) {
-    const groupPhotoUrl = group.photo
-        ? `${backendUrl}${group.photo}`
+    const groupPhotoUrl = group.image
+        ? `${backendUrl}${group.image}`
         : `${backendUrl}/groups/default-group.png`;
 
     const ownerPhotoUrl = group.owner?.avatar
@@ -39,17 +39,21 @@ function Group({ group }) {
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
-                height: '100%',
-                position: 'relative'
+                height: 300,
+                position: 'relative',
+                maxWidth: 300,
+                width: 300,
             }}
         >
-            {/* Slika skupine */}
             <CardMedia
                 component="img"
-                height="200"
                 image={groupPhotoUrl}
                 alt={group.name}
-                sx={{ objectFit: "cover", width: "100%" }}
+                sx={{
+                    width: '100%',
+                    height: 200,
+                    objectFit: 'cover',
+                }}
             />
 
             {/* Badge z lastnikom */}
@@ -88,34 +92,26 @@ function Group({ group }) {
                 </Box>
             )}
 
-            {/* Vsebina */}
             <CardContent sx={{ px: 2, pt: 2, pb: 2 }}>
                 <Typography
                     variant="h6"
                     gutterBottom
-                    sx={{ fontWeight: 600 }}
+                    sx={{
+                        fontWeight: 600,
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word',
+                        overflowWrap: 'break-word',
+                        display: 'block',
+                    }}
                 >
                     {group.name}
                 </Typography>
                 <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
                     {group.isPrivate ? 'Zasebna Skupina 🔒' : 'Javna Skupina 🔓'}
                 </Typography>
-                {group.description && (
-                    <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{
-                            overflow: 'hidden',
-                            display: '-webkit-box',
-                            WebkitLineClamp: 3,
-                            WebkitBoxOrient: 'vertical',
-                        }}
-                    >
-                        {group.description}
-                    </Typography>
-                )}
             </CardContent>
         </Card>
+
     );
 }
 
