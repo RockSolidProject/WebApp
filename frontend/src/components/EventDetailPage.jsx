@@ -119,7 +119,7 @@ function EventDetailPage() {
                     {event.climbingCenters?.length > 0 && (
                         <Section title="Plezalni Centri" items={event.climbingCenters} />
                     )}
-                    <Typography variant={"h4"}></Typography>
+                    {event.group && <Typography variant={"h4"}>Skupina</Typography>}
                     {event.group && (
                         <Section title="Plezalni Centri" items={[event.group]} />
                     )}

@@ -13,13 +13,30 @@ module.exports = {
      */
     list: async function (req, res) {
         try {
-            const groups = await GroupModel.find()
-            return res.json(groups)
+            const userId = req.user?.id;
+
+            const allGroups = await GroupModel.find().populate('owner');
+            const memberships = await GroupMemberModel.find({member: userId});
+
+            const memberGroupIds = new Set(memberships.map(m => m.group.toString()));
+
+            const groupsWithMineFlag = allGroups.map(group => {
+                const isMine =
+                    group.owner._id.toString() === userId ||
+                    memberGroupIds.has(group._id.toString());
+
+                return {
+                    ...group.toObject(),
+                    mine: isMine
+                };
+            });
+
+            return res.json(groupsWithMineFlag);
         } catch (err) {
             return res.status(500).json({
                 error: err,
                 message: "failed to list groups"
-            })
+            });
         }
     },
     listSearch: async function (req, res) {
@@ -30,7 +47,7 @@ module.exports = {
             console.log("here");
 
             // Filter by name prefix if pattern provided
-            const nameFilter = { name: { $regex: `^${pattern}`, $options: "i" } };
+            const nameFilter = {name: {$regex: `${pattern}`, $options: "i"}};
 
             // Get owned groups matching pattern
             const ownedGroups = await GroupModel.find({
@@ -38,20 +55,7 @@ module.exports = {
                 ...nameFilter,
             });
 
-            /*// Get groups where the user is a member, populate the group
-            const memberships = await GroupMemberModel.find({ member: userId }).populate({
-                path: "group",
-                match: nameFilter,
-            });
 
-            const memberGroups = memberships
-                .map(m => m.group)
-                .filter(group => group && group.owner.toString() !== userId);
-
-            // Merge and deduplicate (optional but safe)
-            const allGroups = [...ownedGroups, ...memberGroups];*/
-
-            // Apply limit
             const limitedGroups = ownedGroups.slice(0, limit);
 
             return res.json(limitedGroups);
@@ -67,10 +71,10 @@ module.exports = {
             const userId = req.user.id;
 
             // 1. Groups the user owns
-            const ownedGroups = await GroupModel.find({ owner: userId });
+            const ownedGroups = await GroupModel.find({owner: userId});
 
             // 2. Membership records where the user is a member
-            const memberships = await GroupMemberModel.find({ member: userId }).populate('group');
+            const memberships = await GroupMemberModel.find({member: userId}).populate('group');
 
             const memberGroups = memberships
                 .map(m => m.group)
@@ -128,7 +132,7 @@ module.exports = {
             var isMember = false
             if (!groupMembers) {
                 isMember = false
-            } else{
+            } else {
                 isMember = groupMembers.some(
                     gm => gm.member._id === req.user.id
                 )
@@ -136,9 +140,9 @@ module.exports = {
             groupObj.isMember = isMember;
 
             groupObj.isOwner = req.user.id.toString() === group.owner._id.toString();
-            if(!isMember && !groupObj.isOwner) {
+            if (!isMember && !groupObj.isOwner) {
                 return res.json(groupObj);
-            }else {
+            } else {
                 groupObj.members = groupMembers;
                 return res.json(groupObj);
             }

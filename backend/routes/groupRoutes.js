@@ -6,7 +6,7 @@ var auth = require("../middleware/auth.js");
 /*
  * GET
  */
-router.get('/', groupController.list);
+router.get('/', auth, groupController.list);
 
 /*
  * GET
