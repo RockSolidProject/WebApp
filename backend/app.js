@@ -29,7 +29,7 @@ var allowedOrigins = [
   'http://52.166.14.239/api',
   'http://52.166.14.239',
   'http://localhost:5173',
-  'http://localhost:3001'
+  'http://localhost:3001',
 ];
 app.use(cors({
   credentials: true,

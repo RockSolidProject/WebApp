@@ -56,7 +56,7 @@ function EventDetailPage() {
                     component="img"
                     src={
                         event.photo
-                            ? `${backendUrl}/events/photos/${event.photo}`
+                            ? `${backendUrl}/${event.photo}`
                             : `${backendUrl}/eventPhotos/default-event.jpg`
                     }
                     alt={event.name}

@@ -60,10 +60,14 @@ module.exports = {
 
     // POST /events
     create: async function (req, res) {
+
         const group = req.body.group || null;
-        const centers = req.body.climbingCenters || [];
-        const areas = req.body.climbingAreas || [];
+
+        const centers = req.body.climbingCenters ? JSON.parse(req.body.climbingCenters) : [];
+        const areas = req.body.climbingAreas ? JSON.parse(req.body.climbingAreas) : [];
+        console.log("do tu pridem")
         const date = req.body.date ? new Date(req.body.date) : new Date();
+
 
         if (!group && centers.length === 0 && areas.length === 0) {
             return res.status(400).json({
@@ -94,7 +98,7 @@ module.exports = {
                 name: req.body.name,
                 description: req.body.description,
                 date: date,
-                photo: req.body.photo,
+                photo: req.file ? `/events/${req.file.filename}` : null,  // shrani ime datoteke
                 owner: req.user.id,
             });
 
