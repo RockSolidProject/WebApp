@@ -31,7 +31,7 @@ var allowedOrigins = [
   'http://132.164.72.107/api',
   'http://132.164.72.107',
   'http://localhost:5173',
-  'http://localhost:3001'
+  'http://localhost:3001',
 ];
 app.use(cors({
   credentials: true,
@@ -69,6 +69,7 @@ app.use('/events', eventRoutes)
 app.use('/climbingCenter', climbingCenterRoutes);
 app.use('/centerConnections', climbingCenterRateComment);
 app.use('/avatars', express.static('public/avatars'));
+app.use('/eventPhotos', express.static('public/events'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

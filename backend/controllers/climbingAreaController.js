@@ -16,7 +16,7 @@ module.exports = {
         try {
             const limit = parseInt(req.query.limit) || 10;
             const pattern = req.query.pattern || "";
-            const nameFilter = { name: { $regex: `^${pattern}`, $options: "i" } };
+            const nameFilter = { name: { $regex: `${pattern}`, $options: "i" } };
 
             const climbingAreas = await ClimbingareaModel
                 .find(nameFilter)

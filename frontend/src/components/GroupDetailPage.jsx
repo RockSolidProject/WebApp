@@ -2,7 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import GroupAddMember from "./GroupAddMember.jsx";
 import {
-    Container, Typography, Button, List, ListItem, Alert, Box, Avatar, Card, CardContent
+    Container,
+    Typography,
+    Button,
+    Avatar,
+    Box,
+    Card,
+    CardContent,
+    CardMedia,
 } from "@mui/material";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -35,7 +42,7 @@ function GroupDetailPage() {
             }
 
             if (!res.ok) {
-                setError("Error fetching group.");
+                setError("Napaka pri pridobivanju skupine.");
                 return;
             }
 
@@ -43,7 +50,7 @@ function GroupDetailPage() {
             setGroup(data);
         } catch (err) {
             console.error(err);
-            setError("Could not fetch group.");
+            setError("Napaka pri pridobivanju skupine.");
         }
     }
 
@@ -53,7 +60,7 @@ function GroupDetailPage() {
             if (!token) return navigate("/login");
 
             if (!selected) {
-                setError("Missing member to add");
+                setError("Izberi člana za dodajanje.");
                 return;
             }
 
@@ -73,13 +80,13 @@ function GroupDetailPage() {
                 navigate("/login");
                 return;
             } else if (!res.ok) {
-                setError(`Issue adding a member`);
+                setError(`Napaka pri dodajanju člana`);
             }
 
             await getGroup();
             setSelected(null);
         } catch (e) {
-            setError(`Error adding member: ${e.message}`);
+            setError(`Napaka: ${e.message}`);
             setSelected(null);
         }
     }
@@ -105,7 +112,7 @@ function GroupDetailPage() {
             }
 
             if (!res.ok) {
-                setError(`Error joining group`);
+                setError(`Napaka pri včlanjevanju.`);
                 return;
             }
 
@@ -113,15 +120,26 @@ function GroupDetailPage() {
             await res.json();
             await getGroup();
         } catch (e) {
-            setError(e.message || "An error occurred");
+            setError(e.message || "Prišlo je do napake.");
         }
     }
 
     if (!group) return <Typography>Loading group...</Typography>;
 
+    const groupImageUrl = group.image
+        ? `${backendUrl}${group.image}`
+        : `${backendUrl}/groups/default-group.png`;
+
     return (
         <Container maxWidth="md" sx={{ mt: 4 }}>
-            <Card>
+            <Card sx={{ borderRadius: 3 }}>
+                <CardMedia
+                    component="img"
+                    height="240"
+                    image={groupImageUrl}
+                    alt="Slika skupine"
+                    sx={{ objectFit: 'cover' }}
+                />
                 <CardContent>
                     <Typography variant="h4" gutterBottom>
                         {group.name}
@@ -152,22 +170,20 @@ function GroupDetailPage() {
                     {(group.isMember || group.isOwner) && (
                         <>
                             {group.isOwner && (
-                                <>
-                                    <Box mt={3}>
-                                        <GroupAddMember onUserSelect={(user) => setSelected(user?.value)} />
-                                        <Button
-                                            onClick={handleAddMember}
-                                            variant="contained"
-                                            sx={{ mt: 1 }}
-                                        >
-                                            Dodaj Člana
-                                        </Button>
-                                    </Box>
-                                </>
+                                <Box mt={3}>
+                                    <GroupAddMember onUserSelect={(user) => setSelected(user?.value)} />
+                                    <Button
+                                        onClick={handleAddMember}
+                                        variant="contained"
+                                        sx={{ mt: 1 }}
+                                    >
+                                        Dodaj Člana
+                                    </Button>
+                                </Box>
                             )}
 
                             <Box mt={4}>
-                                <Typography variant="h6">Člani</Typography>
+                                <Typography variant="h6" gutterBottom>Člani</Typography>
                                 <Box
                                     display="flex"
                                     flexWrap="wrap"
@@ -175,13 +191,23 @@ function GroupDetailPage() {
                                     mt={2}
                                 >
                                     {group.members?.map(({ member }) => (
-                                        <Card key={member._id} sx={{ width: 160, p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                        <Card
+                                            key={member._id}
+                                            sx={{
+                                                width: 140,
+                                                p: 2,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                textAlign: 'center',
+                                            }}
+                                        >
                                             <Avatar
                                                 src={member.avatar ? `${backendUrl}${member.avatar}` : undefined}
                                                 alt={member.username}
                                                 sx={{ width: 48, height: 48, mb: 1 }}
                                             />
-                                            <Typography variant="body2" align="center">
+                                            <Typography variant="body2" noWrap>
                                                 {member.username}
                                             </Typography>
                                         </Card>
@@ -200,7 +226,6 @@ function GroupDetailPage() {
             </Card>
         </Container>
     );
-
 }
 
 export default GroupDetailPage;
