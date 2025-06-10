@@ -1,4 +1,4 @@
-# Node modules
+ # Node modules
 node_modules/
 
 /.idea/
@@ -24,4 +24,3 @@ frontend/package-lock.json
 .vscode
 .env*
 package.json
-backend/public/*
