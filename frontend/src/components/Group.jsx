@@ -51,7 +51,7 @@ function Group({ group }) {
                 alt={group.name}
                 sx={{
                     width: '100%',
-                    height: 200,
+                    height: 180,
                     objectFit: 'cover',
                 }}
             />
