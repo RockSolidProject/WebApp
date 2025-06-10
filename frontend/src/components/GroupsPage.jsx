@@ -11,6 +11,8 @@ import { Link , useNavigate} from "react-router-dom";
 import { useState, useEffect } from "react";
 import Group from "./Group.jsx";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const GroupsPage = () => {
     const [groups, setGroups] = useState([]);
     const [search, setSearch] = useState("");
@@ -20,7 +22,7 @@ const GroupsPage = () => {
     useEffect(() => {
         async function getGroups() {
             try {
-                const res = await fetch("http://localhost:3001/groups",{
+                const res = await fetch(`${backendUrl}/groups`,{
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
