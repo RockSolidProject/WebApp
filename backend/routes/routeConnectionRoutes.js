@@ -2,7 +2,17 @@ var express = require('express');
 var router = express.Router();
 var routeConnectionController = require('../controllers/routeConnectionController.js');
 var auth = require("../middleware/auth.js");
-
+const path = require('path');
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname, '../public/commentImages'));
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
 /*
  * GET
  */
@@ -42,7 +52,7 @@ router.post('/climbed/:routeId', auth, routeConnectionController.markClimbed)
 /*
  * POST
  */
-router.post('/comment/:routeId', auth, routeConnectionController.commentRoute)
+router.post('/comment/:routeId', auth, upload.single('image'), routeConnectionController.commentRoute)
 
 /*
  * POST

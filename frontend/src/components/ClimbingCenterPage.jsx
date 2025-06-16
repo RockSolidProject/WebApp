@@ -138,16 +138,41 @@ export default function ClimbingCenterPage() {
             navigate("/login");
             return;
         }
-        let imageBase64 = null;
+
+        const formData = new FormData();
+        formData.append("content", newComment);
         if (imageFile) {
-            const reader = new FileReader();
-            reader.onloadend = async () => {
-                imageBase64 = reader.result;
-                await submitComment(imageBase64);
-            };
-            reader.readAsDataURL(imageFile);
-        } else {
-            await submitComment(null);
+            formData.append("image", imageFile);
+        }
+
+        try {
+            const res = await fetch(`${backendUrl}/centerConnections/comment/${id}`, {
+                method: "POST",
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            if (res.status === 401 || res.status === 403) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                navigate("/login");
+                return;
+            }
+
+            if (!res.ok) {
+                setError("Failed to add comment.");
+                return;
+            }
+
+            setNewComment('');
+            setImageFile(null);
+            setImagePreview(null);
+            const data = await res.json();
+            setComments(prev => [data, ...prev]);
+        } catch (err) {
+            setError("Error adding comment.");
         }
     }
 
