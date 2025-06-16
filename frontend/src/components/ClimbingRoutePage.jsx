@@ -27,7 +27,7 @@ export default function ClimbingRoutePage() {
     const [userClimbed, setUserClimbed] = useState(null);
     const [averageGrade, setAverageGrade] = useState("Ni še ocen.");
     const [isBookmarked, setIsBookmarked] = useState(false);
-    const [chartKey, setChartKey] = useState(0); // Add this line
+    const [chartKey, setChartKey] = useState(0);
     const fileInputRef = useRef();
 
     const ropeGrades = [
