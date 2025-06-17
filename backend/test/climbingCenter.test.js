@@ -9,20 +9,38 @@ describe('ClimbingCenter API', () => {
     let userId;
     let centerId;
 
+    const testUserCredentials = {
+        username: 'centeruser',
+        email: 'centeruser@test.com',
+        password: 'CenterPassword'
+    };
+
     beforeAll(async () => {
         await mongoose.connect(process.env.MONGODB_LINK, { useNewUrlParser: true, useUnifiedTopology: true });
-        // Create a user and login to get token
-        const user = new UserModel({
-            username: 'centeruser',
-            email: 'centeruser@test.com',
-            password: await require('bcryptjs').hash('CenterPassword', 10)
-        });
-        await user.save();
-        userId = user._id;
-        const res = await request(app)
+
+        const registrationRes = await request(app)
+            .post('/users')
+            .send(testUserCredentials);
+        if (registrationRes.status === 201 && registrationRes.body._id) {
+            userId = registrationRes.body._id;
+        } else if (registrationRes.status === 409) {
+            console.warn('User might already exist or registration failed:', registrationRes.body);
+        } else if (registrationRes.status !== 201) {
+            throw new Error(`User registration failed with status ${registrationRes.status}: ${JSON.stringify(registrationRes.body)}`);
+        }
+
+        const loginRes = await request(app)
             .post('/users/login')
-            .send({ username: 'centeruser', password: 'CenterPassword' });
-        token = res.body.token;
+            .send({ username: testUserCredentials.username, password: testUserCredentials.password });
+
+        if (loginRes.status !== 200) {
+            console.error('Login failed after API registration:', loginRes.body);
+            throw new Error(`Login failed with status ${loginRes.status} after attempting API registration.`);
+        }
+        token = loginRes.body.token;
+        if (!userId && loginRes.body.userData && loginRes.body.userData._id) {
+            userId = loginRes.body.userData._id;
+        }
     });
 
     afterAll(async () => {

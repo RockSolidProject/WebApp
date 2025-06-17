@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.image }}
     env:
       MONGODB_LINK: mongodb://localhost:27017/test
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
     strategy:
       matrix:
         image: [ubuntu-latest, windows-latest, macos-latest]
