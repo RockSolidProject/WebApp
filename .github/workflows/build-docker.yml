@@ -1,10 +1,8 @@
 name: Publish images to Docker Hub
 
 on:
-  workflow_run:
-    workflows: ["JS Tests"]
-    types:
-      - completed
+  push:
+    branches: ["develop"]
 
 jobs:
   build:
