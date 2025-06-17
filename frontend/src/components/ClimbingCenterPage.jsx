@@ -172,15 +172,28 @@ export default function ClimbingCenterPage() {
                 return;
             }
             if (!res.ok) {
+                const errorData = await res.text();
+                console.error("Failed to add comment:", errorData);
                 setError("Failed to add comment.");
                 return;
             }
             setNewComment('');
             setImageFile(null);
             setImagePreview(null);
+
             const data = await res.json();
-            setComments(prev => [data, ...prev]);
+            const currentUser = JSON.parse(localStorage.getItem("user"));
+
+            const commentToDisplay = {
+                ...data,
+                postedBy: currentUser
+                    ? { _id: currentUser.id, username: currentUser.username }
+                    : (data.postedBy || { username: "Neznano" })
+            };
+            setComments(prev => [commentToDisplay, ...prev]);
+
         } catch (err) {
+            console.error("Error adding comment:", err);
             setError("Error adding comment.");
         }
     }
