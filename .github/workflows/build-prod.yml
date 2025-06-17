@@ -3,8 +3,6 @@ name: Publish images to Docker Hub prod
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   build:

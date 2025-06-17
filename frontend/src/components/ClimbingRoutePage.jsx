@@ -241,30 +241,35 @@ export default function ClimbingRoutePage() {
         }
     }
 
-    async function submitComment(image) {
+    async function submitComment() {
         const token = localStorage.getItem("token");
+        const formData = new FormData();
+        formData.append("content", newComment);
+        if (imageFile) {
+            formData.append("image", imageFile);
+        }
+
         try {
             const res = await fetch(`${backendUrl}/routeConnections/comment/${id}`, {
                 method: "POST",
                 headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({
-                    content: newComment,
-                    image: image
-                })
+                body: formData
             });
+
             if (res.status === 401 || res.status === 403) {
                 localStorage.removeItem("token");
                 localStorage.removeItem("user");
                 navigate("/login");
                 return;
             }
+
             if (!res.ok) {
                 setError("Failed to add comment.");
                 return;
             }
+
             setNewComment('');
             setImageFile(null);
             setImagePreview(null);
