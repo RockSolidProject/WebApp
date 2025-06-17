@@ -13,7 +13,7 @@ module.exports = {
      */
     list: async function (req, res) {
         try {
-            const userId = req.user?.id;
+            const userId = req.user?.id?.toString();
 
             const allGroups = await GroupModel.find().populate('owner');
             const memberships = await GroupMemberModel.find({member: userId});
@@ -22,7 +22,7 @@ module.exports = {
 
             const groupsWithMineFlag = allGroups.map(group => {
                 const isMine =
-                    group.owner._id.toString() === userId ||
+                    group.owner && group.owner._id && group.owner._id.toString() === userId ||
                     memberGroupIds.has(group._id.toString());
 
                 return {

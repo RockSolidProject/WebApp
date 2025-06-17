@@ -235,27 +235,27 @@ module.exports = {
         }
     },
 
-    commentRoute: async function(req, res) {
-        const routeId = req.params.routeId
-        const userId = req.user.id
-
+    commentRoute: async function (req, res) {
         try {
-            const comment = new RouteCommentModel({
-                climbingRoute: routeId,
-                postedBy: userId,
-                content: req.body.content,
-                image: req.body.image
-            })
+            if (!req.body.content) {
+                return res.status(400).json({ message: "Comment content is required." });
+            }
 
-            const addedComment = await comment.save()
-            await addedComment.populate('postedBy');
-            return res.status(201).json(addedComment);
-        }
-        catch (err) {
+            const comment = new RouteCommentModel({
+                content: req.body.content,
+                image: req.file ? `/public/commentImages/${req.file.filename}` : null,
+                postedBy: req.user.id,
+                climbingRoute: req.params.routeId,
+            });
+
+            const savedComment = await comment.save();
+            return res.status(201).json(savedComment);
+        } catch (err) {
+            console.error('Error in commentRoute:', err.stack || err.message || err);
             return res.status(500).json({
-                message: "Adding comment failed",
-                error: err
-            })
+                message: 'Error when adding comment.',
+                error: err.message || err,
+            });
         }
     },
 

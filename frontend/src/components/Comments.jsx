@@ -1,5 +1,5 @@
 import { Box, Typography, Card, CardContent } from '@mui/material';
-
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export default function Comments({ comments }) {
     if (!comments || comments.length === 0) {
         return (
@@ -22,7 +22,7 @@ export default function Comments({ comments }) {
                         {comment.image && (
                             <Box
                                 component="img"
-                                src={comment.image}
+                                src={`${backendUrl}${comment.image}`}
                                 alt="Komentar"
                                 sx={{
                                     maxWidth: '100%',
