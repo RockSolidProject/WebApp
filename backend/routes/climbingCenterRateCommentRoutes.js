@@ -3,16 +3,12 @@ var router = express.Router();
 var climbingCenterRateCommentController = require('../controllers/climbingCenterRateCommentController.js');
 const auth = require("../middleware/auth");
 const path = require('path');
-const multer = require('multer');
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, path.join(__dirname, '../public/commentImages'));
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
+const multer = require("multer");
+const upload = multer({
+    dest: 'public/commentImages/',
+    limits: { fileSize: 5 * 1024 * 1024 }
 });
-const upload = multer({ storage: storage });
+
 /*
  * GET
  */

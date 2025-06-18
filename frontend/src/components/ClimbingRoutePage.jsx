@@ -27,7 +27,7 @@ export default function ClimbingRoutePage() {
     const [userClimbed, setUserClimbed] = useState(null);
     const [averageGrade, setAverageGrade] = useState("Ni še ocen.");
     const [isBookmarked, setIsBookmarked] = useState(false);
-    const [chartKey, setChartKey] = useState(0); // Add this line
+    const [chartKey, setChartKey] = useState(0);
     const fileInputRef = useRef();
 
     const ropeGrades = [
@@ -228,17 +228,7 @@ export default function ClimbingRoutePage() {
             navigate("/login");
             return;
         }
-        let imageBase64 = null;
-        if (imageFile) {
-            const reader = new FileReader();
-            reader.onloadend = async () => {
-                imageBase64 = reader.result;
-                await submitComment(imageBase64);
-            };
-            reader.readAsDataURL(imageFile);
-        } else {
-            await submitComment(null);
-        }
+        await submitComment();
     }
 
     async function submitComment() {
@@ -266,6 +256,8 @@ export default function ClimbingRoutePage() {
             }
 
             if (!res.ok) {
+                const errorData = await res.text();
+                console.error("Failed to add comment:", errorData);
                 setError("Failed to add comment.");
                 return;
             }
@@ -273,9 +265,20 @@ export default function ClimbingRoutePage() {
             setNewComment('');
             setImageFile(null);
             setImagePreview(null);
+
             const data = await res.json();
-            setComments(prev => [data, ...prev]);
+            const currentUser = JSON.parse(localStorage.getItem("user"));
+
+            const commentToDisplay = {
+                ...data,
+                postedBy: currentUser
+                    ? { _id: currentUser.id, username: currentUser.username }
+                    : (data.postedBy || { username: "Neznano" })
+            };
+            setComments(prev => [commentToDisplay, ...prev]);
+
         } catch (err) {
+            console.error("Error adding comment:", err);
             setError("Error adding comment.");
         }
     }
