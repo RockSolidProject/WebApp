@@ -39,7 +39,7 @@ describe('ClimbingRoute API', () => {
                 name: 'Test Route',
                 length: 20,
                 type: 'Sport',
-                climbingArea: '60d5f484f1d2c8b8b8b8b8b8', // Example
+                climbingArea: '60d5f484f1d2c8b8b8b8b8b8',
                 postedBy: userId
             })
             .expect(201);
