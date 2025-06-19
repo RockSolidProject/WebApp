@@ -4,7 +4,13 @@ Welcome to the repository of the **RockSolid** project.
 The goal of this project is to develop a web application that allows climbers to easily search for climbing gyms and outdoor climbing spots based on geographic location. It also provides support for adding new locations, climbing routes, groups, and events.
 The project is developed using the MERN stack (MongoDB, Express.js, React, Node.js). Below is a screenshot of our application. You can read more at the links below. The documentation is written in Slovene.
 
+* Currently the website is in Slovene and map is focused on Slovenia but that can be changed with not to much effort.
+
 ![App](https://github.com/user-attachments/assets/0bacd295-7d7d-47ac-8ec0-f5af27ae7fa8)
+
+![image](https://github.com/user-attachments/assets/d2d4c206-d8c6-4fb3-85b7-eda2fea6be83)
+
+![image](https://github.com/user-attachments/assets/efabba35-1397-4249-8dc0-227b39fc4d2a)
 
 ## Documentation (in Slovene)
 
