@@ -25,7 +25,14 @@ var climbingCenterRateComment = require('./routes/climbingCenterRateCommentRoute
 var app = express();
 
 var cors = require('cors');
-var allowedOrigins = ['http://localhost:5173', 'http://localhost:3001'];
+var allowedOrigins = [
+  'http://172.205.210.219/api',
+  'http://172.205.210.219',
+  'http://132.164.72.107/api',
+  'http://132.164.72.107',
+  'http://localhost:5173',
+  'http://localhost:3001',
+];
 app.use(cors({
   credentials: true,
   origin: function(origin, callback){
@@ -61,7 +68,9 @@ app.use('/groups', groupRoutes)
 app.use('/events', eventRoutes)
 app.use('/climbingCenter', climbingCenterRoutes);
 app.use('/centerConnections', climbingCenterRateComment);
-
+app.use('/avatars', express.static('public/avatars'));
+app.use('/eventPhotos', express.static('public/events'));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

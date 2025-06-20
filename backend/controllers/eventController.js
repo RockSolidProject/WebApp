@@ -1,83 +1,116 @@
-var EventModel = require('../models/eventModel.js');
-var GroupModel = require('../models/groupModel.js');
+const EventModel = require('../models/eventModel.js');
+const GroupModel = require('../models/groupModel.js');
+const GroupMemberModel = require('../models/groupMemberModel.js');
 
-/**
- * eventController.js
- *
- * @description :: Server-side logic for managing events.
- */
 module.exports = {
 
-    /**
-     * eventController.list()
-     */
-    list: async function (req, res) { // TODO
+    // GET /events/:id
+    show: async function (req, res) {
         try {
-            var events = await EventModel.find();
-            return res.json(events);
+            const event = await EventModel.findOne({_id: req.params.id})
+                .populate("climbingAreas")
+                .populate("climbingCenters")
+                .populate("group");
+
+            if (!event) {
+                return res.status(404).json({message: "Event not found"});
+            }
+
+            return res.json(event);
         } catch (err) {
             return res.status(500).json({
-                message: 'Error when getting event.',
-                error: err
-            })
+                message: "Error when fetching event.",
+                error: err,
+            });
         }
-
     },
 
-    /**
-     * eventController.s
-
-    /**
-     * eventController.create()
-     */
-    create: async function (req, res) { // TODO
-        var groups = req.body.groups ? req.body.groups : [];
-        var centers = req.body.climbingCenters ? req.body.climbingCenters : [];
-        var areas = req.body.climbingAreas ? req.body.climbingAreas:[];
-        /*if (groups.length === 0 || (centers.length === 0 && areas.length === 0)) {
-            return res.status(400).json({
-                message: 'Event must have at least one group',
-                error: new Error('cannot create an event and center'),
-            })
-        }*/
+    // GET /events
+    list: async function (req, res) {
         try {
-            const ownedGroups = await GroupModel.find({owner: req.user.id, _id: {$in: groups}});
+            const now = new Date();
 
-            if (groups.length !== ownedGroups.length) {
-                return res.status(400).json({
-                    message: 'Cannot add a group that doesn\'t belong to you',
-                    error: new Error('Cannot create event')
-                })
+            // Get groups the user belongs to
+            const myGroups = await GroupMemberModel
+                .find({member: req.user.id});
+            const myGroupIds = myGroups.map(gm => gm.group);
+
+            // Public events are those with no group assigned (group: null)
+            const publicEvents = await EventModel.find({
+                date: {$gte: now},
+                group: null
+            }).sort({date: 1});
+
+            // My events are events whose group is one of the user's groups
+            const myEvents = await EventModel.find({
+                date: {$gte: now},
+                group: {$in: myGroupIds}
+            }).populate('group')
+                .sort({date: 1});
+
+            return res.json({publicEvents, myEvents});
+
+        } catch (err) {
+            return res.status(500).json({
+                message: 'Error when getting events.',
+                error: err
+            });
+        }
+    },
+
+    // POST /events
+    create: async function (req, res) {
+
+        const group = req.body.group || null;
+
+        const centers = req.body.climbingCenters ? JSON.parse(req.body.climbingCenters) : [];
+        const areas = req.body.climbingAreas ? JSON.parse(req.body.climbingAreas) : [];
+        console.log("do tu pridem")
+        const date = req.body.date ? new Date(req.body.date) : new Date();
+
+
+        if (!group && centers.length === 0 && areas.length === 0) {
+            return res.status(400).json({
+                message: 'Event must have at least one center or area.',
+                error: new Error('Invalid event data'),
+            });
+        }
+
+        try {
+            if (group) {
+                const ownedGroup = await GroupModel.findOne({
+                    _id: group,
+                    owner: req.user.id
+                });
+
+                if (!ownedGroup) {
+                    return res.status(400).json({
+                        message: 'Cannot add a group that doesn\'t belong to you',
+                        error: new Error('Unauthorized group assignment'),
+                    });
+                }
             }
-            var event = new EventModel({
+
+            const event = new EventModel({
                 climbingAreas: areas,
                 climbingCenters: centers,
-                groups: groups,
+                group: group,
                 name: req.body.name,
                 description: req.body.description,
-                date: Date.now(),
-                photo: req.body.photo,
-                user: req.user.id,
+                date: date,
+                photo: req.file ? `/events/${req.file.filename}` : null,  // shrani ime datoteke
+                owner: req.user.id,
             });
 
-            var savedEvent = await event.save()
-            return res.json(savedEvent)
+            const savedEvent = await event.save();
+            return res.json(savedEvent);
 
         } catch (err) {
             return res.status(500).json({
-                message: 'Error when getting event.',
+                message: 'Error when creating event.',
                 error: err
-            })
+            });
         }
-    },
-
-    /**
-     * eventController.update()
-     */
-
-    /**
-     * eventController.remove()
-     */
-
+    }
 
 };

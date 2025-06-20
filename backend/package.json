@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon ./bin/www"
+    "dev": "nodemon ./bin/www",
+    "test": "jest --runInBand"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -15,14 +16,20 @@
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
+    "haversine-distance": "^1.2.3",
     "http-errors": "~1.6.3",
     "jade": "^0.29.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.2",
     "morgan": "~1.9.1",
-    "nodemon": "^3.1.10"
+    "multer": "^2.0.0",
+    "nodemon": "^3.1.10",
+    "point-in-polygon": "^1.1.0",
+    "recharts": "^2.15.3"
   },
   "devDependencies": {
-    "express-mongoose-generator": "^3.1.0"
+    "express-mongoose-generator": "^3.1.0",
+    "jest": "^29.7.0",
+    "supertest": "^7.1.1"
   }
 }

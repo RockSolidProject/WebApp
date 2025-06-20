@@ -13,8 +13,77 @@ module.exports = {
      */
     list: async function (req, res) {
         try {
-            const groups = await GroupModel.find()
-            return res.json(groups)
+            const userId = req.user?.id?.toString();
+
+            const allGroups = await GroupModel.find().populate('owner');
+            const memberships = await GroupMemberModel.find({member: userId});
+
+            const memberGroupIds = new Set(memberships.map(m => m.group.toString()));
+
+            const groupsWithMineFlag = allGroups.map(group => {
+                const isMine =
+                    group.owner && group.owner._id && group.owner._id.toString() === userId ||
+                    memberGroupIds.has(group._id.toString());
+
+                return {
+                    ...group.toObject(),
+                    mine: isMine
+                };
+            });
+
+            return res.json(groupsWithMineFlag);
+        } catch (err) {
+            return res.status(500).json({
+                error: err,
+                message: "failed to list groups"
+            });
+        }
+    },
+    listSearch: async function (req, res) {
+        try {
+            const userId = req.user.id;
+            const limit = parseInt(req.query.limit) || 10;
+            const pattern = req.query.pattern || "";
+            console.log("here");
+
+            // Filter by name prefix if pattern provided
+            const nameFilter = {name: {$regex: `${pattern}`, $options: "i"}};
+
+            // Get owned groups matching pattern
+            const ownedGroups = await GroupModel.find({
+                owner: userId,
+                ...nameFilter,
+            });
+
+
+            const limitedGroups = ownedGroups.slice(0, limit);
+
+            return res.json(limitedGroups);
+        } catch (err) {
+            return res.status(500).json({
+                error: err,
+                message: "Failed to list groups"
+            });
+        }
+    },
+    listByUser: async function (req, res) {
+        try {
+            const userId = req.user.id;
+
+            // 1. Groups the user owns
+            const ownedGroups = await GroupModel.find({owner: userId});
+
+            // 2. Membership records where the user is a member
+            const memberships = await GroupMemberModel.find({member: userId}).populate('group');
+
+            const memberGroups = memberships
+                .map(m => m.group)
+                .filter(group => group.owner.toString() !== userId);
+
+            return res.json({
+                owned: ownedGroups,
+                membered: memberGroups
+            });
         } catch (err) {
             return res.status(500).json({
                 error: err,
@@ -27,12 +96,57 @@ module.exports = {
      * groupController.show()
      */
     show: async function (req, res) {
-
         var id = req.params.id;
         try {
-            var group = await GroupModel.findOne({_id: id})
-            return res.json(group)
-        } catch(err) {
+
+            var group = await GroupModel
+                .findOne({_id: id})
+                .populate('owner')
+
+            if (!group) {
+                return res.status(404).json({
+                    message: 'Group does not exist'
+                })
+            }
+
+
+            if (!group.isPrivate) {
+                const groupMembers = await GroupMemberModel
+                    .find({group: group._id})
+                    .populate('member')
+                const groupObj = group.toObject();
+                groupObj.members = groupMembers;
+                groupObj.isMember = groupMembers.some(
+                    gm => gm.member._id.toString() === req.user.id.toString()
+                )
+                groupObj.isOwner = req.user.id.toString() === group.owner._id.toString();
+                return res.json(groupObj)
+            }
+            const groupObj = group.toObject();
+
+
+            const groupMembers = await GroupMemberModel
+                .find({group: group._id})
+                .populate('member')
+
+            var isMember = false
+            if (!groupMembers) {
+                isMember = false
+            } else {
+                isMember = groupMembers.some(
+                    gm => gm.member._id === req.user.id
+                )
+            }
+            groupObj.isMember = isMember;
+
+            groupObj.isOwner = req.user.id.toString() === group.owner._id.toString();
+            if (!isMember && !groupObj.isOwner) {
+                return res.json(groupObj);
+            } else {
+                groupObj.members = groupMembers;
+                return res.json(groupObj);
+            }
+        } catch (err) {
             return res.status(500).json({
                 error: err,
                 message: "failed to show groups"
@@ -45,13 +159,20 @@ module.exports = {
      * groupController.create()
      */
     create: async function (req, res) {
-        var group = new GroupModel({//TODO
+        var group = new GroupModel({
             name: req.body.name,
             isPrivate: req.body.isPrivate,
-            owner: req.user.id
+            owner: req.user.id,
+            description: req.body.description,
+            image: req.file ? `/groups/${req.file.filename}` : null,
         });
         try {
             var savedGroup = await group.save();
+            var groupMember = new GroupMemberModel({
+                member: req.user.id,
+                group: savedGroup._id
+            })
+            var member = await groupMember.save()
             return res.json(savedGroup);
         } catch (err) {
             return res.status(500).json({
@@ -64,20 +185,21 @@ module.exports = {
 
     join: async function (req, res) {
         try {
-            var groupId = req.body.groupId;
-            var group = await GroupModel.findOne({_id: groupId, isPrivate: false});
+            const groupId = req.body.groupId;
+            const group = await GroupModel.findOne({_id: groupId, isPrivate: false});
             if (!group) {
                 return res.status(400).json({
                     message: 'Cannot join a private group or a nonexistent one',
                     error: new Error('')
                 });
             }
-            var groupMember = await GroupMemberModel.findOne({group: groupId, member: req.user.id})
+            let groupMember = await GroupMemberModel.findOne({group: groupId, member: req.user.id});
             if (!groupMember) {
                 groupMember = new GroupMemberModel({
                     member: req.user.id,
                     group: groupId,
                 })
+                await groupMember.save()
                 return res.json(groupMember);
             } else {
                 return res.status(400).json({
@@ -93,26 +215,35 @@ module.exports = {
     },
     addMember: async function (req, res) {
         try {
-            var groupId = req.body.group;
-            var ownerId = req.user.id;
-            var memberId = req.body.member;
-            var group = await GroupModel.findOne({_id: groupId, owner: ownerId});
+
+            const groupId = req.body.group;
+            const ownerId = req.user.id;
+            const memberId = req.body.member;
+            const group = await GroupModel.findOne({_id: groupId, owner: ownerId});
+
             if (!group) {
+
                 return res.status(400).json({
                     message: 'Cannot add a member to group that you don\'t own or a nonexistent one',
                     error: new Error('')
                 });
             }
-            var groupMember = await GroupMemberModel.findOne({group: groupId, member: memberId})
+
+            let groupMember = await GroupMemberModel.findOne({group: groupId, member: memberId});
+
             if (!groupMember) {
+
                 groupMember = new GroupMemberModel({
                     member: memberId,
                     group: groupId,
                 })
-                return res.json(groupMember);
+                var saved = await groupMember.save()
+                return res.json(saved)
             } else {
+
                 return res.status(400).json({
                     message: 'Already joined the group',
+                    error: new Error('already joined the group'),
                 })
             }
         } catch (err) {

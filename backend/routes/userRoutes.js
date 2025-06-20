@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var userController = require('../controllers/userController.js');
 const auth = require("../middleware/auth.js");
+const multer = require('multer')
+const upload = multer({dest: 'public/avatars/'});
 
 /*
  * GET
@@ -13,8 +15,8 @@ router.get('/test', function(req, res, next) {
 /*
  * GET
  */
-router.get('/:id', auth, userController.show);
-
+router.get('/profile', auth, userController.show);
+router.get('/', userController.list);
 /*
  * POST
  */
@@ -24,8 +26,7 @@ router.post('/login', userController.login);
 /*
  * PUT
  */
-router.put('/:id', auth, userController.update);
-router.put('/avatar/:id', auth, userController.setAvatar);
+router.put('/avatar/', auth, upload.single('avatar'), userController.setAvatar);
 /*
  * DELETE
  */

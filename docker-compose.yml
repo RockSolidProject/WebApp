@@ -1,0 +1,59 @@
+services:
+  mongo:
+    image: mongo:7.0.12
+    volumes:
+      - mongo_data:/data/db #Volumen, katerega upravlja docker (da se podatki o bazi vedno ohraniji)
+    networks:
+      - mern-app
+  api: # backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - backend/.env.production
+    volumes:
+      - ./backend:/app #da docker uporabi datoteke iz backenda
+      - /app/node_modules # docker uporabi svojo verzijo node_modules
+    depends_on:
+      - mongo # Da api počaka da se mongo naloži
+    networks:
+      - mern-app
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - frontend/.env.production
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - mern-app
+    depends_on:
+      - api # počaka da se naloži api
+
+  caddy: #reverse proxy
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - mern-app
+    depends_on:
+      - api
+      - frontend
+
+volumes:
+  mongo_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  mern-app:
+    driver: bridge

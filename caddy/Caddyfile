@@ -1,0 +1,10 @@
+52.166.14.239:80 {
+    encode gzip
+
+    handle_path /api* {
+        reverse_proxy api:3001
+    }
+
+    reverse_proxy frontend:5173
+}
+

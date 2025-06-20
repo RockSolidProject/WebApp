@@ -2,12 +2,30 @@ var RouteWishListModel = require('../models/routeWishListModel.js')
 var RouteClimbedModel = require('../models/routeClimbedModel.js')
 var RouteCommentModel = require('../models/routeCommentModel.js')
 var RouteRateModel = require('../models/routeRateModel.js')
-
 /**
  * routeConnectionController.js
  *
  * @description :: Handles user route connections.
  */
+
+const ropeGrades = [
+    "3", "3+", "4a", "4b", "4c",
+    "5a", "5b", "5c",
+    "6a", "6a+", "6b", "6b+", "6c", "6c+",
+    "7a", "7a+", "7b", "7b+", "7c", "7c+",
+    "8a", "8a+", "8b", "8b+", "8c", "8c+",
+    "9a", "9a+", "9b", "9b+", "9c", "9c+"
+];
+const boulderGrades = [
+    "3", "3+", "4", "4+", "5", "5+",
+    "6A", "6A+", "6B", "6B+", "6C", "6C+",
+    "7A", "7A+", "7B", "7B+", "7C", "7C+",
+    "8A", "8A+", "8B", "8B+", "8C", "8C+", "9A"
+];
+const urbanGrades = [
+    "I", "II", "III", "IV", "IV+", "V", "V+", "VI", "VI+",
+    "VII", "VII+", "VIII", "VIII+", "IX", "IX+", "X", "X+", "XI", "XI+"
+];
 
 module.exports = {
     getUsersWishlist: async function (req, res) {
@@ -44,6 +62,80 @@ module.exports = {
             })
         }
     },
+
+    computeAverageGrade: async function (routeId) {
+        const rates = await RouteClimbedModel.find({ climbingRoute: routeId }).populate("climbingRoute");
+        if (!rates.length) return null;
+
+        const routeType = rates[0].climbingRoute.type;
+        let gradeList = [];
+        if (routeType === "boulder") gradeList = boulderGrades;
+        else if (routeType === "lead") gradeList = ropeGrades;
+        else if (routeType === "urban") gradeList = urbanGrades;
+
+        const gradeIndexes = rates
+            .map(grade => gradeList.indexOf(grade.gradeOpinion))
+            .filter(index => index !== -1);
+
+        if (!gradeIndexes.length) return null;
+
+        const avgIndex = gradeIndexes.reduce((a, b) => a + b, 0) / gradeIndexes.length;
+        return gradeList[Math.round(avgIndex)];
+    },
+
+    computeAverageRating: async function (routeId) {
+        try {
+            const ratings = await RouteRateModel.find({ climbingRoute: routeId })
+                .populate("postedBy")
+                .populate("climbingRoute");
+            if (!ratings.length) return null;
+            const avg =
+                ratings.reduce((sum, r) => sum + (r.rating || 0), 0) / ratings.length;
+            return avg;
+        } catch (err) {
+            throw err;
+        }
+    },
+
+    getAverageGrade: async function(req, res) {
+        const routeId = req.params.routeId
+
+        if (!routeId) {
+            return res.status(400).json({ message: "Missing routeId parameter." });
+        }
+
+        try {
+            const rates = await RouteClimbedModel.find({ climbingRoute: routeId }).populate("climbingRoute");
+            if (!rates.length) {
+                return res.json({ average: null });
+            }
+            const routeType = rates[0].climbingRoute.type;
+            let gradeList = [];
+            if (routeType === "boulder") gradeList = boulderGrades;
+            else if (routeType === "lead") gradeList = ropeGrades;
+            else if (routeType === "urban") gradeList = urbanGrades;
+
+            const gradeIndexes = rates
+                .map(grade => gradeList.indexOf(grade.gradeOpinion))
+                .filter(index => index !== -1);
+
+            if (!gradeIndexes.length) {
+                return res.json({ average: null });
+            }
+
+            const avgIndex = gradeIndexes.reduce((a, b) => a + b, 0) / gradeIndexes.length;
+            const avgGrade = gradeList[Math.round(avgIndex)];
+
+            return res.json({ average: avgGrade });
+        } catch (err) {
+            return res.status(500).json({
+                message: "Error getting route average grade.",
+                error: err
+            })
+        }
+
+    },
+
 
     getRoutesComments: async function(req, res) {
         const routeId = req.params.routeId
@@ -109,7 +201,17 @@ module.exports = {
         const routeId = req.params.routeId
         const userId = req.user.id
 
-        try{            
+        if(req.body.gradeOpinion === "rope" && !ropeGrades.includes(req.body.gradeOpinion)) {
+            return res.status(400).json({message: "Invalid rope grade."})
+        }
+        if(req.body.gradeOpinion === "boulder" && !boulderGrades.includes(req.body.gradeOpinion)) {
+            return res.status(400).json({message: "Invalid boulder grade."})
+        }
+        if(req.body.gradeOpinion === "urban" && !urbanGrades.includes(req.body.gradeOpinion)) {
+            return res.status(400).json({message: "Invalid urban grade."})
+        }
+        if(req.body.gradeOpinion === "rope" && req.body.attempts < 1) {}
+        try{
             const current = await RouteClimbedModel.findOne({postedBy: userId, climbingRoute: routeId})
             if (current) {
                 return res.status(400).json({message: "Already marked this route as climbed."})
@@ -133,26 +235,27 @@ module.exports = {
         }
     },
 
-    commentRoute: async function(req, res) {
-        const routeId = req.params.routeId
-        const userId = req.user.id
-
+    commentRoute: async function (req, res) {
         try {
-            const comment = new RouteCommentModel({
-                climbingRoute: routeId,
-                postedBy: userId,
-                content: req.body.content,
-                image: req.body.image
-            })
+            if (!req.body.content) {
+                return res.status(400).json({ message: "Comment content is required." });
+            }
 
-            const addedComment = await comment.save()
-            return res.status(201).json(addedComment)
-        }
-        catch (err) {
+            const comment = new RouteCommentModel({
+                content: req.body.content,
+                image: req.file ? `/public/commentImages/${req.file.filename}` : null,
+                postedBy: req.user.id,
+                climbingRoute: req.params.routeId,
+            });
+
+            const savedComment = await comment.save();
+            return res.status(201).json(savedComment);
+        } catch (err) {
+            console.error('Error in commentRoute:', err.stack || err.message || err);
             return res.status(500).json({
-                message: "Adding comment failed",
-                error: err
-            })
+                message: 'Error when adding comment.',
+                error: err.message || err,
+            });
         }
     },
 
@@ -173,13 +276,73 @@ module.exports = {
                 rating: req.body.rating
             })
             await routeRate.save()
-            return res.status(201).json(routeRating)
+            return res.status(201).json(routeRate)
         }
         catch (err) {
             return res.status(500).json({
                 message: "Rating route failed.",
                 error: err
             })
+        }
+    },
+    getGradesOverTime: async function(req, res) {
+        const routeId = req.params.routeId;
+        try {
+            const climbedData = await RouteClimbedModel.find({ climbingRoute: routeId })
+                .populate("climbingRoute");
+
+            if (!climbedData.length) {
+                return res.json({ data: [], routeType: null });
+            }
+            const routeType = climbedData[0].climbingRoute.type;
+            let gradeList = [];
+
+            if (routeType === "boulder") {
+                gradeList = boulderGrades;
+            } else if (routeType === "lead") {
+                gradeList = ropeGrades;
+            } else if (routeType === "urban") {
+                gradeList = urbanGrades;
+            }
+
+            const monthlyGrades = {};
+
+            climbedData.forEach(data => {
+                const recordDate = data.dateTime ||
+                    (data.createdAt ? data.createdAt :
+                        (data._id.getTimestamp ? data._id.getTimestamp() : null));
+
+                const yearMonth = recordDate ?
+                    new Date(recordDate).toISOString().slice(0, 7) : "unknown";
+
+                if (!monthlyGrades[yearMonth]) {
+                    monthlyGrades[yearMonth] = {};
+                    gradeList.forEach(grade => monthlyGrades[yearMonth][grade] = 0);
+                }
+
+                if (gradeList.includes(data.gradeOpinion)) {
+                    monthlyGrades[yearMonth][data.gradeOpinion]++;
+                }
+            });
+
+            // sort
+            const result = Object.entries(monthlyGrades)
+                .sort(([monthA], [monthB]) => monthA.localeCompare(monthB))
+                .map(([period, grades]) => ({
+                    period,
+                    grades
+                }));
+
+            res.json({
+                data: result,
+                routeType
+            });
+
+        } catch (err) {
+            res.status(500).json({
+                message: "Error getting grades over time.",
+                error: err
+            });
         }
     }
 }

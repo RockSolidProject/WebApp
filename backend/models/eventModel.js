@@ -10,10 +10,10 @@ var eventSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'climbingCenter'
 	}],
-	'groups' : [{
+	'group' : {
 		type: Schema.Types.ObjectId,
 		ref: 'group'
-	}],
+	},
 	'name' : {
 		type: String,
 		required: true

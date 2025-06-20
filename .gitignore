@@ -1,4 +1,4 @@
-# Node modules
+ # Node modules
 node_modules/
 
 /.idea/
@@ -18,8 +18,9 @@ build/
 .DS_Store
 
 backend/package-lock.json
-backend/public/images
+backend/public/avatars
 package-lock.json
 frontend/package-lock.json
 .vscode
-/backend/.env
+.env*
+package.json

@@ -44,7 +44,7 @@ module.exports = {
                 .find({climbingCenter: centerId})
             if (ratings.length === 0) {
                 return res.status(200).json({
-                    message: "No ratings yet.",
+                    message: "Ni še ocen.",
                     averageRating: 0
                 })
             }
@@ -64,25 +64,31 @@ module.exports = {
 
 
     commentCenter: async function(req, res) {
-        const centerId = req.params.centerId
-        const userId = req.user.id
+        const centerId = req.params.centerId;
+        const userId = req.user.id;
 
         try {
+            if (!req.body.content) {
+                return res.status(400).json({ message: "Comment content is required." });
+            }
+
+            const imagePath = req.file ? `/public/commentImages/${req.file.filename}` : null;
+
             const comment = new ClimbingCenterCommentModel({
                 climbingCenter: centerId,
                 postedBy: userId,
                 content: req.body.content,
-                image: req.body.image
-            })
+                image: imagePath
+            });
 
-            const addedComment = await comment.save()
-            return res.status(201).json(addedComment)
-        }
-        catch (err) {
+            const addedComment = await comment.save();
+            return res.status(201).json(addedComment);
+        } catch (err) {
+            console.error('Error in commentCenter:', err.stack || err.message || err);
             return res.status(500).json({
                 message: "Adding comment failed",
-                error: err
-            })
+                error: err.message || err
+            });
         }
     },
 
